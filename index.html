@@ -3901,16 +3901,14 @@
           updateSocketStatusUI('error');
         });
 
-        // 1. Listen for full state broadcast from partner
+        // 1. Listen for compact state broadcast from partner
         pusherChannel.bind('client-wedding-update', (data) => {
           if (data && data.senderDeviceId !== myDeviceId) {
-            handleRemoteCloudUpdate(data, true);
+            const unpacked = unpackWeddingState(data);
+            if (unpacked) {
+              handleRemoteCloudUpdate(unpacked, true);
+            }
           }
-        });
-
-        // 2. Listen for chunked messages (when data size exceeds 8 KB)
-        pusherChannel.bind('client-sync-chunk', (chunkData) => {
-          handleIncomingChunk(chunkData);
         });
 
         // 3. Listen for partner requesting our latest state
@@ -3993,66 +3991,115 @@
     }
 
     /**
-     * Sends payload, chunking it if it approaches Pusher's 10 KB limit
+     * Compact state packer: extracts only dynamic values (completed, costs, notes, seating, date)
+     * Fits into ~500-1500 bytes (far below Pusher's 10 KB limit)
      */
-    function sendPusherPayload(payload) {
-      if (!pusherChannel || !isPusherSubscribed) return;
+    function packWeddingState(actionDescription = '') {
+      const completed = [];
+      const costs = {};
+      const notes = {};
+      const subtasksCompleted = [];
+      const customItems = [];
 
-      const jsonStr = JSON.stringify(payload);
-      const CHUNK_SIZE = 7500; // safe margin below 10,240 bytes
+      categories.forEach(cat => {
+        cat.items.forEach(item => {
+          if (item.completed) completed.push(item.id);
+          if (item.cost && String(item.cost).trim() !== '') costs[item.id] = String(item.cost).trim();
+          if (item.notes && String(item.notes).trim() !== '') notes[item.id] = String(item.notes).trim();
+          if (Array.isArray(item.subtasks)) {
+            item.subtasks.forEach(st => {
+              if (st.completed) subtasksCompleted.push(st.id);
+            });
+          }
+          if (item.isCustom) {
+            customItems.push({ catId: cat.id, item });
+          }
+        });
+      });
 
-      if (jsonStr.length <= CHUNK_SIZE) {
-        pusherChannel.trigger('client-wedding-update', payload);
-      } else {
-        const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-        const totalChunks = Math.ceil(jsonStr.length / CHUNK_SIZE);
-
-        for (let i = 0; i < totalChunks; i++) {
-          const part = jsonStr.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-          pusherChannel.trigger('client-sync-chunk', {
-            msgId: msgId,
-            index: i,
-            total: totalChunks,
-            chunk: part,
-            senderDeviceId: myDeviceId
-          });
-        }
-      }
+      return {
+        senderDeviceId: myDeviceId,
+        actionDescription: actionDescription || '',
+        updatedAt: Date.now(),
+        d: localStorage.getItem(DATE_STORAGE_KEY) || null,
+        b: localStorage.getItem(TARGET_BUDGET_KEY) || null,
+        c: completed,
+        k: costs,
+        n: notes,
+        st: subtasksCompleted,
+        x: customItems,
+        s: seatingData
+      };
     }
 
     /**
-     * Reassembles chunked messages from partner
+     * Unpacks compact wedding state into live categories and UI
      */
-    function handleIncomingChunk(data) {
-      if (!data || data.senderDeviceId === myDeviceId) return;
-      const { msgId, index, total, chunk } = data;
+    function unpackWeddingState(payload) {
+      if (!payload || typeof payload !== 'object') return null;
 
-      if (!incomingChunks.has(msgId)) {
-        incomingChunks.set(msgId, new Array(total));
-      }
-      const chunksArr = incomingChunks.get(msgId);
-      chunksArr[index] = chunk;
+      const completedSet = new Set(payload.c || []);
+      const subtasksSet = new Set(payload.st || []);
+      const costs = payload.k || {};
+      const notes = payload.n || {};
 
-      let complete = true;
-      for (let i = 0; i < total; i++) {
-        if (chunksArr[i] === undefined) {
-          complete = false;
-          break;
-        }
+      categories.forEach(cat => {
+        cat.items.forEach(item => {
+          item.completed = completedSet.has(item.id);
+          item.cost = costs[item.id] !== undefined ? String(costs[item.id]) : '';
+          item.notes = notes[item.id] !== undefined ? String(notes[item.id]) : '';
+          if (Array.isArray(item.subtasks)) {
+            item.subtasks.forEach(st => {
+              st.completed = subtasksSet.has(st.id);
+            });
+          }
+        });
+      });
+
+      if (Array.isArray(payload.x)) {
+        payload.x.forEach(({ catId, item }) => {
+          const cat = categories.find(c => c.id === catId);
+          if (cat && !cat.items.some(i => i.id === item.id)) {
+            cat.items.push(item);
+          }
+        });
       }
 
-      if (complete) {
-        try {
-          const fullJson = chunksArr.join('');
-          incomingChunks.delete(msgId);
-          const parsed = JSON.parse(fullJson);
-          handleRemoteCloudUpdate(parsed, true);
-        } catch (e) {
-          console.error('Failed to parse reassembled chunk:', e);
-        }
-      }
+      return {
+        senderDeviceId: payload.senderDeviceId,
+        updatedAt: payload.updatedAt,
+        categories: categories,
+        seating: payload.s || seatingData,
+        weddingDate: payload.d,
+        targetBudget: payload.b
+      };
     }
 
+    /**
+     * Push latest state to partner via Pusher WebSocket (Compact & Ultra-Fast)
+     */
+    function pushToCloud(actionDescription = '') {
+      if (isReceivingCloudUpdate) return;
+
+      clearTimeout(pusherDebounceTimer);
+      pusherDebounceTimer = setTimeout(() => {
+        try {
+          if (!pusherChannel || !isPusherSubscribed) return;
+          const payload = packWeddingState(actionDescription);
+          pusherChannel.trigger('client-wedding-update', payload);
+        } catch (e) {
+          console.error('Failed to push to Pusher:', e);
+        }
+      }, 100);
+    }
+
+    // In event listener:
+    // pusherChannel.bind('client-wedding-update', (data) => {
+    //   if (data && data.senderDeviceId !== myDeviceId) {
+    //     const fullState = unpackWeddingState(data);
+    //     if (fullState) handleRemoteCloudUpdate(fullState, true);
+    //   }
+    // });
     /**
      * Apply remote update to application state safely
      */
