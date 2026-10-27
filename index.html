@@ -16,9 +16,6 @@
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Firebase 9 Compat SDK (Realtime Database for Instant Two-Device Sync) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -270,10 +267,9 @@
         Гармоничная подготовка: пошаговый чек-лист, свадебный бюджет и интерактивная рассадка гостей по залу.
       </p>
 
-      <!-- Header Badges Bar: Countdown & Real-Time Sync (Single Link for Couple) -->
-      <div class="no-print mt-3.5 flex flex-wrap items-center justify-center gap-2.5">
-        <!-- Wedding Date Countdown Widget -->
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-bordergold text-xs text-warmgray backdrop-blur-xs shadow-xs">
+      <!-- Clean Luxury Header: Wedding Date Countdown -->
+      <div class="no-print mt-4 flex items-center justify-center">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-bordergold text-xs text-warmgray backdrop-blur-xs shadow-xs">
           <span class="text-gold-dark">💍</span>
           <label for="weddingDateInput" class="cursor-pointer font-medium hover:text-charcoal transition-colors">
             Дата свадьбы:
@@ -281,24 +277,6 @@
           <input type="date" id="weddingDateInput" class="bg-transparent border-0 text-charcoal font-medium text-xs focus:ring-0 focus:outline-none cursor-pointer">
           <span id="countdownBadge" class="hidden font-serif font-semibold text-olive bg-olive-soft px-2.5 py-0.5 rounded-full border border-olive/30"></span>
         </div>
-
-        <!-- Live Cloud Sync Status & Instant Refresh -->
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 border border-bordergold text-xs shadow-xs backdrop-blur-xs">
-          <span id="syncStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" title="Синхронизация активна"></span>
-          <span id="syncStatusLabel" class="text-[11px] font-medium text-charcoal select-none">Общий доступ: в сети</span>
-          <button type="button" id="forceSyncBtn" class="text-warmgray hover:text-charcoal cursor-pointer p-0.5 rounded hover:bg-champagne transition-all flex items-center justify-center text-xs" title="Обновить данные сейчас">
-            🔄
-          </button>
-          <button type="button" id="openSyncModalBtn" class="p-0.5 rounded text-warmgray hover:text-charcoal cursor-pointer text-xs" title="Настройки совместного доступа">
-            ⚙️
-          </button>
-        </div>
-
-        <!-- 1-Click Zero-VPN Instant Sync Button -->
-        <button type="button" id="openMagicSyncBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-champagne hover:bg-gold-light/60 border border-gold-light text-xs font-semibold text-charcoal shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer" title="Передать все обновления половинке без VPN (Telegram / QR)">
-          <span class="text-sm">📲</span>
-          <span>Передать половинке (без VPN)</span>
-        </button>
       </div>
 
       <!-- MAIN APP TABS SWITCHER (Чек-лист vs Рассадка гостей) -->
@@ -744,8 +722,11 @@
       <div class="font-serif tracking-widest uppercase text-gold-dark text-xs sm:text-[13px]">
         Свадебный планер 2026 • Идеальный день вашей любви
       </div>
-      <div class="text-[11px] text-warmgray/80">
-        Переключайтесь между чек-листом и рассадкой в верхней панели
+      <div class="flex items-center gap-3 text-[11px]">
+        <button type="button" id="openGoogleSheetBtn" class="hover:text-charcoal text-gold-dark transition-colors cursor-pointer flex items-center gap-1.5 underline underline-offset-2">
+          <span>📊 Подключить Google Таблицу (синхронизация)</span>
+        </button>
+        <span id="sheetStatusIndicator" class="hidden text-olive font-medium">✓ Таблица подключена</span>
       </div>
     </div>
   </footer>
@@ -1061,207 +1042,88 @@
     </div>
   </div>
 
-  <!-- ZERO-VPN MAGIC SYNC MODAL -->
-  <div id="magicSyncModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200 max-h-[90vh] overflow-y-auto">
+  <!-- GOOGLE SHEETS SYNC MODAL -->
+  <div id="googleSheetModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-7 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200 max-h-[90vh] overflow-y-auto">
       
       <!-- Modal Header -->
       <div class="flex items-start justify-between pb-3.5 border-b border-bordergold/60 mb-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-champagne flex items-center justify-center text-gold-dark border border-gold-light/40 text-lg shadow-inner shrink-0">
-            📲
+          <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-200 text-lg shadow-inner shrink-0">
+            📊
           </div>
           <div>
             <h3 class="text-lg font-serif text-charcoal font-bold tracking-wide">
-              Синхронизация без VPN
+              Синхронизация через Google Таблицу
             </h3>
             <p class="text-xs text-warmgray mt-0.5">
-              100% работает на любом телефоне (МТС, Мегафон, Билайн, Tele2)
+              Единая база данных для жениха и невесты без VPN на любых телефонах
             </p>
           </div>
         </div>
-        <button id="closeMagicSyncBtn" class="text-warmgray hover:text-charcoal p-1 cursor-pointer transition-colors" title="Закрыть">
+        <button id="closeGoogleSheetModalBtn" class="text-warmgray hover:text-charcoal p-1 cursor-pointer transition-colors" title="Закрыть">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
-      <!-- Explanation Banner -->
-      <div class="p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-4 text-xs text-warmgray leading-relaxed">
-        Все ваши галочки, суммы бюджета и рассадка гостей упаковываются в одну ссылку. Вторая половинка просто нажимает на нее со смартфона — и всё обновляется мгновенно!
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="space-y-3">
-        <!-- Send to Telegram Button -->
-        <button type="button" id="magicSendTgBtn" class="w-full py-3 px-4 rounded-xl bg-[#229ED9] hover:bg-[#1e8ec3] text-white text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-sm hover:shadow flex items-center justify-center gap-2.5 cursor-pointer active:scale-95">
-          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-          </svg>
-          <span>Отправить половинке в Telegram</span>
-        </button>
-
-        <!-- Copy Link Button -->
-        <button type="button" id="magicCopyLinkBtn" class="w-full py-2.5 px-4 rounded-xl bg-champagne hover:bg-gold-light/60 border border-gold-light text-charcoal text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-          <span>📋 Скопировать ссылку для отправки</span>
-        </button>
-
-        <!-- Toggle QR Code -->
-        <button type="button" id="toggleQrCodeBtn" class="w-full py-2 text-xs text-gold-dark hover:text-charcoal hover:underline transition-colors text-center cursor-pointer font-medium">
-          📷 Показать QR-код для камеры смартфона
-        </button>
-
-        <!-- QR Code Display Box (hidden by default) -->
-        <div id="qrCodeContainer" class="hidden text-center p-4 bg-ivory-100 rounded-xl border border-bordergold transition-all">
-          <p class="text-[11px] text-warmgray mb-3">
-            Наведите камеру смартфона на экран — планер мгновенно откроется с вашими данными:
-          </p>
-          <div class="flex justify-center">
-            <img id="qrCodeImg" class="w-48 h-48 bg-white p-2 rounded-xl border border-bordergold shadow-sm" alt="QR-код планера" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Close Button -->
-      <button id="closeMagicSyncBtn2" class="w-full mt-4 py-2 text-xs text-warmgray hover:text-charcoal text-center font-medium cursor-pointer">
-        Закрыть
-      </button>
-
-    </div>
-  </div>
-
-  <!-- MODAL: Cloud Sync & Couple Access (Жених и Невеста) -->
-  <div id="syncModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-7 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200 max-h-[90vh] overflow-y-auto">
-      
-      <!-- Modal Header -->
-      <div class="flex items-start justify-between pb-4 border-b border-bordergold/60 mb-5">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-champagne flex items-center justify-center text-gold-dark border border-gold-light/40 text-lg shadow-inner shrink-0">
-            ☁️
-          </div>
-          <div>
-            <h3 class="text-lg sm:text-xl font-serif text-charcoal font-bold tracking-wide">
-              Совместный доступ (Жених и Невеста)
-            </h3>
-            <p class="text-xs text-warmgray mt-0.5">
-              Мгновенная синхронизация правок между всеми вашими смартфонами
-            </p>
-          </div>
-        </div>
-        <button class="closeSyncModalBtn text-warmgray hover:text-charcoal p-1 cursor-pointer transition-colors" title="Закрыть">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Live Connection Status Alert Box -->
-      <div id="syncStatusAlertBox" class="p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-5 flex items-start gap-3 transition-colors">
-        <span id="syncAlertIcon" class="text-base mt-0.5 shrink-0">☁️</span>
-        <div class="text-xs min-w-0">
-          <div id="syncAlertTitle" class="font-semibold text-charcoal">Офлайн-режим (только это устройство)</div>
-          <div id="syncAlertDesc" class="text-warmgray mt-0.5 leading-relaxed">
-            Подключите базу данных, чтобы видеть действия друг друга в реальном времени — от галочек в чеклисте и бюджета до рассадки гостей.
-          </div>
-        </div>
-      </div>
-
-      <!-- Form Content -->
-      <div class="space-y-4">
-        
-        <!-- GitHub Native Sync (100% NO-VPN) -->
-        <div class="p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-2">
-          <div class="flex items-center justify-between mb-1.5">
-            <label for="githubTokenInput" class="text-xs font-serif font-bold uppercase tracking-wider text-charcoal flex items-center gap-1.5">
-              <span>🐙 Автосохранение на GitHub (без VPN)</span>
-            </label>
-            <a href="https://github.com/settings/tokens/new?scopes=repo&description=WeddingSync" target="_blank" rel="noopener noreferrer" class="text-[11px] text-gold-dark hover:text-charcoal underline underline-offset-2 transition-colors">
-              Получить токен (15 сек) ↗
-            </a>
-          </div>
-          <input type="password" id="githubTokenInput" placeholder="ghp_... (токен GitHub для автозаписи)" class="w-full bg-white border border-bordergold rounded-xl px-3.5 py-2 text-xs text-charcoal placeholder-warmgray/50 focus:outline-none focus:ring-1 focus:ring-gold transition-all shadow-xs">
-          <p class="text-[11px] text-warmgray mt-1 leading-relaxed">
-            Чтение с любого смартфона в РФ работает <strong>без всякого токена и без VPN</strong>. Токен нужен только чтобы сайт сам записывал новые галочки в репозиторий.
-          </p>
-        </div>
-
-        <!-- Step 1: Wedding Room Code -->
+      <!-- Instruction & Field -->
+      <div class="space-y-4 text-xs">
         <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label for="syncRoomInput" class="text-xs font-serif font-bold uppercase tracking-wider text-charcoal">
-              1. Код вашей свадьбы (комната)
-            </label>
-            <button type="button" id="generateRandomRoomBtn" class="text-[11px] text-gold-dark hover:text-charcoal underline underline-offset-2 transition-colors cursor-pointer">
-              Случайный код 🎲
+          <label for="googleSheetUrlInput" class="block font-serif font-bold uppercase tracking-wider text-charcoal mb-1.5">
+            Ссылка на веб-приложение Google Таблицы:
+          </label>
+          <input type="url" id="googleSheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2.5 text-xs text-charcoal placeholder-warmgray/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold transition-all shadow-xs">
+          <p class="text-[11px] text-warmgray mt-1">
+            Сайт будет автоматически считывать и сохранять данные прямо в вашу Google Таблицу.
+          </p>
+        </div>
+
+        <!-- Share with partner section (if connected) -->
+        <div id="partnerShareSection" class="hidden p-3.5 rounded-xl bg-champagne/40 border border-gold-light/60 space-y-2">
+          <p class="font-bold font-serif text-charcoal text-[11px] uppercase tracking-wider">
+            Ссылка для вашей половинки:
+          </p>
+          <p class="text-[11px] text-warmgray">
+            Отправьте эту ссылку в Telegram — таблица на втором телефоне подключится сама в 1 клик:
+          </p>
+          <div class="flex gap-2">
+            <input type="text" id="partnerShareInput" readonly class="w-full bg-white border border-bordergold rounded-lg px-2.5 py-1.5 text-[11px] text-charcoal select-all">
+            <button type="button" id="copyPartnerShareBtn" class="px-3 py-1.5 rounded-lg bg-olive hover:bg-olive-dark text-white text-[11px] font-medium shrink-0 cursor-pointer transition-colors">
+              Копировать
             </button>
           </div>
-          <input type="text" id="syncRoomInput" value="wedding-2027" placeholder="Например: alek-anna-2026" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-xs sm:text-sm text-charcoal placeholder-warmgray/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all shadow-xs">
-          <p class="text-[11px] text-warmgray mt-1">Одинаковый код должен быть указан у жениха и у невесты.</p>
         </div>
 
-        <!-- Step 3: Firebase Database URL -->
-        <div>
-          <label for="syncDbUrlInput" class="block text-xs font-serif font-bold uppercase tracking-wider text-charcoal mb-1.5">
-            2. Ссылка на базу данных Firebase
-          </label>
-          <input type="text" id="syncDbUrlInput" value="https://wedding-2027-df5b3-default-rtdb.firebaseio.com" placeholder="https://wedding-2027-df5b3-default-rtdb.firebaseio.com" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-xs sm:text-sm text-charcoal placeholder-warmgray/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all shadow-xs">
-          <p class="text-[11px] text-warmgray mt-1">
-            Google Firebase Realtime Database (100% бесплатный тариф Spark навсегда, без карты).
-          </p>
+        <!-- 3 Simple Steps -->
+        <div class="p-3.5 rounded-xl bg-ivory-100/80 border border-bordergold space-y-2.5 leading-relaxed text-[11px] text-charcoal">
+          <p class="font-bold font-serif uppercase tracking-wider text-gold-dark">Инструкция по настройке (один раз за 2 минуты):</p>
+          <p><strong>1.</strong> Откройте <a href="https://sheets.new" target="_blank" class="text-emerald-700 underline font-semibold">sheets.new</a> и создайте пустую Google Таблицу (назовите «Свадьба 2026»).</p>
+          <p><strong>2.</strong> В верхнем меню таблицы выберите <em>«Расширения» → «Apps Script»</em>, удалите весь текст и вставьте этот мини-код:</p>
+          <pre class="bg-white p-2.5 rounded-lg border border-bordergold text-[10px] font-mono text-charcoal overflow-x-auto select-all leading-normal">function doGet(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();var d=s.getRange('A1').getValue();return ContentService.createTextOutput(d||'{}').setMimeType(ContentService.MimeType.JSON);}
+function doPost(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();if(e&amp;&amp;e.postData&amp;&amp;e.postData.contents){s.getRange('A1').setValue(e.postData.contents);}return ContentService.createTextOutput('{"status":"ok"}').setMimeType(ContentService.MimeType.JSON);}</pre>
+          <p><strong>3.</strong> Справа вверху нажмите синюю кнопку <strong>«Начать развертывание» → «Новое развертывание»</strong>:</p>
+          <ul class="list-disc list-inside space-y-1 text-warmgray">
+            <li>Тип: выберите <strong>«Веб-приложение»</strong> (шестеренка слева).</li>
+            <li>У кого есть доступ: выберите <strong>«Все» (Anyone)</strong>.</li>
+            <li>Нажмите «Развернуть» и скопируйте полученную ссылку на веб-приложение в поле выше.</li>
+          </ul>
         </div>
-
-        <!-- Collapsible Setup Instructions Guide -->
-        <details class="group bg-ivory-100/70 rounded-xl border border-bordergold text-xs">
-          <summary class="p-3 font-medium text-charcoal cursor-pointer flex items-center justify-between list-none select-none">
-            <span class="flex items-center gap-2">
-              <span class="text-gold-dark">📖</span>
-              <span>Инструкция: как получить бесплатную базу за 2 минуты</span>
-            </span>
-            <span class="text-warmgray group-open:rotate-180 transition-transform">▼</span>
-          </summary>
-          <div class="px-3.5 pb-3.5 pt-1 text-warmgray space-y-2 border-t border-bordergold/40 text-[11px] leading-relaxed">
-            <p><strong>Шаг 1:</strong> Откройте <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" class="text-gold-dark underline hover:text-charcoal font-medium">console.firebase.google.com</a> под любым Google-аккаунтом и нажмите <em>«Добавить проект»</em> (назовите, например, <code>wedding-2026</code>).</p>
-            <p><strong>Шаг 2:</strong> В левом меню выберите <em>«Сборка» (Build) → «Realtime Database» → «Создать базу данных»</em> (выберите любой регион, например <code>europe-west1</code>).</p>
-            <p><strong>Шаг 3:</strong> На вкладке <em>«Правила» (Rules)</em> укажите открытый доступ для чтения и записи и нажмите «Опубликовать»:</p>
-            <pre class="bg-white p-2 rounded border border-bordergold text-[10px] text-charcoal font-mono overflow-x-auto select-all">{"rules": { ".read": true, ".write": true }}</pre>
-            <p><strong>Шаг 4:</strong> Скопируйте ссылку наверху страницы (начинается с <code>https://...firebaseio.com</code>) и вставьте в поле <strong>«3. Ссылка на базу данных»</strong> выше.</p>
-          </div>
-        </details>
-
       </div>
 
       <!-- Action Buttons -->
-      <div class="mt-6 flex flex-col gap-2.5">
-        <!-- Connect Button -->
-        <button id="connectSyncBtn" class="w-full py-2.5 px-4 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer flex items-center justify-center gap-2">
-          <span>Подключить синхронизацию</span>
-          <span class="text-base">🟢</span>
+      <div class="mt-5 flex flex-col gap-2">
+        <button id="saveGoogleSheetBtn" class="w-full py-2.5 px-4 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer text-center">
+          Сохранить и подключить таблицу
         </button>
-
-        <!-- Shareable Link Button -->
-        <button id="copyShareLinkBtn" class="w-full py-2.5 px-4 rounded-xl bg-champagne hover:bg-gold-light/60 text-gold-dark text-xs sm:text-sm font-semibold tracking-wide border border-gold-light/70 transition-all text-center cursor-pointer flex items-center justify-center gap-2">
-          <span>💌 Скопировать готовую ссылку для половинки</span>
-        </button>
-        <p id="copyShareLinkHint" class="text-[11px] text-warmgray text-center -mt-1">
-          Вторая половинка просто перейдет по ссылке со смартфона и подключится мгновенно без каких-либо настроек!
-        </p>
-
-        <!-- Disconnect Button -->
-        <button id="disconnectSyncBtn" class="hidden w-full py-2 text-xs text-rose-600 hover:text-rose-700 hover:underline transition-colors text-center cursor-pointer">
-          Отключить совместный доступ на этом устройстве
-        </button>
-
-        <!-- Close Button -->
-        <button class="closeSyncModalBtn w-full py-2 text-xs text-warmgray hover:text-charcoal mt-1 text-center font-medium cursor-pointer">
-          Закрыть
+        <button id="disconnectGoogleSheetBtn" class="w-full py-2 text-[11px] text-rose-600 hover:text-rose-700 hover:underline transition-colors text-center cursor-pointer">
+          Отключить таблицу
         </button>
       </div>
 
     </div>
   </div>
-
   <!-- Toast Container -->
   <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
@@ -1271,112 +1133,526 @@
      * INITIAL WEDDING CHECKLIST 2026 DATA
      */
     const INITIAL_CATEGORIES = [
+  {
+    "id": "cat-1",
+    "title": "1. ОСНОВНАЯ ЧАСТЬ",
+    "items": [
       {
-        id: 'cat-1',
-        title: '1. ОСНОВНАЯ ЧАСТЬ',
-        items: [
-          { id: 'item-1-1', text: 'Определить формат свадьбы', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-1-2', text: 'Выбрать дату свадьбы', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-1-3', text: 'Согласовать свадебный бюджет', completed: false, cost: '', notes: 'Примерный расчет основных статей: площадка, кейтеринг, фото, декор.', subtasks: [
-            { id: 'sub-1-3-1', text: 'Площадка и банкетное меню', completed: false },
-            { id: 'sub-1-3-2', text: 'Фотограф и видеограф', completed: false },
-            { id: 'sub-1-3-3', text: 'Образы жениха и невесты', completed: false },
-            { id: 'sub-1-3-4', text: 'Ведущий и DJ', completed: false }
-          ] },
-          { id: 'item-1-4', text: 'Составить предварительный список гостей', completed: false, cost: '', notes: 'Здесь ведем полный список гостей, рассадку по столам и пожелания по меню.', subtasks: [
-            { id: 'sub-1-4-1', text: 'Семья жениха', completed: false },
-            { id: 'sub-1-4-2', text: 'Семья невесты', completed: false },
-            { id: 'sub-1-4-3', text: 'Друзья и свидетели', completed: false },
-            { id: 'sub-1-4-4', text: 'Коллеги', completed: false }
-          ] },
-          { id: 'item-1-5', text: 'Подать заявление в ЗАГС', completed: false, cost: '350', notes: 'Госпошлина за регистрацию брака', subtasks: [] },
-          { id: 'item-1-6', text: 'Купить кольца', completed: false, cost: '75000', notes: 'Выбрать ювелирный салон и определиться с гравировкой', subtasks: [] },
-          { id: 'item-1-7', text: 'Подготовить документы для свадьбы', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-1-8', text: 'Подготовить и отправить Save the Date', completed: false, cost: '', notes: '', subtasks: [] }
+        "id": "item-1-1",
+        "text": "Определить формат свадьбы",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-1-2",
+        "text": "Выбрать дату свадьбы",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-1-3",
+        "text": "Согласовать свадебный бюджет",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": [
+          {
+            "id": "sub-1-3-1",
+            "text": "Площадка и банкетное меню",
+            "completed": false
+          },
+          {
+            "id": "sub-1-3-2",
+            "text": "Фотограф и видеограф",
+            "completed": false
+          },
+          {
+            "id": "sub-1-3-3",
+            "text": "Образы жениха и невесты",
+            "completed": false
+          },
+          {
+            "id": "sub-1-3-4",
+            "text": "Ведущий и DJ",
+            "completed": false
+          }
         ]
       },
       {
-        id: 'cat-2',
-        title: '2. ПЛОЩАДКА И КОМАНДА',
-        items: [
-          { id: 'item-2-1', text: 'Выбрать площадку', completed: false, cost: '250000', notes: 'Депозит и аренда свадебной локации', subtasks: [] },
-          { id: 'item-2-2', text: 'Забронировать фотографа', completed: false, cost: '80000', notes: '', subtasks: [] },
-          { id: 'item-2-3', text: 'Забронировать видеографа', completed: false, cost: '70000', notes: '', subtasks: [] },
-          { id: 'item-2-4', text: 'Выбрать ведущего', completed: false, cost: '90000', notes: '', subtasks: [] },
-          { id: 'item-2-5', text: 'Выбрать DJ / утвердить плейлист', completed: false, cost: '35000', notes: '', subtasks: [] },
-          { id: 'item-2-6', text: 'Найти визажиста и стилиста', completed: false, cost: '25000', notes: '', subtasks: [] },
-          { id: 'item-2-7', text: 'Заказать декор и флористику', completed: false, cost: '120000', notes: '', subtasks: [] },
-          { id: 'item-2-8', text: 'Согласовать свадебное меню', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-2-9', text: 'Заказать свадебный торт', completed: false, cost: '22000', notes: '', subtasks: [] },
-          { id: 'item-2-10', text: 'Организовать транспорт', completed: false, cost: '30000', notes: '', subtasks: [] },
-          { id: 'item-2-11', text: 'Продумать фотозону', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-2-12', text: 'Организовать детскую зону', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-2-13', text: 'Назначить свадебного координатора', completed: false, cost: '40000', notes: '', subtasks: [] },
-          { id: 'item-2-14', text: 'Оформить и отправить приглашения', completed: false, cost: '15000', notes: '', subtasks: [] },
-          { id: 'item-2-15', text: 'Собрать ответы гостей (RSVP)', completed: false, cost: '', notes: '', subtasks: [] }
+        "id": "item-1-4",
+        "text": "Составить предварительный список гостей",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": [
+          {
+            "id": "sub-1-4-1",
+            "text": "Семья жениха",
+            "completed": false
+          },
+          {
+            "id": "sub-1-4-2",
+            "text": "Семья невесты",
+            "completed": false
+          },
+          {
+            "id": "sub-1-4-3",
+            "text": "Друзья и свидетели",
+            "completed": false
+          },
+          {
+            "id": "sub-1-4-4",
+            "text": "Коллеги",
+            "completed": false
+          }
         ]
       },
       {
-        id: 'cat-3',
-        title: '3. ОБРАЗ НЕВЕСТЫ И ЖЕНИХА',
-        items: [
-          { id: 'item-3-1', text: 'Купить свадебное платье', completed: false, cost: '95000', notes: '', subtasks: [] },
-          { id: 'item-3-2', text: 'Подобрать обувь невесты', completed: false, cost: '18000', notes: '', subtasks: [] },
-          { id: 'item-3-3', text: 'Подобрать аксессуары невесты', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-3-4', text: 'Записаться на макияж и прическу', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-3-5', text: 'Сделать репетицию свадебного образа', completed: false, cost: '8000', notes: '', subtasks: [] },
-          { id: 'item-3-6', text: 'Подготовить образ жениха', completed: false, cost: '55000', notes: '', subtasks: [] },
-          { id: 'item-3-7', text: 'Купить обувь жениха', completed: false, cost: '15000', notes: '', subtasks: [] },
-          { id: 'item-3-8', text: 'Подготовить украшения и аксессуары', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-3-9', text: 'Заказать букет невесты', completed: false, cost: '10000', notes: '', subtasks: [] },
-          { id: 'item-3-10', text: 'Подготовить одежду на утро свадьбы', completed: false, cost: '', notes: '', subtasks: [] }
-        ]
+        "id": "item-1-5",
+        "text": "Подать заявление в ЗАГС",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
       },
       {
-        id: 'cat-4',
-        title: '4. СЦЕНАРИЙ ДНЯ',
-        items: [
-          { id: 'item-4-1', text: 'Составить тайминг свадебного дня', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-4-2', text: 'Продумать программу мероприятия', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-4-3', text: 'Подготовить интерактив для гостей', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-4-4', text: 'Поставить первый танец', completed: false, cost: '15000', notes: '', subtasks: [] },
-          { id: 'item-4-5', text: 'Продумать план Б на случай дождя', completed: false, cost: '', notes: '', subtasks: [] }
-        ]
+        "id": "item-1-6",
+        "text": "Купить кольца",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
       },
       {
-        id: 'cat-5',
-        title: '5. ДОПОЛНИТЕЛЬНО',
-        items: [
-          { id: 'item-5-1', text: 'Подготовить подарки гостям', completed: false, cost: '12000', notes: '', subtasks: [] },
-          { id: 'item-5-2', text: 'Организовать девичник', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-5-3', text: 'Организовать мальчишник', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-5-4', text: 'Запланировать Love Story съемку', completed: false, cost: '25000', notes: '', subtasks: [] },
-          { id: 'item-5-5', text: 'Забронировать отель', completed: false, cost: '20000', notes: '', subtasks: [] },
-          { id: 'item-5-6', text: 'Подготовить аптечку и косметичку', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-5-7', text: 'Собрать вещи на свадебный день', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-5-8', text: 'Подготовить оплату подрядчикам', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-5-9', text: 'Подготовить другие свадебные карточки (посадочные, номера столов, меню, интерактив)', completed: false, cost: '8000', notes: '', subtasks: [] }
-        ]
+        "id": "item-1-7",
+        "text": "Подготовить документы для свадьбы",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
       },
       {
-        id: 'cat-6',
-        title: '6. ЗА 1 НЕДЕЛЮ',
-        items: [
-          { id: 'item-6-1', text: 'Подтвердить всех подрядчиков', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-6-2', text: 'Проверить финальный список гостей', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-6-3', text: 'Заказать план рассадки', completed: false, cost: '5000', notes: '', subtasks: [] },
-          { id: 'item-6-4', text: 'Проверить тайминг свадебного дня', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-6-5', text: 'Подготовить кольца и документы', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-6-6', text: 'Проверить все адреса и контакты', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-6-7', text: 'Собрать свадебные вещи', completed: false, cost: '', notes: '', subtasks: [] },
-          { id: 'item-6-8', text: 'Передать свадебному координатору все контакты и инструкции', completed: false, cost: '', notes: '', subtasks: [] }
-        ]
+        "id": "item-1-8",
+        "text": "Подготовить и отправить Save the Date",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
       }
-    ];
+    ]
+  },
+  {
+    "id": "cat-2",
+    "title": "2. ПЛОЩАДКА И КОМАНДА",
+    "items": [
+      {
+        "id": "item-2-1",
+        "text": "Выбрать площадку",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-2",
+        "text": "Забронировать фотографа",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-3",
+        "text": "Забронировать видеографа",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-4",
+        "text": "Выбрать ведущего",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-5",
+        "text": "Выбрать DJ / утвердить плейлист",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-6",
+        "text": "Найти визажиста и стилиста",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-7",
+        "text": "Заказать декор и флористику",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-8",
+        "text": "Согласовать свадебное меню",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-9",
+        "text": "Заказать свадебный торт",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-10",
+        "text": "Организовать транспорт",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-11",
+        "text": "Продумать фотозону",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-12",
+        "text": "Организовать детскую зону",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-13",
+        "text": "Назначить свадебного координатора",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-14",
+        "text": "Оформить и отправить приглашения",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-2-15",
+        "text": "Собрать ответы гостей (RSVP)",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      }
+    ]
+  },
+  {
+    "id": "cat-3",
+    "title": "3. ОБРАЗ НЕВЕСТЫ И ЖЕНИХА",
+    "items": [
+      {
+        "id": "item-3-1",
+        "text": "Купить свадебное платье",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-2",
+        "text": "Подобрать обувь невесты",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-3",
+        "text": "Подобрать аксессуары невесты",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-4",
+        "text": "Записаться на макияж и прическу",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-5",
+        "text": "Сделать репетицию свадебного образа",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-6",
+        "text": "Подготовить образ жениха",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-7",
+        "text": "Купить обувь жениха",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-8",
+        "text": "Подготовить украшения и аксессуары",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-9",
+        "text": "Заказать букет невесты",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-3-10",
+        "text": "Подготовить одежду на утро свадьбы",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      }
+    ]
+  },
+  {
+    "id": "cat-4",
+    "title": "4. СЦЕНАРИЙ ДНЯ",
+    "items": [
+      {
+        "id": "item-4-1",
+        "text": "Составить тайминг свадебного дня",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-4-2",
+        "text": "Продумать программу мероприятия",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-4-3",
+        "text": "Подготовить интерактив для гостей",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-4-4",
+        "text": "Поставить первый танец",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-4-5",
+        "text": "Продумать план Б на случай дождя",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      }
+    ]
+  },
+  {
+    "id": "cat-5",
+    "title": "5. ДОПОЛНИТЕЛЬНО",
+    "items": [
+      {
+        "id": "item-5-1",
+        "text": "Подготовить подарки гостям",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-2",
+        "text": "Организовать девичник",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-3",
+        "text": "Организовать мальчишник",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-4",
+        "text": "Запланировать Love Story съемку",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-5",
+        "text": "Забронировать отель",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-6",
+        "text": "Подготовить аптечку и косметичку",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-7",
+        "text": "Собрать вещи на свадебный день",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-8",
+        "text": "Подготовить оплату подрядчикам",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-5-9",
+        "text": "Подготовить другие свадебные карточки (посадочные, номера столов, меню, интерактив)",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      }
+    ]
+  },
+  {
+    "id": "cat-6",
+    "title": "6. ЗА 1 НЕДЕЛЮ",
+    "items": [
+      {
+        "id": "item-6-1",
+        "text": "Подтвердить всех подрядчиков",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-6-2",
+        "text": "Проверить финальный список гостей",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-6-3",
+        "text": "Заказать план рассадки",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-6-4",
+        "text": "Проверить тайминг свадебного дня",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-6-5",
+        "text": "Подготовить кольца и документы",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-6-6",
+        "text": "Проверить все адреса и контакты",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-6-7",
+        "text": "Собрать свадебные вещи",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      },
+      {
+        "id": "item-6-8",
+        "text": "Передать свадебному координатору все контакты и инструкции",
+        "completed": false,
+        "cost": "",
+        "notes": "",
+        "subtasks": []
+      }
+    ]
+  }
+];
 
-    /**
-     * INITIAL SEATING DATA (Matches Screenshot 1 & 3: Стол молодожёнов, Стол 1, Стол 2)
-     */
     const INITIAL_SEATING_DATA = {
       tables: [
         {
@@ -1536,6 +1812,15 @@
      */
     function loadData() {
       try {
+        // Version 3 wipe: ensure all old sample dummy costs and sample notes are wiped clean on all phones
+        const RESET_FLAG_KEY = 'wedding_clean_reset_v3';
+        if (!localStorage.getItem(RESET_FLAG_KEY)) {
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(TARGET_BUDGET_KEY);
+          localStorage.removeItem(DATE_STORAGE_KEY);
+          localStorage.setItem(RESET_FLAG_KEY, 'true');
+        }
+
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
           categories = JSON.parse(saved);
@@ -3564,982 +3849,266 @@
     }
 
     /** ========================================================================= */
-    /** CLOUD SYNCHRONIZATION CONTROLLER (Firebase Realtime Database)             */
-    /** Instant Two-Way Real-time Collaboration Across All Devices & Mobiles      */
+    /** GOOGLE SHEETS SYNCHRONIZATION CONTROLLER                                   */
+    /** 100% Unblocked in Russia, Works on all Mobile Networks Without VPN         */
     /** ========================================================================= */
 
+    const GOOGLE_SHEET_KEY = 'wedding_google_sheet_url';
+    let lastKnownRemoteUpdatedAt = 0;
+    let googleSheetDebounceTimer = null;
+
     /**
-     * ZERO-VPN INSTANT MAGIC SYNC ENGINE
-     * Encodes and decodes wedding state losslessly without servers or VPN
+     * Initialize Google Sheets synchronization and listen for changes
      */
-    function utf8ToBase64(str) {
-      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
-        return String.fromCharCode('0x' + p1);
-      }));
-    }
+    function initCloudSync() {
+      // 1. Check for ?sheet= URL parameter (makes 1-click sharing to partner effortless)
+      try {
+        const params = new URLSearchParams(window.location.search);
+        let sheetParam = params.get('sheet');
+        if (!sheetParam && window.location.hash.startsWith('#sheet=')) {
+          sheetParam = decodeURIComponent(window.location.hash.replace('#sheet=', ''));
+        }
+        if (sheetParam) {
+          try {
+            const parsed = new URL(sheetParam);
+            if (parsed.protocol.startsWith('http')) {
+              localStorage.setItem(GOOGLE_SHEET_KEY, sheetParam);
+              window.history.replaceState({}, document.title, window.location.pathname);
+              showToast('📊 Google Таблица успешно подключена по ссылке!');
+            }
+          } catch (e) {}
+        }
+      } catch (e) {}
 
-    function base64ToUtf8(str) {
-      return decodeURIComponent(Array.prototype.map.call(atob(str), (c) => {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-    }
+      setupGoogleSheetModalEvents();
+      updateSheetIndicator();
 
-    function exportSyncPayload(cats, seating, date, budget) {
-      const completedIds = [];
-      const costs = {};
-      const notes = {};
-      const customItems = [];
+      // 2. Initial fetch from Google Sheet (or data.json fallback)
+      fetchFromGoogleSheet(false);
+      fetchInitialDataJsonFallback();
 
-      const initialItemIds = new Set();
-      if (typeof INITIAL_CATEGORIES !== 'undefined') {
-        INITIAL_CATEGORIES.forEach(c => c.items.forEach(i => initialItemIds.add(i.id)));
-      }
-
-      cats.forEach(cat => {
-        cat.items.forEach(item => {
-          if (item.completed) completedIds.push(item.id);
-          if (item.cost) costs[item.id] = String(item.cost);
-          if (item.notes) notes[item.id] = item.notes;
-          if (!initialItemIds.has(item.id)) {
-            customItems.push({ catId: cat.id, item });
-          }
-        });
+      // 3. Listen for window focus & visibility changes (e.g. partner made changes while app was backgrounded)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          fetchFromGoogleSheet(true);
+        }
+      });
+      window.addEventListener('focus', () => {
+        fetchFromGoogleSheet(true);
       });
 
-      const obj = {
-        v: 1,
-        u: Date.now(),
-        d: date || '',
-        b: budget || '',
-        c: completedIds,
-        k: costs,
-        n: notes,
-        s: seating,
-        x: customItems
-      };
-
-      return encodeURIComponent(utf8ToBase64(JSON.stringify(obj)));
+      // 4. Background refresh every 25 seconds
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          fetchFromGoogleSheet(true);
+        }
+      }, 25000);
     }
 
-    function importSyncPayload(encodedStr, cats, seating) {
-      try {
-        const jsonStr = base64ToUtf8(decodeURIComponent(encodedStr));
-        const obj = JSON.parse(jsonStr);
+    /**
+     * Updates the indicator badge in the footer
+     */
+    function updateSheetIndicator() {
+      const url = localStorage.getItem(GOOGLE_SHEET_KEY);
+      const indicator = document.getElementById('sheetStatusIndicator');
+      const openBtn = document.getElementById('openGoogleSheetBtn');
 
-        const completedSet = new Set(obj.c || []);
-
-        cats.forEach(cat => {
-          cat.items.forEach(item => {
-            item.completed = completedSet.has(item.id);
-            if (obj.k && obj.k[item.id] !== undefined) item.cost = obj.k[item.id];
-            if (obj.n && obj.n[item.id] !== undefined) item.notes = obj.n[item.id];
-          });
-        });
-
-        if (Array.isArray(obj.x)) {
-          obj.x.forEach(({ catId, item }) => {
-            const cat = cats.find(c => c.id === catId);
-            if (cat && !cat.items.some(i => i.id === item.id)) {
-              cat.items.push(item);
-            }
-          });
-        }
-
-        return {
-          categories: cats,
-          seating: obj.s || seating,
-          weddingDate: obj.d,
-          targetBudget: obj.b
-        };
-      } catch (err) {
-        console.error('Failed to import sync payload:', err);
-        return null;
+      if (url) {
+        if (indicator) indicator.classList.remove('hidden');
+        if (openBtn) openBtn.innerHTML = '<span>📊 Google Таблица (подключена ✓)</span>';
+      } else {
+        if (indicator) indicator.classList.add('hidden');
+        if (openBtn) openBtn.innerHTML = '<span>📊 Подключить Google Таблицу (синхронизация)</span>';
       }
     }
 
-    function generateMagicSyncUrl() {
-      const payload = exportSyncPayload(
-        categories,
-        seatingData,
-        localStorage.getItem(DATE_STORAGE_KEY),
-        localStorage.getItem(TARGET_BUDGET_KEY)
-      );
-      const base = window.location.origin + window.location.pathname;
-      return `${base}#sync=${payload}`;
-    }
-
-    function setupMagicSyncEvents() {
-      const modal = document.getElementById('magicSyncModal');
-      const openBtn = document.getElementById('openMagicSyncBtn');
-      const closeBtn1 = document.getElementById('closeMagicSyncBtn');
-      const closeBtn2 = document.getElementById('closeMagicSyncBtn2');
-      const tgBtn = document.getElementById('magicSendTgBtn');
-      const copyBtn = document.getElementById('magicCopyLinkBtn');
-      const toggleQrBtn = document.getElementById('toggleQrCodeBtn');
-      const qrContainer = document.getElementById('qrCodeContainer');
-      const qrImg = document.getElementById('qrCodeImg');
+    /**
+     * Modal controls and event listeners
+     */
+    function setupGoogleSheetModalEvents() {
+      const modal = document.getElementById('googleSheetModal');
+      const openBtn = document.getElementById('openGoogleSheetBtn');
+      const closeBtn = document.getElementById('closeGoogleSheetModalBtn');
+      const saveBtn = document.getElementById('saveGoogleSheetBtn');
+      const disconnectBtn = document.getElementById('disconnectGoogleSheetBtn');
+      const urlInput = document.getElementById('googleSheetUrlInput');
+      const partnerSection = document.getElementById('partnerShareSection');
+      const partnerInput = document.getElementById('partnerShareInput');
+      const copyPartnerBtn = document.getElementById('copyPartnerShareBtn');
 
       const openModal = () => {
+        if (!modal) return;
+        const currentUrl = localStorage.getItem(GOOGLE_SHEET_KEY) || '';
+        if (urlInput) urlInput.value = currentUrl;
+
+        if (currentUrl && partnerSection && partnerInput) {
+          partnerSection.classList.remove('hidden');
+          partnerInput.value = window.location.origin + window.location.pathname + '?sheet=' + encodeURIComponent(currentUrl);
+        } else if (partnerSection) {
+          partnerSection.classList.add('hidden');
+        }
+
         modal.classList.remove('hidden');
         setTimeout(() => {
           modal.classList.remove('opacity-0');
-          modal.querySelector('div').classList.remove('scale-95');
+          modal.children[0].classList.remove('scale-95');
+          modal.children[0].classList.add('scale-100');
         }, 10);
       };
 
       const closeModal = () => {
+        if (!modal) return;
         modal.classList.add('opacity-0');
-        modal.querySelector('div').classList.add('scale-95');
+        modal.children[0].classList.remove('scale-100');
+        modal.children[0].classList.add('scale-95');
         setTimeout(() => {
           modal.classList.add('hidden');
-          if (qrContainer) qrContainer.classList.add('hidden');
         }, 200);
       };
 
       if (openBtn) openBtn.addEventListener('click', openModal);
-      if (closeBtn1) closeBtn1.addEventListener('click', closeModal);
-      if (closeBtn2) closeBtn2.addEventListener('click', closeModal);
-
-      if (tgBtn) {
-        tgBtn.addEventListener('click', () => {
-          const shareUrl = generateMagicSyncUrl();
-          const tgText = encodeURIComponent('Любимая, я обновил наш свадебный планер: чек-лист и бюджет! Открой ссылку, всё обновится само:');
-          const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${tgText}`;
-          window.open(tgUrl, '_blank');
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeModal();
         });
       }
 
-      if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-          const shareUrl = generateMagicSyncUrl();
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(shareUrl).then(() => {
-              showToast('📋 Ссылка скопирована! Отправьте ее в любой мессенджер.');
-            }).catch(() => {
-              prompt('Скопируйте ссылку для половинке:', shareUrl);
-            });
-          } else {
-            prompt('Скопируйте ссылку для половинки:', shareUrl);
+      if (saveBtn) {
+        saveBtn.addEventListener('click', async () => {
+          const val = urlInput ? urlInput.value.trim() : '';
+          if (!val) {
+            showToast('Пожалуйста, вставьте ссылку на веб-приложение Google', 'error');
+            return;
           }
-        });
-      }
-
-      if (toggleQrBtn && qrContainer && qrImg) {
-        toggleQrBtn.addEventListener('click', () => {
-          if (qrContainer.classList.contains('hidden')) {
-            const shareUrl = generateMagicSyncUrl();
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(shareUrl)}`;
-            qrContainer.classList.remove('hidden');
-            toggleQrBtn.textContent = 'Скрыть QR-код ▲';
-          } else {
-            qrContainer.classList.add('hidden');
-            toggleQrBtn.textContent = '📷 Показать QR-код для камеры смартфона';
+          if (!val.startsWith('http')) {
+            showToast('Ссылка должна начинаться с https://', 'error');
+            return;
           }
-        });
-      }
-    }
 
+          localStorage.setItem(GOOGLE_SHEET_KEY, val);
+          updateSheetIndicator();
+          showToast('Сохранение и синхронизация...');
+          closeModal();
 
-    /** ========================================================================= */
-    /** UNBLOCKED CLOUD GATEWAY ENGINE (100% NO-VPN SYNC ACROSS ALL MOBILE ISPS)  */
-    /** Bypasses Russian cellular blocks (MTS, Megafon, Beeline, Tele2)          */
-    /** ========================================================================= */
-    const UNBLOCKED_GATEWAY_URL = 'https://api.restful-api.dev/objects/ff808181a09d98f701a17d664574279e';
-    let isFetchingGateway = false;
-
-    function getAllInitialItemIds() {
-      const ids = [];
-      if (typeof INITIAL_CATEGORIES !== 'undefined') {
-        INITIAL_CATEGORIES.forEach(c => c.items.forEach(i => ids.push(i.id)));
-      }
-      return ids;
-    }
-
-    function encodeCompactState() {
-      const initialIds = getAllInitialItemIds();
-      const itemMap = new Map();
-      categories.forEach(c => c.items.forEach(i => itemMap.set(i.id, i)));
-
-      let mask = '';
-      const costs = {};
-      const notes = {};
-
-      initialIds.forEach(id => {
-        const item = itemMap.get(id);
-        mask += (item && item.completed) ? '1' : '0';
-        if (item && item.cost) costs[id] = String(item.cost);
-        if (item && item.notes) notes[id] = item.notes;
-      });
-
-      // Compact seating: only table coordinates and seated guest assignments
-      const compactSeating = {
-        t: (seatingData.tables || []).map(t => ({ i: t.id, x: Math.round(t.x || 0), y: Math.round(t.y || 0), n: t.name })),
-        g: (seatingData.guests || []).filter(g => g.tableId).map(g => ({ i: g.id, t: g.tableId, s: g.seatIndex || 0 }))
-      };
-
-      return {
-        name: 'wedding_sync_2027',
-        data: {
-          u: Date.now(),
-          dev: myDeviceId,
-          d: localStorage.getItem(DATE_STORAGE_KEY) || '',
-          b: localStorage.getItem(TARGET_BUDGET_KEY) || '',
-          m: mask,
-          k: costs,
-          n: notes,
-          s: compactSeating
-        }
-      };
-    }
-
-    function decodeCompactState(data) {
-      if (!data || !data.m) return false;
-      const initialIds = getAllInitialItemIds();
-      const mask = data.m;
-      const itemMap = new Map();
-      categories.forEach(c => c.items.forEach(i => itemMap.set(i.id, i)));
-
-      initialIds.forEach((id, idx) => {
-        const item = itemMap.get(id);
-        if (item) {
-          item.completed = mask[idx] === '1';
-          if (data.k && data.k[id] !== undefined) item.cost = data.k[id];
-          if (data.n && data.n[id] !== undefined) item.notes = data.n[id];
-        }
-      });
-
-      // Restore seating
-      if (data.s && typeof data.s === 'object') {
-        if (Array.isArray(data.s.t)) {
-          data.s.t.forEach(st => {
-            const tbl = (seatingData.tables || []).find(t => t.id === st.i);
-            if (tbl) {
-              tbl.x = st.x;
-              tbl.y = st.y;
-              if (st.n) tbl.name = st.n;
-            }
-          });
-        }
-        if (Array.isArray(data.s.g)) {
-          const seatedMap = new Map();
-          data.s.g.forEach(sg => seatedMap.set(sg.i, { tableId: sg.t, seatIndex: sg.s }));
-          (seatingData.guests || []).forEach(g => {
-            if (seatedMap.has(g.id)) {
-              const info = seatedMap.get(g.id);
-              g.tableId = info.tableId;
-              g.seatIndex = info.seatIndex;
-            } else {
-              g.tableId = null;
-              g.seatIndex = null;
-            }
-          });
-        }
-      }
-
-      // Restore date & budget
-      if (data.d !== undefined) {
-        if (data.d) {
-          localStorage.setItem(DATE_STORAGE_KEY, String(data.d));
-          const dateInput = document.getElementById('weddingDateInput');
-          if (dateInput) dateInput.value = data.d;
-          if (typeof updateCountdownDisplay === 'function') updateCountdownDisplay(data.d);
-        } else {
-          localStorage.removeItem(DATE_STORAGE_KEY);
-        }
-      }
-
-      if (data.b !== undefined) {
-        if (data.b) {
-          localStorage.setItem(TARGET_BUDGET_KEY, String(data.b));
-        } else {
-          localStorage.removeItem(TARGET_BUDGET_KEY);
-        }
-      }
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
-      localStorage.setItem(SEATING_STORAGE_KEY, JSON.stringify(seatingData));
-      updateSeatingBadges();
-      return true;
-    }
-
-    async function pushToUnblockedGateway() {
-      try {
-        const payload = encodeCompactState();
-        const res = await fetch(UNBLOCKED_GATEWAY_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          updateSyncStatusUI('saved', 'Сохранено ✓');
+          // Immediate test push and pull
+          pushToCloud('Подключение Google Таблицы');
           setTimeout(() => {
-            updateSyncStatusUI('connected', 'Общий доступ: в сети');
-          }, 1200);
-        }
-      } catch (e) {
-        console.warn('Unblocked gateway push error:', e);
+            fetchFromGoogleSheet(false);
+          }, 600);
+        });
       }
-    }
 
-    async function fetchFromUnblockedGateway(showNotice = true) {
-      if (isReceivingCloudUpdate || isFetchingGateway) return;
-      try {
-        isFetchingGateway = true;
-        const res = await fetch(`${UNBLOCKED_GATEWAY_URL}?_cb=${Date.now()}`);
-        if (!res.ok) return;
-        const obj = await res.json();
-        const data = obj && obj.data;
-        if (data && data.u && data.u > lastKnownRemoteUpdatedAt) {
-          if (data.dev !== myDeviceId) {
-            lastKnownRemoteUpdatedAt = data.u;
-            isReceivingCloudUpdate = true;
-            try {
-              const changed = decodeCompactState(data);
-              if (changed) {
-                renderApp();
-                renderSeating();
-                updateProgress();
-                if (showNotice) {
-                  showToast('✨ Планер синхронизирован!');
-                }
-              }
-            } finally {
-              setTimeout(() => { isReceivingCloudUpdate = false; }, 80);
-            }
+      if (disconnectBtn) {
+        disconnectBtn.addEventListener('click', () => {
+          localStorage.removeItem(GOOGLE_SHEET_KEY);
+          if (urlInput) urlInput.value = '';
+          updateSheetIndicator();
+          closeModal();
+          showToast('Google Таблица отключена');
+        });
+      }
+
+      if (copyPartnerBtn && partnerInput) {
+        copyPartnerBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(partnerInput.value);
+            showToast('📋 Ссылка для половинки скопирована в буфер!');
+          } catch (e) {
+            partnerInput.select();
+            document.execCommand('copy');
+            showToast('📋 Ссылка скопирована!');
           }
-          hasInitialCloudSyncCompleted = true;
-          updateSyncStatusUI('connected', 'Общий доступ: в сети');
-        }
-      } catch (err) {
-        console.warn('Unblocked gateway fetch error:', err);
-      } finally {
-        isFetchingGateway = false;
+        });
       }
     }
 
-
-    /** ========================================================================= */
-    /** GITHUB NATIVE SYNC ENGINE (100% ACCESSIBLE IN RUSSIA WITHOUT VPN)         */
-    /** Uses alekd1/wedding/data.json directly on GitHub Pages                    */
-    /** ========================================================================= */
-    const GITHUB_REPO_OWNER = 'alekd1';
-    const GITHUB_REPO_NAME = 'wedding';
-    const GITHUB_DATA_FILE = 'data.json';
-    const GITHUB_TOKEN_STORAGE_KEY = 'wedding_github_sync_token';
-
-    let gitHubFileSha = null;
-    let isPushingToGitHub = false;
-    let isFetchingFromGitHub = false;
-
-    function getGitHubToken() {
+    /**
+     * Fallback to data.json on initial load if no Google Sheet is connected yet
+     */
+    async function fetchInitialDataJsonFallback() {
+      if (localStorage.getItem(GOOGLE_SHEET_KEY)) return;
       try {
-        return localStorage.getItem(GITHUB_TOKEN_STORAGE_KEY) || '';
-      } catch (e) {
-        return '';
-      }
-    }
-
-    function setGitHubToken(token) {
-      try {
-        if (token) {
-          localStorage.setItem(GITHUB_TOKEN_STORAGE_KEY, token.trim());
-        } else {
-          localStorage.removeItem(GITHUB_TOKEN_STORAGE_KEY);
+        const response = await fetch('data.json?v=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data && Array.isArray(data.categories)) {
+          // Only apply if user has no saved changes locally
+          if (!localStorage.getItem(STORAGE_KEY)) {
+            handleRemoteCloudUpdate(data, false);
+          }
         }
       } catch (e) {}
     }
 
     /**
-     * Fetch latest data directly from GitHub Pages data.json (100% NO VPN, NO TOKEN NEEDED)
+     * Fetch latest state from Google Sheets
      */
-    async function fetchFromGitHubData(showNotice = false) {
-      if (isReceivingCloudUpdate || isFetchingFromGitHub) return;
-      try {
-        isFetchingFromGitHub = true;
-        const cb = Date.now();
-        // 1. Try relative fetch from same origin (alekd1.github.io/wedding/data.json)
-        let res = await fetch(`data.json?_cb=${cb}`);
-        if (!res.ok) {
-          // 2. Try raw.githubusercontent.com fallback
-          res = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/main/${GITHUB_DATA_FILE}?_cb=${cb}`);
-        }
-        if (!res.ok) return;
+    async function fetchFromGoogleSheet(silent = false) {
+      const sheetUrl = localStorage.getItem(GOOGLE_SHEET_KEY);
+      if (!sheetUrl) return;
 
+      try {
+        const res = await fetch(sheetUrl);
+        if (!res.ok) return;
         const data = await res.json();
-        if (data && data.updatedAt && data.updatedAt > lastKnownRemoteUpdatedAt) {
-          if (data.senderDeviceId !== myDeviceId) {
-            lastKnownRemoteUpdatedAt = data.updatedAt;
-            handleRemoteCloudUpdate(data, showNotice);
-            updateSyncStatusUI('connected', 'Общий доступ: в сети');
+
+        if (data && typeof data === 'object' && Array.isArray(data.categories)) {
+          if (!lastKnownRemoteUpdatedAt || (data.updatedAt && data.updatedAt > lastKnownRemoteUpdatedAt)) {
+            lastKnownRemoteUpdatedAt = data.updatedAt || Date.now();
+            handleRemoteCloudUpdate(data, !silent);
           }
+          updateSheetIndicator();
         }
       } catch (err) {
-        console.warn('GitHub data.json fetch error:', err);
-      } finally {
-        isFetchingFromGitHub = false;
+        console.warn('Google Sheets fetch notice:', err);
       }
     }
 
     /**
-     * Push updated state to GitHub repository contents API
+     * Push latest state to Google Sheets
      */
-    async function pushToGitHubRepo(actionDesc = '') {
-      const token = getGitHubToken();
-      if (!token || isPushingToGitHub || isReceivingCloudUpdate) return;
-
-      try {
-        isPushingToGitHub = true;
-        const payload = {
-          updatedAt: Date.now(),
-          senderDeviceId: myDeviceId,
-          actionDescription: actionDesc || '',
-          weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
-          targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null,
-          categories: categories,
-          seating: seatingData
-        };
-
-        const jsonContent = JSON.stringify(payload, null, 2);
-        const base64Content = utf8ToBase64(jsonContent);
-
-        // First get current SHA if unknown
-        if (!gitHubFileSha) {
-          try {
-            const getRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_DATA_FILE}`, {
-              headers: {
-                'Authorization': `token ${token}`,
-                'User-Agent': 'WeddingApp'
-              }
-            });
-            if (getRes.ok) {
-              const fileInfo = await getRes.json();
-              gitHubFileSha = fileInfo.sha;
-            }
-          } catch (e) {}
-        }
-
-        const putBody = {
-          message: `Обновление планера: ${actionDesc || 'автосохранение'}`,
-          content: base64Content
-        };
-        if (gitHubFileSha) {
-          putBody.sha = gitHubFileSha;
-        }
-
-        const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_DATA_FILE}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json',
-            'User-Agent': 'WeddingApp'
-          },
-          body: JSON.stringify(putBody)
-        });
-
-        if (putRes.ok) {
-          const putResult = await putRes.json();
-          if (putResult && putResult.content && putResult.content.sha) {
-            gitHubFileSha = putResult.content.sha;
-          }
-          lastKnownRemoteUpdatedAt = payload.updatedAt;
-          updateSyncStatusUI('saved', 'Сохранено на GitHub ✓');
-          setTimeout(() => {
-            updateSyncStatusUI('connected', 'Общий доступ: в сети');
-          }, 1500);
-        } else {
-          console.warn('GitHub PUT failed with status:', putRes.status);
-          // Invalidate cached sha to re-fetch next time
-          gitHubFileSha = null;
-        }
-      } catch (err) {
-        console.warn('GitHub push error:', err);
-      } finally {
-        isPushingToGitHub = false;
-      }
-    }
-
-    function initCloudSync() {
-      loadCloudConfig();
-      checkUrlSyncParameters();
-      setupSyncModalEvents();
-      setupManualSyncButton();
-      setupMagicSyncEvents();
-      window.addEventListener('hashchange', () => {
-        if (window.location.hash && window.location.hash.startsWith('#sync=')) {
-          checkUrlSyncParameters();
-        }
-      });
-      updateSyncStatusUI('connecting', 'Подключение...');
-
-      // 1. Immediate dual-fetch: Unblocked gateway (100% mobile unblocked) + Firebase
-      fetchFromGitHubData(false);
-      fetchFromUnblockedGateway(false);
-      fetchFromCloudRest(false);
-
-      // 2. Connect Firebase Realtime SDK (WebSocket push listener)
-      connectCloudSync(false);
-
-      // 3. Listen for window focus & visibility changes (e.g. unlocking phone or switching back to browser tab)
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          fetchFromGitHubData(true);
-        fetchFromUnblockedGateway(true);
-          fetchFromCloudRest(true);
-        }
-      });
-      window.addEventListener('focus', () => {
-        fetchFromUnblockedGateway(true);
-        fetchFromCloudRest(true);
-      });
-
-      // 4. Background heartbeat sync every 3 seconds across both gateways
-      setInterval(() => {
-        if (document.visibilityState === 'visible') {
-          fetchFromGitHubData(false);
-          fetchFromUnblockedGateway(false);
-          fetchFromCloudRest(false);
-        }
-      }, 3000);
-    }
-
-    function setupManualSyncButton() {
-      const forceBtn = document.getElementById('forceSyncBtn');
-      if (forceBtn) {
-        forceBtn.addEventListener('click', async () => {
-          forceBtn.classList.add('animate-spin');
-          updateSyncStatusUI('connecting', 'Обновление...');
-          await Promise.all([
-            fetchFromGitHubData(false),
-            fetchFromUnblockedGateway(false),
-            fetchFromCloudRest(false)
-          ]);
-          updateSyncStatusUI('saved', 'Обновлено ✓');
-          showToast('🔄 Все данные синхронизированы!');
-          setTimeout(() => {
-            updateSyncStatusUI('connected', 'Общий доступ: в сети');
-          }, 1200);
-          setTimeout(() => {
-            forceBtn.classList.remove('animate-spin');
-          }, 400);
-        });
-      }
-    }
-
-    function loadCloudConfig() {
-      try {
-        const saved = localStorage.getItem(CLOUD_SYNC_STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          cloudConfig.enabled = true;
-          const ghInput = document.getElementById('githubTokenInput');
-          if (ghInput) setGitHubToken(ghInput.value); // Always ON for zero friction
-          cloudConfig.room = parsed.room || 'wedding-2027';
-          cloudConfig.dbUrl = parsed.dbUrl || 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com';
-        } else {
-          cloudConfig.enabled = true;
-          cloudConfig.room = 'wedding-2027';
-          cloudConfig.dbUrl = 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com';
-        }
-      } catch (e) {
-        console.error('Failed to load cloud config:', e);
-      }
-    }
-
-    function saveCloudConfig() {
-      try {
-        localStorage.setItem(CLOUD_SYNC_STORAGE_KEY, JSON.stringify(cloudConfig));
-      } catch (e) {
-        console.error('Failed to save cloud config:', e);
-      }
-    }
-
-    function checkUrlSyncParameters() {
-      try {
-        // 1. Check for Zero-VPN Magic Sync in URL Hash (#sync=...)
-        if (window.location.hash && window.location.hash.startsWith('#sync=')) {
-          const rawPayload = window.location.hash.substring(6);
-          const restored = importSyncPayload(rawPayload, categories, seatingData);
-          if (restored) {
-            categories = restored.categories;
-            seatingData = restored.seating;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
-            localStorage.setItem(SEATING_STORAGE_KEY, JSON.stringify(seatingData));
-
-            if (restored.weddingDate) {
-              localStorage.setItem(DATE_STORAGE_KEY, String(restored.weddingDate));
-              const dateInput = document.getElementById('weddingDateInput');
-              if (dateInput) dateInput.value = restored.weddingDate;
-              if (typeof updateCountdownDisplay === 'function') {
-                updateCountdownDisplay(restored.weddingDate);
-              }
-            }
-
-            if (restored.targetBudget) {
-              localStorage.setItem(TARGET_BUDGET_KEY, String(restored.targetBudget));
-            }
-
-            renderApp();
-            renderSeating();
-            updateProgress();
-
-            // Clear hash smoothly from address bar without reloading
-            window.history.replaceState(null, document.title, window.location.pathname);
-
-            setTimeout(() => {
-              showToast('💍 Планер успешно синхронизирован! Все данные обновлены.');
-            }, 500);
-
-            if (typeof pushToCloud === 'function') {
-              pushToCloud('Синхронизация по ссылке');
-            }
-            return;
-          }
-        }
-
-        const params = new URLSearchParams(window.location.search);
-        const urlRoom = params.get('room');
-        const urlDb = params.get('db');
-
-        if (urlRoom) {
-          cloudConfig.room = urlRoom.trim();
-          if (urlDb) {
-            cloudConfig.dbUrl = decodeURIComponent(urlDb.trim());
-          }
-          cloudConfig.enabled = true;
-          saveCloudConfig();
-
-          // Clean query params from address bar without reloading
-          const cleanUrl = window.location.origin + window.location.pathname;
-          window.history.replaceState({}, document.title, cleanUrl);
-
-          setTimeout(() => {
-            showToast('🟢 Подключено к совместному планеру!');
-          }, 400);
-        }
-      } catch (e) {
-        console.error('Error parsing sync URL parameters:', e);
-      }
-    }
-
-    function setupSyncModalEvents() {
-      const modal = document.getElementById('syncModal');
-      const openBtn = document.getElementById('openSyncModalBtn');
-      const roomInput = document.getElementById('syncRoomInput');
-      const dbUrlInput = document.getElementById('syncDbUrlInput');
-      const connectBtn = document.getElementById('connectSyncBtn');
-      const copyLinkBtn = document.getElementById('copyShareLinkBtn');
-      const disconnectBtn = document.getElementById('disconnectSyncBtn');
-      const randomRoomBtn = document.getElementById('generateRandomRoomBtn');
-
-      const openModal = () => {
-        roomInput.value = cloudConfig.room || '';
-        dbUrlInput.value = cloudConfig.dbUrl || '';
-        updateModalStatusAlert();
-
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-          modal.classList.remove('opacity-0');
-          modal.querySelector('div').classList.remove('scale-95');
-          if (!cloudConfig.room) roomInput.focus();
-        }, 10);
-      };
-
-      const closeModal = () => {
-        modal.classList.add('opacity-0');
-        modal.querySelector('div').classList.add('scale-95');
-        setTimeout(() => modal.classList.add('hidden'), 200);
-      };
-
-      if (openBtn) openBtn.addEventListener('click', openModal);
-      document.querySelectorAll('.closeSyncModalBtn').forEach(b => b.addEventListener('click', closeModal));
-
-      // Generate random room code
-      if (randomRoomBtn) {
-        randomRoomBtn.addEventListener('click', () => {
-          const words = ['love', 'forever', 'family', 'happy', 'sweet', 'bliss', 'heart'];
-          const word = words[Math.floor(Math.random() * words.length)];
-          const num = Math.floor(100 + Math.random() * 900);
-          const generated = `wedding-${word}-${num}`;
-          roomInput.value = generated;
-          cloudConfig.room = generated;
-          saveCloudConfig();
-          showToast(`Код комнаты сгенерирован: ${generated} 🎲`);
-        });
-      }
-
-      // Connect button
-      if (connectBtn) {
-        connectBtn.addEventListener('click', () => {
-          const roomVal = roomInput.value.trim();
-          let dbVal = dbUrlInput.value.trim();
-
-          if (!roomVal) {
-            showToast('Укажите имя комнаты или нажмите «Случайный код»', 'error');
-            roomInput.focus();
-            return;
-          }
-
-          if (!dbVal) {
-            showToast('Укажите ссылку на базу данных Firebase', 'error');
-            dbUrlInput.focus();
-            return;
-          }
-
-          cloudConfig.room = roomVal;
-          cloudConfig.dbUrl = dbVal;
-          cloudConfig.enabled = true;
-          saveCloudConfig();
-
-          connectCloudSync(true);
-          fetchFromCloudRest(true);
-          updateModalStatusAlert();
-          setTimeout(closeModal, 500);
-        });
-      }
-
-      // Copy shareable 1-click link (clean universal link)
-      if (copyLinkBtn) {
-        copyLinkBtn.addEventListener('click', () => {
-          const roomVal = (roomInput.value.trim() || cloudConfig.room).trim();
-          const base = window.location.origin + window.location.pathname;
-          let shareUrl = base;
-          if (roomVal && roomVal !== 'wedding-2027') {
-            shareUrl += `?room=${encodeURIComponent(roomVal)}`;
-          }
-
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(shareUrl).then(() => {
-              showToast('💌 Ссылка на планер скопирована в буфер обмена!');
-            }).catch(() => {
-              fallbackPrompt(shareUrl);
-            });
-          } else {
-            fallbackPrompt(shareUrl);
-          }
-        });
-      }
-
-      function fallbackPrompt(url) {
-        prompt('Скопируйте эту ссылку и откройте на телефоне:', url);
-      }
-
-      // Disconnect button
-      if (disconnectBtn) {
-        disconnectBtn.addEventListener('click', () => {
-          disconnectCloudSync();
-          updateModalStatusAlert();
-        });
-      }
-    }
-
-    function updateModalStatusAlert() {
-      const box = document.getElementById('syncStatusAlertBox');
-      const icon = document.getElementById('syncAlertIcon');
-      const title = document.getElementById('syncAlertTitle');
-      const desc = document.getElementById('syncAlertDesc');
-      const disconnectBtn = document.getElementById('disconnectSyncBtn');
-      if (!box || !icon || !title || !desc) return;
-
-      if (cloudConfig.enabled && cloudConfig.room) {
-        box.className = 'p-3.5 rounded-xl bg-olive-soft border border-olive/30 mb-5 flex items-start gap-3 transition-colors';
-        icon.textContent = '🟢';
-        title.className = 'font-semibold text-olive-dark';
-        title.textContent = `Синхронизация активна: «${cloudConfig.room}»`;
-        desc.textContent = 'Все изменения чек-листа, бюджета и рассадки гостей мгновенно передаются между вашими устройствами в реальном времени.';
-        if (disconnectBtn) disconnectBtn.classList.remove('hidden');
-      } else {
-        box.className = 'p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-5 flex items-start gap-3 transition-colors';
-        icon.textContent = '☁️';
-        title.className = 'font-semibold text-charcoal';
-        title.textContent = 'Офлайн-режим (только это устройство)';
-        desc.textContent = 'Подключите базу данных, чтобы видеть действия друг друга в реальном времени — от галочек в чеклисте и бюджета до рассадки гостей.';
-        if (disconnectBtn) disconnectBtn.classList.add('hidden');
-      }
-    }
-
-    function updateSyncStatusUI(status, label) {
-      const dot = document.getElementById('syncStatusDot');
-      const text = document.getElementById('syncStatusLabel');
-      if (!dot || !text) return;
-
-      if (status === 'connected') {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-all';
-        text.textContent = label || 'Общий доступ: в сети';
-      } else if (status === 'saving') {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse transition-all';
-        text.textContent = label || 'Сохранение...';
-      } else if (status === 'saved') {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 transition-all';
-        text.textContent = label || 'Сохранено ✓';
-      } else if (status === 'connecting') {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse transition-all';
-        text.textContent = label || 'Подключение...';
-      } else if (status === 'error') {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 transition-all';
-        text.textContent = label || 'Ошибка';
-      } else {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-warmgray/50 transition-all';
-        text.textContent = label || 'Офлайн';
-      }
-
-      updateModalStatusAlert();
-    }
-
-    function connectCloudSync(isUserInitiated = false) {
-      if (typeof firebase === 'undefined') {
-        updateSyncStatusUI('error', 'Офлайн (нет SDK)');
-        if (isUserInitiated) {
-          showToast('Firebase SDK не загружен. Проверьте интернет-соединение.', 'error');
-        }
+    function pushToCloud(actionDescription = '') {
+      const sheetUrl = localStorage.getItem(GOOGLE_SHEET_KEY);
+      if (!sheetUrl || isReceivingCloudUpdate) {
         return;
       }
 
-      if (!cloudConfig.room || !cloudConfig.dbUrl) {
-        updateSyncStatusUI('disconnected', 'Совместный доступ');
-        return;
-      }
+      clearTimeout(googleSheetDebounceTimer);
+      googleSheetDebounceTimer = setTimeout(() => {
+        try {
+          const now = Date.now();
+          lastKnownRemoteUpdatedAt = now;
+          const payload = {
+            senderDeviceId: myDeviceId,
+            actionDescription: actionDescription || '',
+            updatedAt: now,
+            categories: categories,
+            seating: seatingData,
+            weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
+            targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null
+          };
 
-      const cleanRoom = cloudConfig.room.trim().replace(/[^a-zA-Z0-9_\-]/g, '_');
-      let cleanUrl = cloudConfig.dbUrl.trim();
-      if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-        cleanUrl = 'https://' + cleanUrl;
-      }
-      cleanUrl = cleanUrl.replace(/\/+$/, '');
-
-      try {
-        updateSyncStatusUI('connecting', 'Подключение...');
-
-        if (!firebase.apps.length) {
-          cloudApp = firebase.initializeApp({
-            databaseURL: cleanUrl
+          // Google Apps Script accepts text/plain POST with mode: 'no-cors'
+          fetch(sheetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload)
+          }).then(() => {
+            updateSheetIndicator();
+          }).catch(err => {
+            console.warn('Google Sheets push notice:', err);
           });
-        } else {
-          cloudApp = firebase.app();
+        } catch (e) {
+          console.error('Failed to construct Google Sheets payload:', e);
         }
-
-        cloudDb = firebase.database(cloudApp);
-        cloudRef = cloudDb.ref('wedding_rooms/' + cleanRoom);
-
-        // Detach existing listener if any
-        cloudRef.off();
-
-        // Listen for Realtime Changes
-        cloudRef.on('value', (snapshot) => {
-          const val = snapshot.val();
-          if (val && typeof val === 'object' && val.updatedAt) {
-            if (val.senderDeviceId !== myDeviceId && val.updatedAt > lastKnownRemoteUpdatedAt) {
-              lastKnownRemoteUpdatedAt = val.updatedAt;
-              handleRemoteCloudUpdate(val, true);
-            } else if (!hasInitialCloudSyncCompleted) {
-              lastKnownRemoteUpdatedAt = val.updatedAt;
-              handleRemoteCloudUpdate(val, false);
-            }
-            hasInitialCloudSyncCompleted = true;
-            updateSyncStatusUI('connected', 'Общий доступ: в сети');
-          } else if (!val) {
-            hasInitialCloudSyncCompleted = true;
-            pushToCloud('Инициализация планера');
-          }
-        }, (error) => {
-          console.error('Firebase DB Error:', error);
-          if (error.code === 'PERMISSION_DENIED' || (error.message && error.message.toLowerCase().includes('permission_denied'))) {
-            updateSyncStatusUI('error', 'Разрешите Rules в Firebase');
-            showToast('⚠️ В Firebase на вкладке Rules укажите .read: true, .write: true', 'error');
-          } else {
-            updateSyncStatusUI('error', 'Ошибка связи с облаком');
-          }
-        });
-
-        if (isUserInitiated) {
-          showToast('🟢 Совместный доступ успешно подключен!');
-        }
-      } catch (err) {
-        console.error('Failed to init Firebase:', err);
-        updateSyncStatusUI('error', 'Ошибка');
-        if (isUserInitiated) {
-          showToast('Не удалось подключиться: ' + err.message, 'error');
-        }
-      }
+      }, 350);
     }
 
-    function disconnectCloudSync() {
-      if (cloudRef) {
-        try { cloudRef.off(); } catch (e) {}
-        cloudRef = null;
-      }
-      cloudConfig.enabled = false;
-      saveCloudConfig();
-      updateSyncStatusUI('disconnected', 'Офлайн');
-      showToast('Совместный доступ отключен. Планер перешел в локальный режим.');
-    }
-
-    function getFirebaseRestUrl() {
-      if (!cloudConfig.dbUrl || !cloudConfig.room) return null;
-      let url = cloudConfig.dbUrl.trim().replace(/\/+$/, '');
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'https://' + url;
-      }
-      const cleanRoom = cloudConfig.room.trim().replace(/[^a-zA-Z0-9_\-]/g, '_');
-      return `${url}/wedding_rooms/${cleanRoom}.json`;
-    }
-
-    let lastKnownRemoteUpdatedAt = 0;
-    let isFetchingRest = false;
-
-    async function fetchFromCloudRest(showToastNotice = true) {
-      if (isReceivingCloudUpdate || isFetchingRest) return;
-      const url = getFirebaseRestUrl();
-      if (!url) {
-        hasInitialCloudSyncCompleted = true;
-        return;
-      }
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-      try {
-        isFetchingRest = true;
-        const fetchUrl = `${url}?_cb=${Date.now()}`;
-        const res = await fetch(fetchUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            updateSyncStatusUI('error', 'Разрешите Rules в Firebase');
-          }
-          hasInitialCloudSyncCompleted = true;
-          return;
-        }
-        const data = await res.json();
-        if (data && typeof data === 'object' && data.updatedAt) {
-          if (data.senderDeviceId !== myDeviceId && data.updatedAt > lastKnownRemoteUpdatedAt) {
-            lastKnownRemoteUpdatedAt = data.updatedAt;
-            handleRemoteCloudUpdate(data, showToastNotice);
-          } else if (!hasInitialCloudSyncCompleted) {
-            lastKnownRemoteUpdatedAt = data.updatedAt;
-            handleRemoteCloudUpdate(data, false);
-          }
-          hasInitialCloudSyncCompleted = true;
-          updateSyncStatusUI('connected', 'Общий доступ: в сети');
-        } else if (!data) {
-          hasInitialCloudSyncCompleted = true;
-          pushToCloud('Инициализация планера');
-        } else {
-          hasInitialCloudSyncCompleted = true;
-        }
-      } catch (err) {
-        clearTimeout(timeoutId);
-        console.warn('REST fetch error:', err);
-        hasInitialCloudSyncCompleted = true;
-        updateSyncStatusUI('error', 'Блок сотовой связи');
-        if (showToastNotice) {
-          showToast('⚠️ Сотовый оператор глушит базу Google. Подключитесь к Wi-Fi или включите VPN!', 'error');
-        }
-      } finally {
-        isFetchingRest = false;
-      }
-    }
-
+    /**
+     * Apply remote update to application state safely
+     */
     function handleRemoteCloudUpdate(data, showToastNotice = true) {
       if (!data || typeof data !== 'object') return;
       if (data.senderDeviceId && data.senderDeviceId === myDeviceId) {
@@ -4638,73 +4207,8 @@
       } finally {
         setTimeout(() => {
           isReceivingCloudUpdate = false;
-        }, 80);
+        }, 100);
       }
-    }
-
-    function pushToCloud(actionDescription = '') {
-      if (!cloudConfig.enabled || isReceivingCloudUpdate) {
-        return;
-      }
-
-      // Visual feedback: show saving state right away
-      updateSyncStatusUI('saving', 'Сохранение...');
-
-      clearTimeout(cloudDebounceTimer);
-      cloudDebounceTimer = setTimeout(() => {
-        try {
-          const now = Date.now();
-          lastKnownRemoteUpdatedAt = now;
-          const payload = {
-            senderDeviceId: myDeviceId,
-            actionDescription: actionDescription || '',
-            updatedAt: now,
-            categories: categories,
-            seating: seatingData,
-            weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
-            targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null
-          };
-
-          // Also push directly to GitHub repository (works 100% without VPN)
-          pushToGitHubRepo(actionDescription);
-
-          // Also push to unblocked gateway (100% accessible in Russia on mobile 4G/LTE without VPN)
-          pushToUnblockedGateway();
-
-          // 1. Send via Firebase SDK WebSocket
-          if (cloudRef) {
-            cloudRef.set(payload).then(() => {
-              updateSyncStatusUI('saved', 'Сохранено ✓');
-              setTimeout(() => {
-                updateSyncStatusUI('connected', 'Общий доступ: в сети');
-              }, 1200);
-            }).catch(err => {
-              console.warn('Firebase WebSocket push error:', err);
-            });
-          }
-
-          // 2. ALSO send via direct HTTPS REST PUT (100% reliable across Russian networks)
-          const restUrl = getFirebaseRestUrl();
-          if (restUrl) {
-            fetch(restUrl, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            }).then(r => {
-              if (r.ok) {
-                updateSyncStatusUI('saved', 'Сохранено ✓');
-                setTimeout(() => {
-                  updateSyncStatusUI('connected', 'Общий доступ: в сети');
-                }, 1200);
-              }
-            }).catch(e => {
-              console.warn('REST push error:', e);
-            });
-          }
-        } catch (e) {
-          console.error('Failed to construct cloud payload:', e);
-        }
-      }, 180);
     }
 
     /**

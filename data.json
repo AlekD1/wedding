@@ -1,8 +1,8 @@
 {
-  "updatedAt": 1793127021543,
+  "updatedAt": 1793132977692,
   "senderDeviceId": "dev_init",
-  "targetBudget": "1500000",
-  "weddingDate": "2027-06-15",
+  "targetBudget": null,
+  "weddingDate": null,
   "categories": [
     {
       "id": "cat-1",
@@ -28,8 +28,8 @@
           "id": "item-1-3",
           "text": "Согласовать свадебный бюджет",
           "completed": false,
-          "cost": "1138350",
-          "notes": "Согласовано",
+          "cost": "",
+          "notes": "",
           "subtasks": [
             {
               "id": "sub-1-3-1",
@@ -58,7 +58,7 @@
           "text": "Составить предварительный список гостей",
           "completed": false,
           "cost": "",
-          "notes": "Здесь ведем полный список гостей, рассадку по столам и пожелания по меню.",
+          "notes": "",
           "subtasks": [
             {
               "id": "sub-1-4-1",
@@ -86,16 +86,16 @@
           "id": "item-1-5",
           "text": "Подать заявление в ЗАГС",
           "completed": false,
-          "cost": "350",
-          "notes": "Госпошлина за регистрацию брака",
+          "cost": "",
+          "notes": "",
           "subtasks": []
         },
         {
           "id": "item-1-6",
           "text": "Купить кольца",
           "completed": false,
-          "cost": "75000",
-          "notes": "Выбрать ювелирный салон и определиться с гравировкой",
+          "cost": "",
+          "notes": "",
           "subtasks": []
         },
         {
@@ -124,15 +124,15 @@
           "id": "item-2-1",
           "text": "Выбрать площадку",
           "completed": false,
-          "cost": "250000",
-          "notes": "Депозит и аренда свадебной локации",
+          "cost": "",
+          "notes": "",
           "subtasks": []
         },
         {
           "id": "item-2-2",
           "text": "Забронировать фотографа",
           "completed": false,
-          "cost": "80000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -140,7 +140,7 @@
           "id": "item-2-3",
           "text": "Забронировать видеографа",
           "completed": false,
-          "cost": "70000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -148,7 +148,7 @@
           "id": "item-2-4",
           "text": "Выбрать ведущего",
           "completed": false,
-          "cost": "90000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -156,7 +156,7 @@
           "id": "item-2-5",
           "text": "Выбрать DJ / утвердить плейлист",
           "completed": false,
-          "cost": "35000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -164,7 +164,7 @@
           "id": "item-2-6",
           "text": "Найти визажиста и стилиста",
           "completed": false,
-          "cost": "25000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -172,7 +172,7 @@
           "id": "item-2-7",
           "text": "Заказать декор и флористику",
           "completed": false,
-          "cost": "120000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -188,7 +188,7 @@
           "id": "item-2-9",
           "text": "Заказать свадебный торт",
           "completed": false,
-          "cost": "22000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -196,7 +196,7 @@
           "id": "item-2-10",
           "text": "Организовать транспорт",
           "completed": false,
-          "cost": "30000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -220,7 +220,7 @@
           "id": "item-2-13",
           "text": "Назначить свадебного координатора",
           "completed": false,
-          "cost": "40000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -228,7 +228,7 @@
           "id": "item-2-14",
           "text": "Оформить и отправить приглашения",
           "completed": false,
-          "cost": "15000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -250,7 +250,7 @@
           "id": "item-3-1",
           "text": "Купить свадебное платье",
           "completed": false,
-          "cost": "95000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -258,7 +258,7 @@
           "id": "item-3-2",
           "text": "Подобрать обувь невесты",
           "completed": false,
-          "cost": "18000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -282,7 +282,7 @@
           "id": "item-3-5",
           "text": "Сделать репетицию свадебного образа",
           "completed": false,
-          "cost": "8000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -290,7 +290,7 @@
           "id": "item-3-6",
           "text": "Подготовить образ жениха",
           "completed": false,
-          "cost": "55000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -298,7 +298,7 @@
           "id": "item-3-7",
           "text": "Купить обувь жениха",
           "completed": false,
-          "cost": "15000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -314,7 +314,7 @@
           "id": "item-3-9",
           "text": "Заказать букет невесты",
           "completed": false,
-          "cost": "10000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -360,7 +360,7 @@
           "id": "item-4-4",
           "text": "Поставить первый танец",
           "completed": false,
-          "cost": "15000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -382,7 +382,7 @@
           "id": "item-5-1",
           "text": "Подготовить подарки гостям",
           "completed": false,
-          "cost": "12000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -406,7 +406,7 @@
           "id": "item-5-4",
           "text": "Запланировать Love Story съемку",
           "completed": false,
-          "cost": "25000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -414,7 +414,7 @@
           "id": "item-5-5",
           "text": "Забронировать отель",
           "completed": false,
-          "cost": "20000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
@@ -446,7 +446,7 @@
           "id": "item-5-9",
           "text": "Подготовить другие свадебные карточки (посадочные, номера столов, меню, интерактив)",
           "completed": false,
-          "cost": "8000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         }
@@ -476,7 +476,7 @@
           "id": "item-6-3",
           "text": "Заказать план рассадки",
           "completed": false,
-          "cost": "5000",
+          "cost": "",
           "notes": "",
           "subtasks": []
         },
