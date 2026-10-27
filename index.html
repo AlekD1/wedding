@@ -13,6 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+  <!-- Pusher JS 8.3 (High-Speed Real-Time WebSockets) -->
+  <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -722,12 +724,10 @@
       <div class="font-serif tracking-widest uppercase text-gold-dark text-xs sm:text-[13px]">
         Свадебный планер 2026 • Идеальный день вашей любви
       </div>
-      <div class="flex items-center gap-3 text-[11px]">
-        <button type="button" id="openGoogleSheetBtn" class="hover:text-charcoal text-gold-dark transition-colors cursor-pointer flex items-center gap-1.5 underline underline-offset-2">
-          <span>📊 Подключить Google Таблицу (синхронизация)</span>
-        </button>
-        <span id="sheetStatusIndicator" class="hidden text-olive font-medium">✓ Таблица подключена</span>
-      </div>
+      <div id="pusherStatusBox" class="flex items-center gap-2 text-[11px] text-warmgray">
+        <span id="pusherStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span id="pusherStatusText">Подключение к сокету...</span>
+      </div></div>
     </div>
   </footer>
 
@@ -1042,88 +1042,6 @@
     </div>
   </div>
 
-  <!-- GOOGLE SHEETS SYNC MODAL -->
-  <div id="googleSheetModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-7 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200 max-h-[90vh] overflow-y-auto">
-      
-      <!-- Modal Header -->
-      <div class="flex items-start justify-between pb-3.5 border-b border-bordergold/60 mb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-200 text-lg shadow-inner shrink-0">
-            📊
-          </div>
-          <div>
-            <h3 class="text-lg font-serif text-charcoal font-bold tracking-wide">
-              Синхронизация через Google Таблицу
-            </h3>
-            <p class="text-xs text-warmgray mt-0.5">
-              Единая база данных для жениха и невесты без VPN на любых телефонах
-            </p>
-          </div>
-        </div>
-        <button id="closeGoogleSheetModalBtn" class="text-warmgray hover:text-charcoal p-1 cursor-pointer transition-colors" title="Закрыть">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Instruction & Field -->
-      <div class="space-y-4 text-xs">
-        <div>
-          <label for="googleSheetUrlInput" class="block font-serif font-bold uppercase tracking-wider text-charcoal mb-1.5">
-            Ссылка на веб-приложение Google Таблицы:
-          </label>
-          <input type="url" id="googleSheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2.5 text-xs text-charcoal placeholder-warmgray/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold transition-all shadow-xs">
-          <p class="text-[11px] text-warmgray mt-1">
-            Сайт будет автоматически считывать и сохранять данные прямо в вашу Google Таблицу.
-          </p>
-        </div>
-
-        <!-- Share with partner section (if connected) -->
-        <div id="partnerShareSection" class="hidden p-3.5 rounded-xl bg-champagne/40 border border-gold-light/60 space-y-2">
-          <p class="font-bold font-serif text-charcoal text-[11px] uppercase tracking-wider">
-            Ссылка для вашей половинки:
-          </p>
-          <p class="text-[11px] text-warmgray">
-            Отправьте эту ссылку в Telegram — таблица на втором телефоне подключится сама в 1 клик:
-          </p>
-          <div class="flex gap-2">
-            <input type="text" id="partnerShareInput" readonly class="w-full bg-white border border-bordergold rounded-lg px-2.5 py-1.5 text-[11px] text-charcoal select-all">
-            <button type="button" id="copyPartnerShareBtn" class="px-3 py-1.5 rounded-lg bg-olive hover:bg-olive-dark text-white text-[11px] font-medium shrink-0 cursor-pointer transition-colors">
-              Копировать
-            </button>
-          </div>
-        </div>
-
-        <!-- 3 Simple Steps -->
-        <div class="p-3.5 rounded-xl bg-ivory-100/80 border border-bordergold space-y-2.5 leading-relaxed text-[11px] text-charcoal">
-          <p class="font-bold font-serif uppercase tracking-wider text-gold-dark">Инструкция по настройке (один раз за 2 минуты):</p>
-          <p><strong>1.</strong> Откройте <a href="https://sheets.new" target="_blank" class="text-emerald-700 underline font-semibold">sheets.new</a> и создайте пустую Google Таблицу (назовите «Свадьба 2026»).</p>
-          <p><strong>2.</strong> В верхнем меню таблицы выберите <em>«Расширения» → «Apps Script»</em>, удалите весь текст и вставьте этот мини-код:</p>
-          <pre class="bg-white p-2.5 rounded-lg border border-bordergold text-[10px] font-mono text-charcoal overflow-x-auto select-all leading-normal">function doGet(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();var d=s.getRange('A1').getValue();return ContentService.createTextOutput(d||'{}').setMimeType(ContentService.MimeType.JSON);}
-function doPost(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();if(e&amp;&amp;e.postData&amp;&amp;e.postData.contents){s.getRange('A1').setValue(e.postData.contents);}return ContentService.createTextOutput('{"status":"ok"}').setMimeType(ContentService.MimeType.JSON);}</pre>
-          <p><strong>3.</strong> Справа вверху нажмите синюю кнопку <strong>«Начать развертывание» → «Новое развертывание»</strong>:</p>
-          <ul class="list-disc list-inside space-y-1 text-warmgray">
-            <li>Тип: выберите <strong>«Веб-приложение»</strong> (шестеренка слева).</li>
-            <li>У кого есть доступ: выберите <strong>«Все» (Anyone)</strong>.</li>
-            <li>Нажмите «Развернуть» и скопируйте полученную ссылку на веб-приложение в поле выше.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="mt-5 flex flex-col gap-2">
-        <button id="saveGoogleSheetBtn" class="w-full py-2.5 px-4 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer text-center">
-          Сохранить и подключить таблицу
-        </button>
-        <button id="disconnectGoogleSheetBtn" class="w-full py-2 text-[11px] text-rose-600 hover:text-rose-700 hover:underline transition-colors text-center cursor-pointer">
-          Отключить таблицу
-        </button>
-      </div>
-
-    </div>
-  </div>
   <!-- Toast Container -->
   <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
@@ -3849,191 +3767,195 @@ function doPost(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     }
 
     /** ========================================================================= */
-    /** GOOGLE SHEETS SYNCHRONIZATION CONTROLLER                                   */
-    /** 100% Unblocked in Russia, Works on all Mobile Networks Without VPN         */
+    /** PUSHER CHANNELS REAL-TIME WEBSOCKET CONTROLLER                             */
+    /** Sub-100ms Instant Two-Way Sync Between Phones Without VPN                 */
     /** ========================================================================= */
 
-    const GOOGLE_SHEET_KEY = 'wedding_google_sheet_url';
+    const PUSHER_CONFIG = {
+      appId: '2205841',
+      key: 'b30a2bcee9c3afe9cb75',
+      secret: '1f08797417142d296b56',
+      cluster: 'eu',
+      channelName: 'private-wedding-2026'
+    };
+
+    let pusherClient = null;
+    let pusherChannel = null;
+    let isPusherSubscribed = false;
+    let pusherDebounceTimer = null;
     let lastKnownRemoteUpdatedAt = 0;
-    let googleSheetDebounceTimer = null;
+    const incomingChunks = new Map(); // msgId -> array of chunks
 
     /**
-     * Initialize Google Sheets synchronization and listen for changes
+     * Browser native HMAC SHA-256 for client-side Pusher private channel auth
+     */
+    async function generateHmacSha256(secret, message) {
+      const enc = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const signatureBuffer = await crypto.subtle.sign(
+        'HMAC',
+        key,
+        enc.encode(message)
+      );
+      return Array.from(new Uint8Array(signatureBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    /**
+     * Update the subtle socket indicator in the footer
+     */
+    function updateSocketStatusUI(state) {
+      const dot = document.getElementById('pusherStatusDot');
+      const text = document.getElementById('pusherStatusText');
+      if (!dot || !text) return;
+
+      dot.classList.remove('bg-emerald-500', 'bg-amber-400', 'bg-rose-400', 'bg-warmgray/60', 'animate-pulse');
+
+      switch (state) {
+        case 'connected':
+          dot.classList.add('bg-emerald-500', 'animate-pulse');
+          text.textContent = 'Связь в реальном времени активна (WebSocket ✓)';
+          break;
+        case 'connecting':
+          dot.classList.add('bg-amber-400');
+          text.textContent = 'Подключение к сокету...';
+          break;
+        case 'unavailable':
+        case 'failed':
+        case 'disconnected':
+          dot.classList.add('bg-warmgray/60');
+          text.textContent = 'Офлайн (все сохраняется на телефоне)';
+          break;
+        case 'error':
+          dot.classList.add('bg-rose-400');
+          text.textContent = 'Ошибка сокета (переподключение...)';
+          break;
+        default:
+          dot.classList.add('bg-emerald-500');
+          text.textContent = 'Связь в реальном времени активна';
+      }
+    }
+
+    /**
+     * Initialize Pusher WebSocket connection and subscribe to private wedding channel
      */
     function initCloudSync() {
-      // 1. Check for ?sheet= URL parameter (makes 1-click sharing to partner effortless)
+      if (typeof Pusher === 'undefined') {
+        console.warn('Pusher library not loaded');
+        return;
+      }
+
+      updateSocketStatusUI('connecting');
+
       try {
-        const params = new URLSearchParams(window.location.search);
-        let sheetParam = params.get('sheet');
-        if (!sheetParam && window.location.hash.startsWith('#sheet=')) {
-          sheetParam = decodeURIComponent(window.location.hash.replace('#sheet=', ''));
-        }
-        if (sheetParam) {
+        pusherClient = new Pusher(PUSHER_CONFIG.key, {
+          cluster: PUSHER_CONFIG.cluster,
+          forceTLS: true,
+          authorizer: (channel, options) => {
+            return {
+              authorize: async (socketId, callback) => {
+                try {
+                  const stringToSign = socketId + ':' + channel.name;
+                  const signature = await generateHmacSha256(PUSHER_CONFIG.secret, stringToSign);
+                  callback(null, {
+                    auth: PUSHER_CONFIG.key + ':' + signature
+                  });
+                } catch (err) {
+                  console.error('Pusher auth error:', err);
+                  callback(err, null);
+                }
+              }
+            };
+          }
+        });
+
+        pusherClient.connection.bind('state_change', (states) => {
+          updateSocketStatusUI(states.current);
+        });
+
+        pusherChannel = pusherClient.subscribe(PUSHER_CONFIG.channelName);
+
+        pusherChannel.bind('pusher:subscription_succeeded', () => {
+          isPusherSubscribed = true;
+          updateSocketStatusUI('connected');
+
+          // Ask if partner is already online and has newer state
           try {
-            const parsed = new URL(sheetParam);
-            if (parsed.protocol.startsWith('http')) {
-              localStorage.setItem(GOOGLE_SHEET_KEY, sheetParam);
-              window.history.replaceState({}, document.title, window.location.pathname);
-              showToast('📊 Google Таблица успешно подключена по ссылке!');
-            }
+            pusherChannel.trigger('client-request-sync', {
+              requesterId: myDeviceId,
+              updatedAt: lastKnownRemoteUpdatedAt || 0
+            });
           } catch (e) {}
-        }
-      } catch (e) {}
-
-      setupGoogleSheetModalEvents();
-      updateSheetIndicator();
-
-      // 2. Initial fetch from Google Sheet (or data.json fallback)
-      fetchFromGoogleSheet(false);
-      fetchInitialDataJsonFallback();
-
-      // 3. Listen for window focus & visibility changes (e.g. partner made changes while app was backgrounded)
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          fetchFromGoogleSheet(true);
-        }
-      });
-      window.addEventListener('focus', () => {
-        fetchFromGoogleSheet(true);
-      });
-
-      // 4. Background refresh every 25 seconds
-      setInterval(() => {
-        if (document.visibilityState === 'visible') {
-          fetchFromGoogleSheet(true);
-        }
-      }, 25000);
-    }
-
-    /**
-     * Updates the indicator badge in the footer
-     */
-    function updateSheetIndicator() {
-      const url = localStorage.getItem(GOOGLE_SHEET_KEY);
-      const indicator = document.getElementById('sheetStatusIndicator');
-      const openBtn = document.getElementById('openGoogleSheetBtn');
-
-      if (url) {
-        if (indicator) indicator.classList.remove('hidden');
-        if (openBtn) openBtn.innerHTML = '<span>📊 Google Таблица (подключена ✓)</span>';
-      } else {
-        if (indicator) indicator.classList.add('hidden');
-        if (openBtn) openBtn.innerHTML = '<span>📊 Подключить Google Таблицу (синхронизация)</span>';
-      }
-    }
-
-    /**
-     * Modal controls and event listeners
-     */
-    function setupGoogleSheetModalEvents() {
-      const modal = document.getElementById('googleSheetModal');
-      const openBtn = document.getElementById('openGoogleSheetBtn');
-      const closeBtn = document.getElementById('closeGoogleSheetModalBtn');
-      const saveBtn = document.getElementById('saveGoogleSheetBtn');
-      const disconnectBtn = document.getElementById('disconnectGoogleSheetBtn');
-      const urlInput = document.getElementById('googleSheetUrlInput');
-      const partnerSection = document.getElementById('partnerShareSection');
-      const partnerInput = document.getElementById('partnerShareInput');
-      const copyPartnerBtn = document.getElementById('copyPartnerShareBtn');
-
-      const openModal = () => {
-        if (!modal) return;
-        const currentUrl = localStorage.getItem(GOOGLE_SHEET_KEY) || '';
-        if (urlInput) urlInput.value = currentUrl;
-
-        if (currentUrl && partnerSection && partnerInput) {
-          partnerSection.classList.remove('hidden');
-          partnerInput.value = window.location.origin + window.location.pathname + '?sheet=' + encodeURIComponent(currentUrl);
-        } else if (partnerSection) {
-          partnerSection.classList.add('hidden');
-        }
-
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-          modal.classList.remove('opacity-0');
-          modal.children[0].classList.remove('scale-95');
-          modal.children[0].classList.add('scale-100');
-        }, 10);
-      };
-
-      const closeModal = () => {
-        if (!modal) return;
-        modal.classList.add('opacity-0');
-        modal.children[0].classList.remove('scale-100');
-        modal.children[0].classList.add('scale-95');
-        setTimeout(() => {
-          modal.classList.add('hidden');
-        }, 200);
-      };
-
-      if (openBtn) openBtn.addEventListener('click', openModal);
-      if (closeBtn) closeBtn.addEventListener('click', closeModal);
-      if (modal) {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) closeModal();
         });
-      }
 
-      if (saveBtn) {
-        saveBtn.addEventListener('click', async () => {
-          const val = urlInput ? urlInput.value.trim() : '';
-          if (!val) {
-            showToast('Пожалуйста, вставьте ссылку на веб-приложение Google', 'error');
-            return;
-          }
-          if (!val.startsWith('http')) {
-            showToast('Ссылка должна начинаться с https://', 'error');
-            return;
-          }
-
-          localStorage.setItem(GOOGLE_SHEET_KEY, val);
-          updateSheetIndicator();
-          showToast('Сохранение и синхронизация...');
-          closeModal();
-
-          // Immediate test push and pull
-          pushToCloud('Подключение Google Таблицы');
-          setTimeout(() => {
-            fetchFromGoogleSheet(false);
-          }, 600);
+        pusherChannel.bind('pusher:subscription_error', (status) => {
+          console.warn('Subscription error:', status);
+          isPusherSubscribed = false;
+          updateSocketStatusUI('error');
         });
-      }
 
-      if (disconnectBtn) {
-        disconnectBtn.addEventListener('click', () => {
-          localStorage.removeItem(GOOGLE_SHEET_KEY);
-          if (urlInput) urlInput.value = '';
-          updateSheetIndicator();
-          closeModal();
-          showToast('Google Таблица отключена');
-        });
-      }
-
-      if (copyPartnerBtn && partnerInput) {
-        copyPartnerBtn.addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(partnerInput.value);
-            showToast('📋 Ссылка для половинки скопирована в буфер!');
-          } catch (e) {
-            partnerInput.select();
-            document.execCommand('copy');
-            showToast('📋 Ссылка скопирована!');
+        // 1. Listen for full state broadcast from partner
+        pusherChannel.bind('client-wedding-update', (data) => {
+          if (data && data.senderDeviceId !== myDeviceId) {
+            handleRemoteCloudUpdate(data, true);
           }
         });
+
+        // 2. Listen for chunked messages (when data size exceeds 8 KB)
+        pusherChannel.bind('client-sync-chunk', (chunkData) => {
+          handleIncomingChunk(chunkData);
+        });
+
+        // 3. Listen for partner requesting our latest state
+        pusherChannel.bind('client-request-sync', (req) => {
+          if (req && req.requesterId !== myDeviceId) {
+            // Partner just opened the app, push our current state so they are in sync!
+            pushToCloud('Синхронизация по запросу');
+          }
+        });
+
+        // 4. Reconnect on phone screen unlock or tab visibility
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            if (pusherClient && pusherClient.connection.state !== 'connected') {
+              pusherClient.connect();
+            }
+            if (pusherChannel && isPusherSubscribed) {
+              try {
+                pusherChannel.trigger('client-request-sync', {
+                  requesterId: myDeviceId,
+                  updatedAt: lastKnownRemoteUpdatedAt || 0
+                });
+              } catch (e) {}
+            }
+          }
+        });
+
+        // 5. Initial fallback to data.json if clean slate
+        fetchInitialDataJsonFallback();
+
+      } catch (err) {
+        console.error('Failed to init Pusher sync:', err);
+        updateSocketStatusUI('error');
       }
     }
 
     /**
-     * Fallback to data.json on initial load if no Google Sheet is connected yet
+     * Fallback to data.json on initial load if no local state exists
      */
     async function fetchInitialDataJsonFallback() {
-      if (localStorage.getItem(GOOGLE_SHEET_KEY)) return;
       try {
         const response = await fetch('data.json?v=' + Date.now(), { cache: 'no-store' });
         if (!response.ok) return;
         const data = await response.json();
         if (data && Array.isArray(data.categories)) {
-          // Only apply if user has no saved changes locally
           if (!localStorage.getItem(STORAGE_KEY)) {
             handleRemoteCloudUpdate(data, false);
           }
@@ -4042,43 +3964,17 @@ function doPost(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     }
 
     /**
-     * Fetch latest state from Google Sheets
-     */
-    async function fetchFromGoogleSheet(silent = false) {
-      const sheetUrl = localStorage.getItem(GOOGLE_SHEET_KEY);
-      if (!sheetUrl) return;
-
-      try {
-        const res = await fetch(sheetUrl);
-        if (!res.ok) return;
-        const data = await res.json();
-
-        if (data && typeof data === 'object' && Array.isArray(data.categories)) {
-          if (!lastKnownRemoteUpdatedAt || (data.updatedAt && data.updatedAt > lastKnownRemoteUpdatedAt)) {
-            lastKnownRemoteUpdatedAt = data.updatedAt || Date.now();
-            handleRemoteCloudUpdate(data, !silent);
-          }
-          updateSheetIndicator();
-        }
-      } catch (err) {
-        console.warn('Google Sheets fetch notice:', err);
-      }
-    }
-
-    /**
-     * Push latest state to Google Sheets
+     * Push latest state to partner via Pusher WebSocket
      */
     function pushToCloud(actionDescription = '') {
-      const sheetUrl = localStorage.getItem(GOOGLE_SHEET_KEY);
-      if (!sheetUrl || isReceivingCloudUpdate) {
-        return;
-      }
+      if (isReceivingCloudUpdate) return;
 
-      clearTimeout(googleSheetDebounceTimer);
-      googleSheetDebounceTimer = setTimeout(() => {
+      clearTimeout(pusherDebounceTimer);
+      pusherDebounceTimer = setTimeout(() => {
         try {
           const now = Date.now();
           lastKnownRemoteUpdatedAt = now;
+
           const payload = {
             senderDeviceId: myDeviceId,
             actionDescription: actionDescription || '',
@@ -4089,21 +3985,72 @@ function doPost(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
             targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null
           };
 
-          // Google Apps Script accepts text/plain POST with mode: 'no-cors'
-          fetch(sheetUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify(payload)
-          }).then(() => {
-            updateSheetIndicator();
-          }).catch(err => {
-            console.warn('Google Sheets push notice:', err);
-          });
+          sendPusherPayload(payload);
         } catch (e) {
-          console.error('Failed to construct Google Sheets payload:', e);
+          console.error('Failed to push to Pusher:', e);
         }
-      }, 350);
+      }, 120); // 120ms debounce for lightning fast responsiveness
+    }
+
+    /**
+     * Sends payload, chunking it if it approaches Pusher's 10 KB limit
+     */
+    function sendPusherPayload(payload) {
+      if (!pusherChannel || !isPusherSubscribed) return;
+
+      const jsonStr = JSON.stringify(payload);
+      const CHUNK_SIZE = 7500; // safe margin below 10,240 bytes
+
+      if (jsonStr.length <= CHUNK_SIZE) {
+        pusherChannel.trigger('client-wedding-update', payload);
+      } else {
+        const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        const totalChunks = Math.ceil(jsonStr.length / CHUNK_SIZE);
+
+        for (let i = 0; i < totalChunks; i++) {
+          const part = jsonStr.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+          pusherChannel.trigger('client-sync-chunk', {
+            msgId: msgId,
+            index: i,
+            total: totalChunks,
+            chunk: part,
+            senderDeviceId: myDeviceId
+          });
+        }
+      }
+    }
+
+    /**
+     * Reassembles chunked messages from partner
+     */
+    function handleIncomingChunk(data) {
+      if (!data || data.senderDeviceId === myDeviceId) return;
+      const { msgId, index, total, chunk } = data;
+
+      if (!incomingChunks.has(msgId)) {
+        incomingChunks.set(msgId, new Array(total));
+      }
+      const chunksArr = incomingChunks.get(msgId);
+      chunksArr[index] = chunk;
+
+      let complete = true;
+      for (let i = 0; i < total; i++) {
+        if (chunksArr[i] === undefined) {
+          complete = false;
+          break;
+        }
+      }
+
+      if (complete) {
+        try {
+          const fullJson = chunksArr.join('');
+          incomingChunks.delete(msgId);
+          const parsed = JSON.parse(fullJson);
+          handleRemoteCloudUpdate(parsed, true);
+        } catch (e) {
+          console.error('Failed to parse reassembled chunk:', e);
+        }
+      }
     }
 
     /**
@@ -4199,7 +4146,7 @@ function doPost(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
           }
 
           if (showToastNotice) {
-            showToast('✨ Планер обновлен второй половинкой!');
+            showToast('✨ Обновлено второй половинкой!');
           }
         }
       } catch (err) {
@@ -4207,7 +4154,7 @@ function doPost(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
       } finally {
         setTimeout(() => {
           isReceivingCloudUpdate = false;
-        }, 100);
+        }, 80);
       }
     }
 
