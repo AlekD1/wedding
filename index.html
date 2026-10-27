@@ -282,17 +282,14 @@
           <span id="countdownBadge" class="hidden font-serif font-semibold text-olive bg-olive-soft px-2.5 py-0.5 rounded-full border border-olive/30"></span>
         </div>
 
-        <!-- Live Sync Status & Instant 1-Click Role Switcher -->
-        <div class="inline-flex items-center gap-1.5 p-1 rounded-full bg-white/85 border border-bordergold text-xs shadow-xs backdrop-blur-xs">
-          <span id="syncStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 ml-2 shadow-[0_0_8px_rgba(16,185,129,0.8)]" title="Синхронизация активна"></span>
-          <span id="syncStatusLabel" class="text-[11px] font-medium text-warmgray pr-1">Общий доступ: в сети</span>
-          <button type="button" id="roleGroomBtn" class="px-2.5 py-1 rounded-full text-xs font-semibold transition-all bg-olive text-white shadow-xs cursor-pointer" title="Я — Жених">
-            🤵 Жених
+        <!-- Live Cloud Sync Status & Instant Refresh -->
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 border border-bordergold text-xs shadow-xs backdrop-blur-xs">
+          <span id="syncStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" title="Синхронизация активна"></span>
+          <span id="syncStatusLabel" class="text-[11px] font-medium text-charcoal select-none">Общий доступ: в сети</span>
+          <button type="button" id="forceSyncBtn" class="text-warmgray hover:text-charcoal cursor-pointer p-0.5 rounded hover:bg-champagne transition-all flex items-center justify-center text-xs" title="Обновить данные сейчас">
+            🔄
           </button>
-          <button type="button" id="roleBrideBtn" class="px-2.5 py-1 rounded-full text-xs font-medium text-charcoal hover:bg-champagne transition-all cursor-pointer" title="Я — Невеста">
-            👰 Невеста
-          </button>
-          <button type="button" id="openSyncModalBtn" class="p-1 rounded-full text-warmgray hover:text-charcoal cursor-pointer ml-0.5 text-xs" title="Настройки облака">
+          <button type="button" id="openSyncModalBtn" class="p-0.5 rounded text-warmgray hover:text-charcoal cursor-pointer text-xs" title="Настройки совместного доступа">
             ⚙️
           </button>
         </div>
@@ -1098,29 +1095,11 @@
       <!-- Form Content -->
       <div class="space-y-4">
         
-        <!-- Step 1: Role Selector -->
-        <div>
-          <label class="block text-xs font-serif font-bold uppercase tracking-wider text-charcoal mb-2">
-            1. Ваша роль
-          </label>
-          <div class="grid grid-cols-3 gap-2" id="syncRoleButtonGroup">
-            <button type="button" data-role="🤵 Жених" class="sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer">
-              🤵 Жених
-            </button>
-            <button type="button" data-role="👰 Невеста" class="sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer">
-              👰 Невеста
-            </button>
-            <button type="button" data-role="💍 Мы вместе" class="sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer">
-              💍 Мы вместе
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 2: Wedding Room Code -->
+        <!-- Step 1: Wedding Room Code -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label for="syncRoomInput" class="text-xs font-serif font-bold uppercase tracking-wider text-charcoal">
-              2. Код вашей свадьбы (комната)
+              1. Код вашей свадьбы (комната)
             </label>
             <button type="button" id="generateRandomRoomBtn" class="text-[11px] text-gold-dark hover:text-charcoal underline underline-offset-2 transition-colors cursor-pointer">
               Случайный код 🎲
@@ -1133,7 +1112,7 @@
         <!-- Step 3: Firebase Database URL -->
         <div>
           <label for="syncDbUrlInput" class="block text-xs font-serif font-bold uppercase tracking-wider text-charcoal mb-1.5">
-            3. Ссылка на базу данных Firebase
+            2. Ссылка на базу данных Firebase
           </label>
           <input type="text" id="syncDbUrlInput" value="https://wedding-2027-df5b3-default-rtdb.firebaseio.com" placeholder="https://wedding-2027-df5b3-default-rtdb.firebaseio.com" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-xs sm:text-sm text-charcoal placeholder-warmgray/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all shadow-xs">
           <p class="text-[11px] text-warmgray mt-1">
@@ -3494,24 +3473,23 @@
 
     /** ========================================================================= */
     /** CLOUD SYNCHRONIZATION CONTROLLER (Firebase Realtime Database)             */
-    /** Real-time Groom & Bride Collaboration across Devices & Platforms          */
+    /** Instant Two-Way Real-time Collaboration Across All Devices & Mobiles      */
     /** ========================================================================= */
 
     function initCloudSync() {
       loadCloudConfig();
       checkUrlSyncParameters();
-      setupHeaderRoleButtons();
       setupSyncModalEvents();
-      updateSyncRoleButtonsUI();
-      updateSyncStatusUI('connecting', 'Подключение к облаку...');
+      setupManualSyncButton();
+      updateSyncStatusUI('connecting', 'Подключение...');
 
-      // 1. Immediate REST fetch (works instantly on mobile and bypasses WebSocket delay)
+      // 1. Immediate REST fetch (instant response, bypasses any mobile WebSocket lag)
       fetchFromCloudRest(false);
 
-      // 2. Connect Firebase Realtime SDK (WebSocket)
+      // 2. Connect Firebase Realtime SDK (WebSocket push listener)
       connectCloudSync(false);
 
-      // 3. Listen for window focus & visibility changes (e.g. unlocking phone or switching back to tab)
+      // 3. Listen for window focus & visibility changes (e.g. unlocking phone or switching back to browser tab)
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
           fetchFromCloudRest(true);
@@ -3521,45 +3499,45 @@
         fetchFromCloudRest(true);
       });
 
-      // 4. Background heartbeat sync every 3.5 seconds
+      // 4. Background heartbeat sync every 3 seconds for continuous live mirror
       setInterval(() => {
         if (document.visibilityState === 'visible') {
           fetchFromCloudRest(false);
         }
-      }, 3500);
+      }, 3000);
     }
 
-    function setupHeaderRoleButtons() {
-      const groomBtn = document.getElementById('roleGroomBtn');
-      const brideBtn = document.getElementById('roleBrideBtn');
-
-      const setRole = (role) => {
-        cloudConfig.role = role;
-        localStorage.setItem('wedding_user_role', role);
-        saveCloudConfig();
-        updateSyncRoleButtonsUI();
-        showToast(`Роль выбрана: ${role}! Все изменения на одной ссылке.`);
-      };
-
-      if (groomBtn) groomBtn.addEventListener('click', () => setRole('🤵 Жених'));
-      if (brideBtn) brideBtn.addEventListener('click', () => setRole('👰 Невеста'));
+    function setupManualSyncButton() {
+      const forceBtn = document.getElementById('forceSyncBtn');
+      if (forceBtn) {
+        forceBtn.addEventListener('click', async () => {
+          forceBtn.classList.add('animate-spin');
+          updateSyncStatusUI('connecting', 'Обновление...');
+          await fetchFromCloudRest(false);
+          setTimeout(() => {
+            forceBtn.classList.remove('animate-spin');
+            updateSyncStatusUI('saved', 'Обновлено ✓');
+            showToast('🔄 Данные синхронизированы с облаком!');
+            setTimeout(() => {
+              updateSyncStatusUI('connected', 'Общий доступ: в сети');
+            }, 1200);
+          }, 300);
+        });
+      }
     }
 
     function loadCloudConfig() {
       try {
-        const savedRole = localStorage.getItem('wedding_user_role');
         const saved = localStorage.getItem(CLOUD_SYNC_STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
-          cloudConfig.enabled = true; // Always ON by default
+          cloudConfig.enabled = true; // Always ON for zero friction
           cloudConfig.room = parsed.room || 'wedding-2027';
           cloudConfig.dbUrl = parsed.dbUrl || 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com';
-          cloudConfig.role = savedRole || parsed.role || '🤵 Жених';
         } else {
           cloudConfig.enabled = true;
           cloudConfig.room = 'wedding-2027';
           cloudConfig.dbUrl = 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com';
-          cloudConfig.role = savedRole || '🤵 Жених';
         }
       } catch (e) {
         console.error('Failed to load cloud config:', e);
@@ -3579,18 +3557,11 @@
         const params = new URLSearchParams(window.location.search);
         const urlRoom = params.get('room');
         const urlDb = params.get('db');
-        const urlRole = params.get('role');
 
         if (urlRoom) {
           cloudConfig.room = urlRoom.trim();
           if (urlDb) {
             cloudConfig.dbUrl = decodeURIComponent(urlDb.trim());
-          }
-          if (urlRole) {
-            if (urlRole === 'bride') cloudConfig.role = '👰 Невеста';
-            else if (urlRole === 'groom') cloudConfig.role = '🤵 Жених';
-            else if (urlRole === 'together') cloudConfig.role = '💍 Мы вместе';
-            else cloudConfig.role = urlRole;
           }
           cloudConfig.enabled = true;
           saveCloudConfig();
@@ -3600,8 +3571,8 @@
           window.history.replaceState({}, document.title, cleanUrl);
 
           setTimeout(() => {
-            showToast(`🟢 Подключено к свадьбе! Ваша роль: ${cloudConfig.role}`);
-          }, 600);
+            showToast('🟢 Подключено к совместному планеру!');
+          }, 400);
         }
       } catch (e) {
         console.error('Error parsing sync URL parameters:', e);
@@ -3621,7 +3592,6 @@
       const openModal = () => {
         roomInput.value = cloudConfig.room || '';
         dbUrlInput.value = cloudConfig.dbUrl || '';
-        updateSyncRoleButtonsUI();
         updateModalStatusAlert();
 
         modal.classList.remove('hidden');
@@ -3640,17 +3610,6 @@
 
       if (openBtn) openBtn.addEventListener('click', openModal);
       document.querySelectorAll('.closeSyncModalBtn').forEach(b => b.addEventListener('click', closeModal));
-
-      // Role button selection
-      document.querySelectorAll('.sync-role-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          cloudConfig.role = btn.dataset.role;
-          saveCloudConfig();
-          updateSyncRoleButtonsUI();
-          updateSyncStatusBadge();
-          showToast(`Роль выбрана: ${cloudConfig.role}`);
-        });
-      });
 
       // Generate random room code
       if (randomRoomBtn) {
@@ -3690,39 +3649,25 @@
           saveCloudConfig();
 
           connectCloudSync(true);
+          fetchFromCloudRest(true);
           updateModalStatusAlert();
-          setTimeout(closeModal, 600);
+          setTimeout(closeModal, 500);
         });
       }
 
-      // Copy shareable 1-click link
+      // Copy shareable 1-click link (clean universal link)
       if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
           const roomVal = (roomInput.value.trim() || cloudConfig.room).trim();
-          const dbVal = (dbUrlInput.value.trim() || cloudConfig.dbUrl).trim();
-
-          if (!roomVal) {
-            showToast('Сначала введите код комнаты!', 'error');
-            roomInput.focus();
-            return;
-          }
-
-          let partnerRole = 'bride';
-          if (cloudConfig.role && cloudConfig.role.includes('Невеста')) {
-            partnerRole = 'groom';
-          } else if (cloudConfig.role && cloudConfig.role.includes('вместе')) {
-            partnerRole = 'together';
-          }
-
           const base = window.location.origin + window.location.pathname;
-          let shareUrl = `${base}?room=${encodeURIComponent(roomVal)}&role=${partnerRole}`;
-          if (dbVal) {
-            shareUrl += `&db=${encodeURIComponent(dbVal)}`;
+          let shareUrl = base;
+          if (roomVal && roomVal !== 'wedding-2027') {
+            shareUrl += `?room=${encodeURIComponent(roomVal)}`;
           }
 
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(shareUrl).then(() => {
-              showToast('💌 Ссылка для второй половинки скопирована в буфер обмена!');
+              showToast('💌 Ссылка на планер скопирована в буфер обмена!');
             }).catch(() => {
               fallbackPrompt(shareUrl);
             });
@@ -3732,54 +3677,16 @@
         });
       }
 
+      function fallbackPrompt(url) {
+        prompt('Скопируйте эту ссылку и откройте на телефоне:', url);
+      }
+
       // Disconnect button
       if (disconnectBtn) {
         disconnectBtn.addEventListener('click', () => {
           disconnectCloudSync();
           updateModalStatusAlert();
         });
-      }
-
-      function fallbackPrompt(url) {
-        prompt('Скопируйте эту ссылку и отправьте второй половинке:', url);
-      }
-    }
-
-    function updateSyncRoleButtonsUI() {
-      const groomBtn = document.getElementById('roleGroomBtn');
-      const brideBtn = document.getElementById('roleBrideBtn');
-      const isGroom = cloudConfig.role.includes('Жених');
-
-      if (groomBtn && brideBtn) {
-        if (isGroom) {
-          groomBtn.className = 'px-2.5 py-1 rounded-full text-xs font-semibold transition-all bg-olive text-white shadow-xs cursor-pointer';
-          brideBtn.className = 'px-2.5 py-1 rounded-full text-xs font-medium text-charcoal hover:bg-champagne transition-all cursor-pointer';
-        } else {
-          brideBtn.className = 'px-2.5 py-1 rounded-full text-xs font-semibold transition-all bg-olive text-white shadow-xs cursor-pointer';
-          groomBtn.className = 'px-2.5 py-1 rounded-full text-xs font-medium text-charcoal hover:bg-champagne transition-all cursor-pointer';
-        }
-      }
-
-      document.querySelectorAll('.sync-role-btn').forEach(btn => {
-        const isSelected = btn.dataset.role === cloudConfig.role;
-        if (isSelected) {
-          btn.className = 'sync-role-btn py-2 px-3 rounded-xl border border-olive text-xs font-semibold text-white bg-olive shadow-xs transition-all text-center cursor-pointer';
-        } else {
-          btn.className = 'sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer';
-        }
-      });
-      updateSyncStatusBadge();
-    }
-
-    function updateSyncStatusBadge() {
-      const badge = document.getElementById('syncRoleBadge');
-      if (badge) {
-        if (cloudConfig.enabled && cloudConfig.role) {
-          badge.textContent = cloudConfig.role;
-          badge.classList.remove('hidden');
-        } else {
-          badge.classList.add('hidden');
-        }
       }
     }
 
@@ -3791,12 +3698,12 @@
       const disconnectBtn = document.getElementById('disconnectSyncBtn');
       if (!box || !icon || !title || !desc) return;
 
-      if (cloudConfig.enabled && cloudRef) {
+      if (cloudConfig.enabled && cloudConfig.room) {
         box.className = 'p-3.5 rounded-xl bg-olive-soft border border-olive/30 mb-5 flex items-start gap-3 transition-colors';
         icon.textContent = '🟢';
         title.className = 'font-semibold text-olive-dark';
         title.textContent = `Синхронизация активна: «${cloudConfig.room}»`;
-        desc.textContent = `Все изменения чек-листа, бюджета и рассадки мгновенно транслируются обоим партнерам в реальном времени.`;
+        desc.textContent = 'Все изменения чек-листа, бюджета и рассадки гостей мгновенно передаются между вашими устройствами в реальном времени.';
         if (disconnectBtn) disconnectBtn.classList.remove('hidden');
       } else {
         box.className = 'p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-5 flex items-start gap-3 transition-colors';
@@ -3815,19 +3722,24 @@
 
       if (status === 'connected') {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-all';
-        text.textContent = 'Общий доступ: в сети';
+        text.textContent = label || 'Общий доступ: в сети';
+      } else if (status === 'saving') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse transition-all';
+        text.textContent = label || 'Сохранение...';
+      } else if (status === 'saved') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 transition-all';
+        text.textContent = label || 'Сохранено ✓';
       } else if (status === 'connecting') {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse transition-all';
-        text.textContent = 'Подключение...';
+        text.textContent = label || 'Подключение...';
       } else if (status === 'error') {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 transition-all';
         text.textContent = label || 'Ошибка';
       } else {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-warmgray/50 transition-all';
-        text.textContent = label || 'Общий доступ';
+        text.textContent = label || 'Офлайн';
       }
 
-      updateSyncStatusBadge();
       updateModalStatusAlert();
     }
 
@@ -3871,14 +3783,17 @@
 
         // Listen for Realtime Changes
         cloudRef.on('value', (snapshot) => {
-          updateSyncStatusUI('connected', 'Общий доступ: в сети');
           const val = snapshot.val();
           if (val && typeof val === 'object' && val.updatedAt) {
-            if (!hasInitialCloudSyncCompleted || (val.senderDeviceId !== myDeviceId && val.updatedAt > lastKnownRemoteUpdatedAt)) {
+            if (val.senderDeviceId !== myDeviceId && val.updatedAt > lastKnownRemoteUpdatedAt) {
               lastKnownRemoteUpdatedAt = val.updatedAt;
-              handleRemoteCloudUpdate(val, hasInitialCloudSyncCompleted);
+              handleRemoteCloudUpdate(val, true);
+            } else if (!hasInitialCloudSyncCompleted) {
+              lastKnownRemoteUpdatedAt = val.updatedAt;
+              handleRemoteCloudUpdate(val, false);
             }
             hasInitialCloudSyncCompleted = true;
+            updateSyncStatusUI('connected', 'Общий доступ: в сети');
           } else if (!val) {
             hasInitialCloudSyncCompleted = true;
             pushToCloud('Инициализация планера');
@@ -3912,7 +3827,7 @@
       }
       cloudConfig.enabled = false;
       saveCloudConfig();
-      updateSyncStatusUI('disconnected', 'Совместный доступ');
+      updateSyncStatusUI('disconnected', 'Офлайн');
       showToast('Совместный доступ отключен. Планер перешел в локальный режим.');
     }
 
@@ -3950,9 +3865,12 @@
         }
         const data = await res.json();
         if (data && typeof data === 'object' && data.updatedAt) {
-          if (!hasInitialCloudSyncCompleted || (data.senderDeviceId !== myDeviceId && data.updatedAt > lastKnownRemoteUpdatedAt)) {
+          if (data.senderDeviceId !== myDeviceId && data.updatedAt > lastKnownRemoteUpdatedAt) {
             lastKnownRemoteUpdatedAt = data.updatedAt;
-            handleRemoteCloudUpdate(data, hasInitialCloudSyncCompleted ? showToastNotice : false);
+            handleRemoteCloudUpdate(data, showToastNotice);
+          } else if (!hasInitialCloudSyncCompleted) {
+            lastKnownRemoteUpdatedAt = data.updatedAt;
+            handleRemoteCloudUpdate(data, false);
           }
           hasInitialCloudSyncCompleted = true;
           updateSyncStatusUI('connected', 'Общий доступ: в сети');
@@ -3972,8 +3890,7 @@
 
     function handleRemoteCloudUpdate(data, showToastNotice = true) {
       if (!data || typeof data !== 'object') return;
-      // Echo cancellation: ignore updates sent by this device ONLY IF it's not initial sync
-      if (hasInitialCloudSyncCompleted && data.senderDeviceId && data.senderDeviceId === myDeviceId) {
+      if (data.senderDeviceId && data.senderDeviceId === myDeviceId) {
         return;
       }
 
@@ -4061,9 +3978,7 @@
           }
 
           if (showToastNotice) {
-            const senderRole = data.senderRole || 'Вторая половинка';
-            const actionMsg = data.actionDescription ? `: ${data.actionDescription}` : '';
-            showToast(`✨ ${senderRole} обновил(а) планер${actionMsg}`);
+            showToast('✨ Планер обновлен второй половинкой!');
           }
         }
       } catch (err) {
@@ -4071,38 +3986,46 @@
       } finally {
         setTimeout(() => {
           isReceivingCloudUpdate = false;
-        }, 120);
+        }, 80);
       }
     }
 
     function pushToCloud(actionDescription = '') {
-      if (!cloudConfig.enabled || isReceivingCloudUpdate || !hasInitialCloudSyncCompleted) {
+      if (!cloudConfig.enabled || isReceivingCloudUpdate) {
         return;
       }
+
+      // Visual feedback: show saving state right away
+      updateSyncStatusUI('saving', 'Сохранение...');
 
       clearTimeout(cloudDebounceTimer);
       cloudDebounceTimer = setTimeout(() => {
         try {
+          const now = Date.now();
+          lastKnownRemoteUpdatedAt = now;
           const payload = {
             senderDeviceId: myDeviceId,
-            senderRole: cloudConfig.role || 'Половинка',
             actionDescription: actionDescription || '',
-            updatedAt: Date.now(),
+            updatedAt: now,
             categories: categories,
             seating: seatingData,
             weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
             targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null
           };
-          lastKnownRemoteUpdatedAt = payload.updatedAt;
 
           // 1. Send via Firebase SDK WebSocket
           if (cloudRef) {
-            cloudRef.set(payload).catch(err => {
+            cloudRef.set(payload).then(() => {
+              updateSyncStatusUI('saved', 'Сохранено ✓');
+              setTimeout(() => {
+                updateSyncStatusUI('connected', 'Общий доступ: в сети');
+              }, 1200);
+            }).catch(err => {
               console.warn('Firebase WebSocket push error:', err);
             });
           }
 
-          // 2. ALSO send via direct HTTPS REST PUT (100% reliable across Russian mobile networks)
+          // 2. ALSO send via direct HTTPS REST PUT (100% reliable across Russian networks)
           const restUrl = getFirebaseRestUrl();
           if (restUrl) {
             fetch(restUrl, {
@@ -4111,7 +4034,10 @@
               body: JSON.stringify(payload)
             }).then(r => {
               if (r.ok) {
-                updateSyncStatusUI('connected', 'Общий доступ: в сети');
+                updateSyncStatusUI('saved', 'Сохранено ✓');
+                setTimeout(() => {
+                  updateSyncStatusUI('connected', 'Общий доступ: в сети');
+                }, 1200);
               }
             }).catch(e => {
               console.warn('REST push error:', e);
@@ -4120,7 +4046,7 @@
         } catch (e) {
           console.error('Failed to construct cloud payload:', e);
         }
-      }, 250);
+      }, 180);
     }
 
     /**
