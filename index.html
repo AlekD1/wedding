@@ -1,0 +1,4138 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СВАДЕБНЫЙ ПЛАНЕР 2026 — Чек-лист, Бюджет и Рассадка гостей</title>
+  
+  <!-- Google Fonts: Cormorant Garamond & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Firebase 9 Compat SDK (Realtime Database for Instant Two-Device Sync) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ivory: {
+              DEFAULT: '#FAF8F5',
+              50: '#FFFFFF',
+              100: '#FAF8F5',
+              200: '#F5EFE6',
+              300: '#EBDDCB',
+              400: '#DEC9B0',
+            },
+            gold: {
+              light: '#E6D7BD',
+              DEFAULT: '#C5A880',
+              hover: '#B5966B',
+              dark: '#8C6F47',
+              accent: '#D4AF37',
+            },
+            terracotta: {
+              DEFAULT: '#B4533C',
+              hover: '#9C432E',
+              light: '#F8ECE8',
+            },
+            olive: {
+              light: '#A3B3A4',
+              DEFAULT: '#6B7F6D',
+              dark: '#506352',
+              soft: '#EBF1EC',
+            },
+            charcoal: '#2D2926',
+            warmgray: '#7A736E',
+            bordergold: '#E8DFD3',
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Playfair Display', 'Georgia', 'serif'],
+            sans: ['"Montserrat"', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            'wedding': '0 12px 35px -8px rgba(197, 168, 128, 0.15), 0 4px 15px -2px rgba(107, 127, 109, 0.06)',
+            'card': '0 4px 20px rgba(180, 160, 140, 0.08)',
+            'card-hover': '0 10px 30px rgba(197, 168, 128, 0.2)',
+            'drawer': '-10px 0 40px rgba(45, 41, 38, 0.18)',
+            'table': '0 8px 24px rgba(180, 160, 140, 0.18), 0 2px 6px rgba(0, 0, 0, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF8F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D9CBBA;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C5A880;
+    }
+
+    /* Ambient Wedding Background */
+    .wedding-bg {
+      background-color: #FAF8F5;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(229, 213, 194, 0.4) 0px, transparent 55%),
+        radial-gradient(at 100% 0%, rgba(214, 226, 215, 0.45) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(245, 239, 230, 0.7) 0px, transparent 65%);
+      background-attachment: fixed;
+    }
+
+    /* Dot Grid for Seating Plan Canvas (Matches Screenshot 1 & 3) */
+    .dot-grid {
+      background-color: #FAF8F5;
+      background-image: radial-gradient(#D5C7B5 1.25px, transparent 1.25px);
+      background-size: 24px 24px;
+    }
+
+    /* Animated Custom Wedding Checkbox */
+    .custom-checkbox {
+      transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .custom-checkbox:hover {
+      border-color: #C5A880;
+      transform: scale(1.12);
+      box-shadow: 0 0 8px rgba(197, 168, 128, 0.35);
+    }
+    .custom-checkbox.checked {
+      background-color: #6B7F6D;
+      border-color: #6B7F6D;
+      box-shadow: 0 0 10px rgba(107, 127, 109, 0.3);
+    }
+
+    /* Inline Editable Elements */
+    [contenteditable="true"] {
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: text;
+    }
+    [contenteditable="true"]:hover {
+      background-color: rgba(245, 239, 230, 0.4);
+      border-radius: 4px;
+    }
+    [contenteditable="true"]:focus {
+      outline: none;
+      background-color: #ffffff;
+      border-radius: 4px;
+      padding: 1px 4px;
+      box-shadow: 0 0 0 1.5px #C5A880, 0 2px 8px rgba(197, 168, 128, 0.2);
+    }
+
+    /* Smooth Strike-through transition */
+    .task-title {
+      position: relative;
+      transition: color 0.25s ease, opacity 0.25s ease;
+    }
+    .task-title.completed {
+      color: #8C827A;
+      opacity: 0.65;
+      text-decoration: line-through;
+      text-decoration-color: #C5A880;
+      text-decoration-thickness: 1.5px;
+    }
+
+    /* Table seat circle */
+    .seat-slot {
+      transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .seat-slot:hover {
+      transform: scale(1.22);
+      z-index: 20;
+    }
+    .seat-slot.highlight-free {
+      animation: pulseSeat 1.5s infinite;
+    }
+    @keyframes pulseSeat {
+      0%, 100% { border-color: #B4533C; transform: scale(1); }
+      50% { border-color: #6B7F6D; transform: scale(1.15); box-shadow: 0 0 8px rgba(107, 127, 109, 0.5); }
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 10pt;
+      }
+      .no-print, header .no-print, footer .no-print, #taskDrawer, #taskDrawerBackdrop, #budgetModal, #addTableModal, #addSceneModal, #addGuestModal {
+        display: none !important;
+      }
+      .print-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+      }
+      .category-card {
+        box-shadow: none !important;
+        border: 1px solid #D9CBBA !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        padding: 14px !important;
+        background: #ffffff !important;
+      }
+      .custom-checkbox {
+        border-color: #888 !important;
+      }
+      .custom-checkbox.checked {
+        background-color: #555 !important;
+        border-color: #555 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      #seatingCanvasWrapper {
+        border: none !important;
+        box-shadow: none !important;
+      }
+    }
+
+    /* Confetti Canvas overlay */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Keyframe Animations */
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-toast {
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+
+<body class="wedding-bg text-charcoal font-sans min-h-screen antialiased flex flex-col selection:bg-gold-light/40 selection:text-charcoal relative">
+
+  <!-- Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Botanical Gold Line Art (Top Right) -->
+  <div class="pointer-events-none absolute top-0 right-0 w-80 md:w-[500px] lg:w-[620px] h-80 md:h-[500px] lg:h-[620px] overflow-hidden opacity-35 select-none z-0">
+    <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-gold">
+      <path d="M480 60 C420 100, 360 80, 330 140 C300 200, 340 270, 420 280 C500 290, 560 210, 530 130 C510 80, 460 70, 480 60 Z" stroke="#C5A880" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M420 130 C390 150, 370 190, 400 220 C430 250, 470 230, 480 190 C490 150, 450 120, 420 130 Z" stroke="#C5A880" stroke-width="1" />
+      <path d="M440 160 C425 175, 420 200, 445 205 C470 210, 485 185, 465 170 Z" stroke="#B5966B" stroke-width="0.8" />
+      <path d="M350 140 C320 110, 290 140, 290 180 C290 220, 330 240, 350 210" stroke="#C5A880" stroke-width="1.2" />
+      <path d="M330 220 C290 240, 270 300, 310 340 C350 380, 400 340, 390 290" stroke="#C5A880" stroke-width="1.2" />
+      <path d="M420 280 C410 340, 460 400, 510 390 C560 380, 570 310, 530 270" stroke="#C5A880" stroke-width="1.2" />
+      <path d="M530 140 C570 130, 610 160, 600 210 C590 260, 540 260, 520 230" stroke="#C5A880" stroke-width="1.2" />
+      <path d="M360 270 Q280 380 200 450 T80 560" stroke="#8EA090" stroke-width="1.5" stroke-linecap="round" />
+      <path d="M280 380 C240 370, 210 400, 220 430 C230 460, 270 450, 280 420 Z" stroke="#6B7F6D" stroke-width="1" fill="#FAF8F5" fill-opacity="0.5" />
+      <path d="M220 440 C170 450, 160 500, 190 520 C220 540, 250 490, 230 460 Z" stroke="#6B7F6D" stroke-width="1" fill="#FAF8F5" fill-opacity="0.5" />
+      <path d="M310 340 C320 300, 360 300, 370 330 C380 360, 340 380, 320 360 Z" stroke="#6B7F6D" stroke-width="1" fill="#FAF8F5" fill-opacity="0.5" />
+      <path d="M140 500 C100 520, 110 560, 140 570 C170 580, 190 540, 160 510 Z" stroke="#6B7F6D" stroke-width="1" fill="#FAF8F5" fill-opacity="0.5" />
+    </svg>
+  </div>
+
+  <!-- Main Content Wrapper -->
+  <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-7 md:py-10 flex-grow">
+
+    <!-- Header -->
+    <header class="text-center mb-6 md:mb-8">
+      
+      <!-- Top Tagline -->
+      <div class="inline-flex items-center gap-2.5 px-3.5 py-1 rounded-full bg-champagne/90 border border-gold-light/60 text-[11px] tracking-[0.25em] uppercase text-gold-dark font-medium mb-3 backdrop-blur-xs shadow-xs">
+        <span>✦</span>
+        <span>Интерактивный свадебный планер</span>
+        <span>✦</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-3xl sm:text-5xl md:text-6xl font-serif tracking-[0.14em] sm:tracking-[0.18em] uppercase text-charcoal font-normal leading-tight">
+        СВАДЕБНЫЙ<br class="sm:hidden" /> <span class="text-gold-dark font-normal">ПЛАНЕР 2026</span>
+      </h1>
+      
+      <p class="mt-2 text-warmgray text-xs sm:text-sm font-light tracking-wider max-w-xl mx-auto">
+        Гармоничная подготовка: пошаговый чек-лист, свадебный бюджет и интерактивная рассадка гостей по залу.
+      </p>
+
+      <!-- Header Badges Bar: Countdown & Real-Time Sync (Single Link for Couple) -->
+      <div class="no-print mt-3.5 flex flex-wrap items-center justify-center gap-2.5">
+        <!-- Wedding Date Countdown Widget -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-bordergold text-xs text-warmgray backdrop-blur-xs shadow-xs">
+          <span class="text-gold-dark">💍</span>
+          <label for="weddingDateInput" class="cursor-pointer font-medium hover:text-charcoal transition-colors">
+            Дата свадьбы:
+          </label>
+          <input type="date" id="weddingDateInput" class="bg-transparent border-0 text-charcoal font-medium text-xs focus:ring-0 focus:outline-none cursor-pointer">
+          <span id="countdownBadge" class="hidden font-serif font-semibold text-olive bg-olive-soft px-2.5 py-0.5 rounded-full border border-olive/30"></span>
+        </div>
+
+        <!-- Live Sync Status & Instant 1-Click Role Switcher -->
+        <div class="inline-flex items-center gap-1.5 p-1 rounded-full bg-white/85 border border-bordergold text-xs shadow-xs backdrop-blur-xs">
+          <span id="syncStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 ml-2 shadow-[0_0_8px_rgba(16,185,129,0.8)]" title="Синхронизация активна"></span>
+          <span id="syncStatusLabel" class="text-[11px] font-medium text-warmgray pr-1">Общий доступ: в сети</span>
+          <button type="button" id="roleGroomBtn" class="px-2.5 py-1 rounded-full text-xs font-semibold transition-all bg-olive text-white shadow-xs cursor-pointer" title="Я — Жених">
+            🤵 Жених
+          </button>
+          <button type="button" id="roleBrideBtn" class="px-2.5 py-1 rounded-full text-xs font-medium text-charcoal hover:bg-champagne transition-all cursor-pointer" title="Я — Невеста">
+            👰 Невеста
+          </button>
+          <button type="button" id="openSyncModalBtn" class="p-1 rounded-full text-warmgray hover:text-charcoal cursor-pointer ml-0.5 text-xs" title="Настройки облака">
+            ⚙️
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN APP TABS SWITCHER (Чек-лист vs Рассадка гостей) -->
+      <nav class="no-print mt-6 flex justify-center">
+        <div class="inline-flex p-1.5 rounded-2xl bg-white/90 border border-bordergold shadow-wedding backdrop-blur-md">
+          <button id="navTabChecklist" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all bg-olive text-white shadow-xs cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <span>Чек-лист и бюджет</span>
+          </button>
+          
+          <button id="navTabSeating" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all text-warmgray hover:text-charcoal cursor-pointer">
+            <svg class="w-4 h-4 text-terracotta" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span>Интерактивная рассадка гостей</span>
+            <span id="seatingBadgeUnseated" class="hidden px-2 py-0.5 rounded-full text-[10px] bg-terracotta-light text-terracotta font-semibold">0</span>
+          </button>
+        </div>
+      </nav>
+
+    </header>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: CHECKLIST & BUDGET VIEW            -->
+    <!-- ========================================== -->
+    <div id="checklistViewSection">
+      
+      <!-- Overall Progress & Budget Dashboard Card -->
+      <div class="max-w-3xl mx-auto bg-white/95 backdrop-blur-md rounded-2xl p-6 sm:p-7 border border-bordergold shadow-wedding transition-all duration-300 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-5 border-b border-bordergold/60">
+          
+          <!-- Column 1: Task Progress -->
+          <div class="flex items-start gap-3.5 text-left">
+            <div class="w-11 h-11 rounded-full bg-olive-soft flex items-center justify-center text-olive border border-olive/25 shadow-inner shrink-0 mt-0.5">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-grow min-w-0">
+              <div class="flex items-center justify-between">
+                <div class="text-[11px] uppercase tracking-wider text-warmgray font-medium">Прогресс задач</div>
+                <span id="progressPercent" class="text-sm font-serif font-bold text-olive">0%</span>
+              </div>
+              <div id="progressText" class="text-base sm:text-lg font-serif font-bold text-charcoal tracking-wide mt-0.5 truncate">
+                0 из 0 задач
+              </div>
+              
+              <!-- Progress Bar -->
+              <div class="w-full bg-ivory-200 h-2.5 rounded-full overflow-hidden p-0.5 border border-bordergold/60 mt-2.5">
+                <div id="progressBar" class="bg-gradient-to-r from-gold via-olive-light to-olive h-full rounded-full transition-all duration-500 ease-out shadow-xs" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Wedding Budget & Expenses Tracker -->
+          <div class="flex items-start gap-3.5 text-left md:border-l md:border-bordergold/60 md:pl-6">
+            <div class="w-11 h-11 rounded-full bg-champagne flex items-center justify-center text-gold-dark border border-gold-light/40 shadow-inner shrink-0 mt-0.5">
+              <span class="text-lg">💰</span>
+            </div>
+            <div class="flex-grow min-w-0">
+              <div class="flex items-center justify-between">
+                <div class="text-[11px] uppercase tracking-wider text-warmgray font-medium">Свадебный бюджет</div>
+                <button id="setTargetBudgetBtn" class="text-[11px] text-gold-dark hover:text-charcoal underline underline-offset-2 transition-colors cursor-pointer" title="Установить или изменить общий бюджет">
+                  Лимит бюджета
+                </button>
+              </div>
+
+              <!-- Main Expense Amount -->
+              <div class="flex items-baseline gap-1.5 mt-0.5 flex-wrap">
+                <span id="totalExpensesText" class="text-base sm:text-lg font-serif font-bold text-charcoal tracking-wide">
+                  0 ₽
+                </span>
+                <span id="targetBudgetSpan" class="text-xs text-warmgray hidden"></span>
+              </div>
+
+              <!-- Breakdown: Paid vs Remaining -->
+              <div class="mt-2 text-xs flex items-center justify-between flex-wrap gap-1 text-warmgray">
+                <div>
+                  Оплачено: <strong id="paidExpensesText" class="text-olive font-semibold">0 ₽</strong>
+                </div>
+                <div id="remainingBudgetText" class="hidden text-gold-dark font-medium">
+                  Остаток: <strong>0 ₽</strong>
+                </div>
+              </div>
+
+              <!-- Budget Progress Track (if target budget is set) -->
+              <div id="budgetProgressContainer" class="hidden w-full bg-ivory-200 h-2 rounded-full overflow-hidden p-0.5 border border-bordergold/60 mt-2">
+                <div id="budgetProgressBar" class="bg-gradient-to-r from-gold to-gold-dark h-full rounded-full transition-all duration-500 ease-out shadow-xs" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dynamic Encouragement Quote -->
+        <div id="encouragementMsg" class="mt-3.5 text-xs italic text-warmgray text-center font-serif transition-all">
+          «Каждая большая сказка начинается с первого шага» ✨
+        </div>
+      </div>
+
+      <!-- Quick Action Toolbar -->
+      <div class="no-print flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-6">
+        <button id="addCategoryBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs sm:text-sm font-medium tracking-wide transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>+ Добавить категорию</span>
+        </button>
+
+        <button id="exportBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-ivory-200 text-charcoal border border-bordergold text-xs sm:text-sm font-medium tracking-wide transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer">
+          <svg class="w-4 h-4 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Экспорт в JSON</span>
+        </button>
+
+        <label class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-ivory-200 text-charcoal border border-bordergold text-xs sm:text-sm font-medium tracking-wide transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer">
+          <svg class="w-4 h-4 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          <span>Импорт</span>
+          <input type="file" id="importInput" accept=".json" class="hidden" />
+        </label>
+
+        <button id="printBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-ivory-200 text-charcoal border border-bordergold text-xs sm:text-sm font-medium tracking-wide transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer" title="Печать карточки чеклиста">
+          <svg class="w-4 h-4 text-warmgray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          <span>Печать / PDF</span>
+        </button>
+
+        <button id="resetBtn" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/70 hover:bg-rose-50 text-rose-700/80 hover:text-rose-800 border border-rose-200/60 text-xs sm:text-sm font-medium tracking-wide transition-all active:scale-95 cursor-pointer" title="Сбросить или восстановить данные">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Сброс</span>
+        </button>
+      </div>
+
+      <!-- Search & Status Filter Controls -->
+      <div class="no-print max-w-xl mx-auto flex flex-col sm:flex-row items-center gap-3 mb-8">
+        <div class="relative w-full">
+          <input type="text" id="searchInput" placeholder="Поиск по задачам (гости, платье, ведущий, торт)..." class="w-full bg-white/95 border border-bordergold rounded-xl pl-10 pr-4 py-2 text-xs sm:text-sm placeholder-warmgray/60 focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all shadow-xs">
+          <svg class="w-4 h-4 text-warmgray absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+
+        <div class="flex items-center bg-white/80 border border-bordergold rounded-xl p-1 shrink-0 text-xs shadow-xs">
+          <button data-filter="all" class="filter-btn px-3 py-1 rounded-lg font-medium transition-all bg-olive text-white shadow-xs">Все</button>
+          <button data-filter="pending" class="filter-btn px-3 py-1 rounded-lg font-medium transition-all text-warmgray hover:text-charcoal">В планах</button>
+          <button data-filter="completed" class="filter-btn px-3 py-1 rounded-lg font-medium transition-all text-warmgray hover:text-charcoal">Готово</button>
+        </div>
+      </div>
+
+      <!-- Categories Grid -->
+      <main id="categoriesGrid" class="print-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+        <!-- Rendered by JS -->
+      </main>
+
+      <!-- Empty Search State -->
+      <div id="emptyState" class="hidden text-center py-16">
+        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-champagne flex items-center justify-center text-gold-dark">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-serif text-charcoal font-semibold">Ничего не найдено</h3>
+        <p class="text-warmgray text-xs mt-1">Попробуйте ввести другое слово или сбросить фильтры.</p>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: INTERACTIVE SEATING PLAN STUDIO    -->
+    <!-- ========================================== -->
+    <div id="seatingViewSection" class="hidden flex flex-col gap-6">
+
+      <!-- Seating Top Bar: Title & Big Stats Card (Matches Screenshot 1) -->
+      <div class="bg-white/95 rounded-2xl p-5 sm:p-6 border border-bordergold shadow-wedding">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal">Рассадка гостей</h2>
+            <p class="text-xs sm:text-sm text-warmgray mt-0.5">
+              Поставьте столы как в вашем банкетном зале, рассадите гостей и распечатайте план.
+            </p>
+          </div>
+
+          <!-- Live Metrics (X/Y мест, столов, свободных, ждут) -->
+          <div class="flex items-center gap-6 sm:gap-8 self-end md:self-auto text-right">
+            <div>
+              <div class="text-xs uppercase text-warmgray font-medium">Столов</div>
+              <div id="seatingTablesCount" class="text-xl font-serif font-bold text-charcoal">0</div>
+            </div>
+            <div>
+              <div class="text-xs uppercase text-warmgray font-medium">Свободных мест</div>
+              <div id="seatingFreeSeatsCount" class="text-xl font-serif font-bold text-olive">0</div>
+            </div>
+            <div>
+              <div class="text-xs uppercase text-warmgray font-medium">Ждут места</div>
+              <div id="seatingWaitingCount" class="text-xl font-serif font-bold text-terracotta">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seating Occupancy Progress Line (Screenshot 1: 1/1 мест занято гостями) -->
+        <div class="mt-4 pt-4 border-t border-bordergold/60">
+          <div class="flex items-center justify-between text-xs mb-1.5">
+            <span class="font-medium text-charcoal">
+              <strong id="seatingOccupiedText" class="text-base text-olive font-serif font-bold">0/0</strong> мест занято гостями
+            </span>
+            <span id="seatingPercentText" class="text-xs text-warmgray font-medium">0%</span>
+          </div>
+          <div class="w-full bg-ivory-200 h-2.5 rounded-full overflow-hidden p-0.5 border border-bordergold/60">
+            <div id="seatingProgressBar" class="bg-gradient-to-r from-emerald-500 to-olive h-full rounded-full transition-all duration-500 ease-out shadow-xs" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seating Actions Toolbar (Matches Screenshot 1) -->
+      <div class="no-print flex flex-wrap items-center justify-between gap-3 bg-white/80 p-3 rounded-2xl border border-bordergold shadow-xs">
+        
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- + Добавить столы Button (Terracotta / Gold) -->
+          <button id="openAddTableModalBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-terracotta hover:bg-terracotta-hover text-white text-xs sm:text-sm font-medium tracking-wide shadow-xs transition-all cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>+ Добавить столы</span>
+          </button>
+
+          <!-- + Добавить гостя Button -->
+          <button id="openAddGuestModalBtn" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-ivory-100 text-charcoal border border-bordergold text-xs sm:text-sm font-medium transition-all shadow-xs cursor-pointer">
+            <svg class="w-4 h-4 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            <span>+ Гость</span>
+          </button>
+
+          <!-- Сцена, танцпол Button -->
+          <button id="openAddSceneModalBtn" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-ivory-100 text-charcoal border border-bordergold text-xs sm:text-sm font-medium transition-all shadow-xs cursor-pointer">
+            <svg class="w-4 h-4 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
+            </svg>
+            <span>Сцена, танцпол...</span>
+          </button>
+
+          <!-- Рассадить автоматически Button -->
+          <button id="autoSeatBtn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-ivory-100 text-warmgray hover:text-charcoal border border-bordergold text-xs font-medium transition-all cursor-pointer" title="Автоматически распределить свободных гостей по свободным местам">
+            <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Рассадить авто</span>
+          </button>
+
+          <!-- Печать Button -->
+          <button id="printSeatingBtn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-ivory-100 text-warmgray hover:text-charcoal border border-bordergold text-xs font-medium transition-all cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-warmgray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            <span>Печать</span>
+          </button>
+        </div>
+
+        <!-- Right Controls: View switcher (Схема зала vs Списком) & Zoom -->
+        <div class="flex items-center gap-2">
+          <!-- Zoom -->
+          <div class="hidden sm:flex items-center bg-white border border-bordergold rounded-xl p-1 text-xs">
+            <button id="zoomOutBtn" class="px-2 py-1 hover:bg-ivory-100 rounded text-warmgray font-bold">-</button>
+            <span id="zoomLevelText" class="px-2 text-[11px] text-warmgray font-medium">100%</span>
+            <button id="zoomInBtn" class="px-2 py-1 hover:bg-ivory-100 rounded text-warmgray font-bold">+</button>
+            <button id="zoomResetBtn" class="px-2 py-1 hover:bg-ivory-100 rounded text-warmgray text-[11px]" title="Сбросить масштаб">⛶</button>
+          </div>
+
+          <!-- View Mode: Схема зала | Списком -->
+          <div class="flex items-center bg-white border border-bordergold rounded-xl p-1 text-xs shadow-2xs">
+            <button id="viewModeCanvasBtn" class="flex items-center gap-1.5 px-3 py-1 rounded-lg font-medium transition-all bg-ivory-200 text-charcoal shadow-2xs">
+              <svg class="w-3.5 h-3.5 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              <span>Схема зала</span>
+            </button>
+            
+            <button id="viewModeListBtn" class="flex items-center gap-1.5 px-3 py-1 rounded-lg font-medium transition-all text-warmgray hover:text-charcoal">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+              <span>Списком</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAIN SEATING STUDIO WORKSPACE: Sidebar (Guests) + Canvas (Hall) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        <!-- LEFT SIDEBAR: Guests list ("Без места" & filters) (Matches Screenshot 1) -->
+        <aside class="no-print lg:col-span-4 xl:col-span-3 bg-white/95 rounded-2xl p-4 sm:p-5 border border-bordergold shadow-wedding flex flex-col max-h-[820px]">
+          
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-terracotta" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <h3 class="text-sm font-serif font-bold text-charcoal">Гости свадьбы</h3>
+            </div>
+            
+            <button id="importFromChecklistBtn" class="text-[11px] text-gold-dark hover:text-charcoal underline transition-colors cursor-pointer" title="Загрузить гостей из пункта чеклиста 1.4">
+              Импорт из чеклиста
+            </button>
+          </div>
+
+          <!-- Search Guest Input -->
+          <div class="relative mb-3">
+            <input type="text" id="seatingGuestSearchInput" placeholder="Найти гостя..." class="w-full bg-ivory-100 border border-bordergold rounded-xl pl-8 pr-3 py-1.5 text-xs text-charcoal focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold">
+            <svg class="w-3.5 h-3.5 text-warmgray absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <!-- Category Filter Pills: Все, Невеста, Жених, Общие (Screenshot 1) -->
+          <div class="flex items-center gap-1.5 mb-3.5 overflow-x-auto pb-1 text-xs">
+            <button data-guest-filter="all" class="guest-filter-pill px-2.5 py-1 rounded-lg font-medium transition-all bg-charcoal text-white text-[11px]">Все</button>
+            <button data-guest-filter="bride" class="guest-filter-pill px-2.5 py-1 rounded-lg font-medium transition-all bg-ivory-200 text-warmgray hover:text-charcoal text-[11px]">Невеста</button>
+            <button data-guest-filter="groom" class="guest-filter-pill px-2.5 py-1 rounded-lg font-medium transition-all bg-ivory-200 text-warmgray hover:text-charcoal text-[11px]">Жених</button>
+            <button data-guest-filter="common" class="guest-filter-pill px-2.5 py-1 rounded-lg font-medium transition-all bg-ivory-200 text-warmgray hover:text-charcoal text-[11px]">Общие</button>
+          </div>
+
+          <!-- Section: Без места (Unseated Guests) -->
+          <div class="flex items-center justify-between text-xs font-medium text-warmgray mb-2">
+            <span class="flex items-center gap-1.5">
+              <span>Без места</span>
+              <span id="unseatedCountBadge" class="px-1.5 py-0.2 rounded-full bg-terracotta-light text-terracotta text-[10px] font-bold">0</span>
+            </span>
+            <span class="text-[10px] text-warmgray/70">Кликните, чтобы посадить</span>
+          </div>
+
+          <!-- Scrollable Unseated Guests List -->
+          <div id="unseatedGuestsContainer" class="flex-grow overflow-y-auto space-y-1.5 pr-1 max-h-[380px]">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- All Guests Seated Empty State -->
+          <div id="allGuestsSeatedMsg" class="hidden text-center py-6 text-xs text-warmgray">
+            <div class="text-xl mb-1">🎉</div>
+            <div class="font-medium text-charcoal">Все гости рассажены!</div>
+            <div class="text-[11px] text-warmgray mt-0.5">Все приглашенные гости распределены по столам.</div>
+          </div>
+
+          <!-- Quick Add Guest inside sidebar -->
+          <div class="mt-4 pt-3 border-t border-bordergold/60">
+            <div class="flex items-center gap-1.5">
+              <input type="text" id="quickGuestNameInput" placeholder="Имя гостя..." class="flex-grow text-xs bg-ivory-100 border border-bordergold rounded-xl px-3 py-1.5 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold">
+              <button id="quickAddGuestBtn" class="px-3 py-1.5 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs font-medium cursor-pointer" title="Добавить">
+                +
+              </button>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- RIGHT AREA: Interactive Canvas with Tables & Dot Grid (Matches Screenshot 1 & 3) -->
+        <section class="lg:col-span-8 xl:col-span-9 flex flex-col">
+          
+          <!-- SELECTION BANNER (Screenshot 1: "Выбран: ацуа · сейчас за «Стол 1» / [Снять со стола] [Отмена]") -->
+          <div id="seatingSelectionBanner" class="hidden mb-3 p-3.5 rounded-2xl bg-charcoal text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg animate-toast">
+            <div class="flex items-center gap-3">
+              <div id="selectedGuestAvatar" class="w-8 h-8 rounded-full bg-gold text-charcoal font-bold flex items-center justify-center text-xs shrink-0">
+                Г
+              </div>
+              <div>
+                <div id="selectedGuestBannerTitle" class="text-xs sm:text-sm font-medium">
+                  Выбран: <strong class="text-gold-light">Иван</strong>
+                </div>
+                <div id="selectedGuestBannerHint" class="text-[11px] text-white/70">
+                  Кликните на свободное место за любым столом, чтобы посадить.
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 self-end sm:self-auto">
+              <button id="unseatSelectedGuestBtn" class="hidden text-xs px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all cursor-pointer">
+                👤 Снять со стола
+              </button>
+              <button id="deleteSelectedGuestBtn" class="text-xs px-2.5 py-1.5 rounded-xl bg-rose-900/60 hover:bg-rose-900 text-white transition-all cursor-pointer" title="Удалить гостя из списка">
+                🗑️
+              </button>
+              <button id="cancelGuestSelectionBtn" class="text-xs px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-medium transition-all cursor-pointer">
+                Отмена
+              </button>
+            </div>
+          </div>
+
+          <!-- CANVAS VIEWPORT -->
+          <div id="seatingCanvasWrapper" class="relative w-full h-[640px] sm:h-[720px] rounded-2xl border border-bordergold shadow-wedding overflow-hidden dot-grid select-none">
+            
+            <!-- Transformable Canvas Board -->
+            <div id="seatingBoard" class="absolute inset-0 w-full h-full origin-top-left transition-transform duration-75">
+              <!-- Draggable Tables, Newlywed Presidium & Stage/Dancefloor rendered dynamically -->
+            </div>
+
+            <!-- Canvas Bottom-Left Helper Badge -->
+            <div class="no-print absolute bottom-3 left-3 px-3 py-1.5 rounded-xl bg-white/85 backdrop-blur-xs border border-bordergold text-[11px] text-warmgray shadow-xs pointer-events-none">
+              💡 Перетаскивайте столы мышкой. Нажимайте на кружки мест для рассадки.
+            </div>
+          </div>
+
+          <!-- LIST VIEW (Alternative: "Списком" for catering / printing banquet sheets) -->
+          <div id="seatingListView" class="hidden bg-white/95 rounded-2xl p-6 border border-bordergold shadow-wedding">
+            <div class="flex items-center justify-between mb-6 pb-3 border-b border-bordergold">
+              <div>
+                <h3 class="text-xl font-serif font-bold text-charcoal">Списки гостей по столам</h3>
+                <p class="text-xs text-warmgray">Удобный формат для передачи банкетному менеджеру и распечатки рассадки.</p>
+              </div>
+              <button id="printListModeBtn" class="px-4 py-2 rounded-xl bg-ivory-200 hover:bg-ivory-300 text-charcoal text-xs font-semibold cursor-pointer">
+                Распечатать списки
+              </button>
+            </div>
+
+            <div id="seatingListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="no-print mt-16 border-t border-bordergold/60 py-8 text-center text-xs text-warmgray bg-white/40 backdrop-blur-xs">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-olive animate-pulse"></span>
+        <span>Zero Data Loss: Все задачи, расходы, столы и рассадка сохраняются в браузере</span>
+      </div>
+      <div class="font-serif tracking-widest uppercase text-gold-dark text-xs sm:text-[13px]">
+        Свадебный планер 2026 • Идеальный день вашей любви
+      </div>
+      <div class="text-[11px] text-warmgray/80">
+        Переключайтесь между чек-листом и рассадкой в верхней панели
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- MODALS & DRAWERS                           -->
+  <!-- ========================================== -->
+
+  <!-- TASK DETAIL SLIDE-OVER DRAWER ("Упасть в задачу") -->
+  <div id="taskDrawerBackdrop" class="fixed inset-0 bg-charcoal/45 backdrop-blur-xs z-40 hidden opacity-0 transition-opacity duration-300"></div>
+
+  <div id="taskDrawer" class="fixed inset-y-0 right-0 max-w-xl w-full bg-white shadow-drawer z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col border-l border-bordergold">
+    <div class="px-6 py-4.5 border-b border-bordergold/60 flex items-center justify-between bg-ivory-100/70">
+      <div class="flex items-center gap-2 text-xs font-serif tracking-widest text-gold-dark uppercase font-medium">
+        <span class="w-2 h-2 rounded-full bg-gold"></span>
+        <span id="drawerCategoryTitle">1. ОСНОВНАЯ ЧАСТЬ</span>
+      </div>
+      <button id="closeDrawerBtn" class="p-1.5 rounded-xl text-warmgray hover:text-charcoal hover:bg-ivory-200 transition-all cursor-pointer" title="Закрыть (Esc)">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-grow overflow-y-auto p-6 sm:p-7 space-y-6">
+      <div>
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <span class="text-[11px] font-medium tracking-wider uppercase text-warmgray">Задача</span>
+          <button id="drawerStatusToggleBtn" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all border cursor-pointer"></button>
+        </div>
+        <input type="text" id="drawerTaskTitleInput" class="w-full text-xl sm:text-2xl font-serif font-bold text-charcoal border-b border-bordergold focus:border-gold py-1 focus:outline-none bg-transparent transition-colors" placeholder="Название задачи...">
+      </div>
+
+      <!-- Cost / Budget Field -->
+      <div class="bg-champagne/40 rounded-2xl p-4 border border-gold-light/80 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">💰</span>
+          <div>
+            <div class="text-xs font-bold text-charcoal">Расход / Стоимость по задаче</div>
+            <div class="text-[11px] text-warmgray">Сумма автоматически суммируется в шапке</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 w-36 sm:w-44">
+          <input type="text" id="drawerCostInput" placeholder="0" class="w-full text-right bg-white border border-bordergold rounded-xl px-3 py-1.5 text-xs sm:text-sm font-semibold text-charcoal focus:outline-none focus:ring-1 focus:ring-gold shadow-xs">
+          <span class="text-xs text-warmgray font-semibold">₽</span>
+        </div>
+      </div>
+
+      <!-- Subtasks / Guest List inside task -->
+      <div class="bg-ivory-100/60 rounded-2xl p-5 border border-bordergold/80">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <h3 class="text-xs sm:text-sm font-serif font-bold tracking-wider uppercase text-charcoal">
+              Список и подзадачи
+            </h3>
+            <span id="drawerSubtasksCount" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-champagne text-gold-dark border border-gold-light/40">
+              0 из 0
+            </span>
+          </div>
+          <button id="bulkAddBtn" class="text-[11px] text-gold-dark hover:text-charcoal font-medium underline underline-offset-2 transition-colors cursor-pointer">
+            + Вставить списком
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 mb-3">
+          <input type="text" id="newSubtaskInput" placeholder="Добавить гостя или подпункт (Enter)..." class="flex-grow bg-white border border-bordergold rounded-xl px-3.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold shadow-xs">
+          <button id="addSubtaskBtn" class="px-3.5 py-2 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs font-medium transition-all shadow-xs shrink-0 cursor-pointer">
+            + Добавить
+          </button>
+        </div>
+
+        <div id="bulkAddContainer" class="hidden mb-3.5 p-3.5 bg-white rounded-xl border border-gold-light/80 shadow-xs">
+          <div class="text-[11px] text-warmgray mb-1.5 font-medium">Вставьте строки (каждая строка станет отдельным пунктом):</div>
+          <textarea id="bulkAddTextarea" rows="4" placeholder="Иван Иванов (+1)&#10;Семья Смирновых (3 чел)&#10;Анна Сергеева" class="w-full text-xs p-2.5 border border-bordergold rounded-lg focus:outline-none focus:ring-1 focus:ring-gold leading-relaxed"></textarea>
+          <div class="flex justify-end gap-2 mt-2">
+            <button id="cancelBulkAddBtn" class="text-xs text-warmgray hover:text-charcoal px-2.5 py-1 cursor-pointer">Отмена</button>
+            <button id="confirmBulkAddBtn" class="text-xs bg-gold hover:bg-gold-hover text-white px-3 py-1 rounded-lg font-medium transition-all cursor-pointer">Добавить все</button>
+          </div>
+        </div>
+
+        <ul id="drawerSubtasksList" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></ul>
+        <div id="emptySubtasksMsg" class="hidden text-center py-4 text-xs text-warmgray/70 italic">
+          Список пока пуст. Добавьте пункты выше или напишите заметки ниже.
+        </div>
+      </div>
+
+      <!-- Notes Field -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label for="drawerNotesTextarea" class="flex items-center gap-2 text-xs sm:text-sm font-serif font-bold tracking-wider uppercase text-charcoal">
+            <svg class="w-4 h-4 text-gold-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Заметки, контакты и детали
+          </label>
+          <span class="text-[11px] text-warmgray">Сохраняется мгновенно</span>
+        </div>
+        <textarea id="drawerNotesTextarea" rows="5" placeholder="Напишите здесь любые мысли, контакты подрядчиков, ссылки, рассадку гостей, предпочтения по меню или договоренности..." class="w-full bg-ivory-100/50 border border-bordergold rounded-2xl p-4 text-xs sm:text-sm text-charcoal leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all shadow-xs resize-y"></textarea>
+      </div>
+    </div>
+
+    <div class="p-5 border-t border-bordergold/60 bg-ivory-100/70 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-[11px] text-warmgray">
+        <span class="w-2 h-2 rounded-full bg-olive animate-pulse"></span>
+        <span>Все данные сохранены</span>
+      </div>
+      <button id="saveAndCloseDrawerBtn" class="px-6 py-2.5 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs sm:text-sm font-medium tracking-wide transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer">
+        Готово
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD TABLES (Matches Screenshot 2) -->
+  <div id="addTableModal" class="fixed inset-0 bg-charcoal/45 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-serif text-charcoal font-bold">Добавить столы</h3>
+        <button class="closeTableModalBtn text-warmgray hover:text-charcoal p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Shape Selector Buttons: Круглый, Прямоугольный, Овальный, Квадратный, Стол молодоженов (Screenshot 2) -->
+      <div class="grid grid-cols-2 gap-2.5 mb-5">
+        <button type="button" data-shape="round" class="table-shape-btn py-2.5 px-3 rounded-2xl border-2 border-terracotta bg-white text-terracotta font-semibold text-xs text-center transition-all shadow-xs cursor-pointer">
+          ⭕ Круглый
+        </button>
+        <button type="button" data-shape="rect" class="table-shape-btn py-2.5 px-3 rounded-2xl border border-bordergold bg-ivory-100 text-charcoal font-medium text-xs text-center hover:bg-white transition-all cursor-pointer">
+          ▭ Прямоугольный
+        </button>
+        <button type="button" data-shape="presidium" class="table-shape-btn py-2.5 px-3 rounded-2xl border border-bordergold bg-ivory-100 text-charcoal font-medium text-xs text-center hover:bg-white transition-all cursor-pointer">
+          💍 Стол молодожёнов
+        </button>
+        <button type="button" data-shape="square" class="table-shape-btn py-2.5 px-3 rounded-2xl border border-bordergold bg-ivory-100 text-charcoal font-medium text-xs text-center hover:bg-white transition-all cursor-pointer">
+          ◻️ Квадратный
+        </button>
+      </div>
+
+      <!-- Inputs: Сколько столов & Мест за столом (Screenshot 2) -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-[11px] font-medium text-warmgray mb-1">Сколько столов</label>
+          <input type="number" id="newTableQuantityInput" value="1" min="1" max="15" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-sm font-semibold text-charcoal focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold">
+        </div>
+        <div>
+          <label class="block text-[11px] font-medium text-warmgray mb-1">Мест за столом</label>
+          <input type="number" id="newTableSeatsInput" value="10" min="2" max="24" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-sm font-semibold text-charcoal focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold">
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-[11px] font-medium text-warmgray mb-1">Название / Префикс (необязательно)</label>
+        <input type="text" id="newTableNamePrefix" placeholder="Например: Стол или Стол друзей" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-xs text-charcoal focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold">
+      </div>
+
+      <div class="flex items-center justify-end gap-3">
+        <button class="closeTableModalBtn px-4 py-2 text-xs font-medium text-warmgray hover:text-charcoal cursor-pointer">Отмена</button>
+        <button id="confirmAddTableBtn" class="px-6 py-2.5 rounded-xl bg-terracotta hover:bg-terracotta-hover text-white text-xs sm:text-sm font-semibold shadow-sm transition-all cursor-pointer">
+          Поставить в зал
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD HALL ELEMENT (Сцена, танцпол, фотозона...) -->
+  <div id="addSceneModal" class="fixed inset-0 bg-charcoal/45 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-serif text-charcoal font-bold">Элементы зала</h3>
+        <button class="closeSceneModalBtn text-warmgray hover:text-charcoal p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-xs text-warmgray mb-5">Добавьте зоны банкетного зала, чтобы схема соответствовала реальной планировке:</p>
+      
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <button type="button" data-elem-type="stage" class="scene-elem-btn p-3 rounded-2xl border border-bordergold bg-ivory-100 hover:bg-champagne/50 text-left transition-all cursor-pointer">
+          <div class="text-xl mb-1">🎭</div>
+          <div class="text-xs font-bold text-charcoal">Сцена / Ведущий</div>
+        </button>
+        <button type="button" data-elem-type="dance" class="scene-elem-btn p-3 rounded-2xl border border-bordergold bg-ivory-100 hover:bg-champagne/50 text-left transition-all cursor-pointer">
+          <div class="text-xl mb-1">💃</div>
+          <div class="text-xs font-bold text-charcoal">Танцпол</div>
+        </button>
+        <button type="button" data-elem-type="photo" class="scene-elem-btn p-3 rounded-2xl border border-bordergold bg-ivory-100 hover:bg-champagne/50 text-left transition-all cursor-pointer">
+          <div class="text-xl mb-1">📸</div>
+          <div class="text-xs font-bold text-charcoal">Фотозона</div>
+        </button>
+        <button type="button" data-elem-type="bar" class="scene-elem-btn p-3 rounded-2xl border border-bordergold bg-ivory-100 hover:bg-champagne/50 text-left transition-all cursor-pointer">
+          <div class="text-xl mb-1">🍸</div>
+          <div class="text-xs font-bold text-charcoal">Бар / Фуршет</div>
+        </button>
+      </div>
+
+      <div class="flex justify-end">
+        <button class="closeSceneModalBtn px-4 py-2 text-xs font-medium text-warmgray hover:text-charcoal cursor-pointer">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD GUEST -->
+  <div id="addGuestModal" class="fixed inset-0 bg-charcoal/45 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xl font-serif text-charcoal font-bold">Новый гость</h3>
+        <button class="closeGuestModalBtn text-warmgray hover:text-charcoal p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-[11px] font-medium text-warmgray mb-1">Имя и фамилия гостя</label>
+          <input type="text" id="modalGuestNameInput" placeholder="Например: Иван Смирнов (+1)" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-4 py-2 text-sm text-charcoal focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold">
+        </div>
+        <div>
+          <label class="block text-[11px] font-medium text-warmgray mb-1">Сторона / Группа</label>
+          <select id="modalGuestGroupSelect" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-xs text-charcoal focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold">
+            <option value="common">Общие друзья и гости</option>
+            <option value="bride">Сторона невесты</option>
+            <option value="groom">Сторона жениха</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3">
+        <button class="closeGuestModalBtn px-4 py-2 text-xs font-medium text-warmgray hover:text-charcoal cursor-pointer">Отмена</button>
+        <button id="confirmAddGuestModalBtn" class="px-5 py-2.5 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs font-medium shadow-sm transition-all cursor-pointer">
+          Добавить в список
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Set Target Budget -->
+  <div id="budgetModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xl font-serif text-charcoal font-bold">Общий бюджет свадьбы</h3>
+        <button class="closeBudgetModalBtn text-warmgray hover:text-charcoal p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-xs text-warmgray mb-4 leading-relaxed">
+        Укажите желаемый общий лимит расходов на свадьбу, чтобы планер автоматически рассчитывал остаток бюджета и процент расхода.
+      </p>
+      <div class="relative mb-5">
+        <input type="text" id="targetBudgetInput" placeholder="Например: 1 500 000" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-4 py-2.5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-2 focus:ring-gold/60 focus:bg-white pr-10">
+        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-warmgray font-semibold">₽</span>
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <button id="clearTargetBudgetBtn" class="text-xs text-rose-600 hover:text-rose-800 font-medium cursor-pointer">Сбросить лимит</button>
+        <div class="flex items-center gap-2">
+          <button class="closeBudgetModalBtn px-3.5 py-2 text-xs font-medium text-warmgray hover:text-charcoal cursor-pointer">Отмена</button>
+          <button id="saveTargetBudgetBtn" class="px-5 py-2.5 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs font-medium shadow-sm transition-all cursor-pointer">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Category -->
+  <div id="addCategoryModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xl font-serif text-charcoal font-bold">Новый раздел чеклиста</h3>
+        <button class="closeModalBtn text-warmgray hover:text-charcoal p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-xs text-warmgray mb-4">Например: «Утро жениха и невесты», «Медовый месяц», «Банкетная программа»</p>
+      <input type="text" id="newCategoryTitleInput" placeholder="Название раздела..." class="w-full bg-ivory-100 border border-bordergold rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold/60 focus:bg-white mb-6">
+      <div class="flex items-center justify-end gap-3">
+        <button class="closeModalBtn px-4 py-2 text-xs font-medium text-warmgray hover:text-charcoal cursor-pointer">Отмена</button>
+        <button id="confirmAddCategoryBtn" class="px-5 py-2.5 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs font-medium shadow-sm transition-all cursor-pointer">Создать раздел</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Reset Confirmation -->
+  <div id="resetModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200">
+      <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-serif text-charcoal font-bold mb-2">Управление данными планера</h3>
+      <p class="text-xs text-warmgray mb-6 leading-relaxed">
+        Вы можете восстановить оригинальный свадебный чек-лист 2026 или полностью очистить всё для создания собственного списка с нуля.
+      </p>
+      <div class="flex flex-col gap-2.5">
+        <button id="restoreDefaultBtn" class="w-full py-2.5 px-4 rounded-xl bg-ivory-200 hover:bg-ivory-300 text-charcoal text-xs font-semibold tracking-wide border border-bordergold transition-all text-center cursor-pointer">
+          Восстановить оригинальный чек-лист 2026
+        </button>
+        <button id="clearAllBtn" class="w-full py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold tracking-wide border border-rose-200 transition-all text-center cursor-pointer">
+          Очистить все пункты и разделы
+        </button>
+        <button class="closeResetModalBtn w-full py-2 text-xs text-warmgray hover:text-charcoal mt-1 text-center font-medium cursor-pointer">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Cloud Sync & Couple Access (Жених и Невеста) -->
+  <div id="syncModal" class="fixed inset-0 bg-charcoal/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-7 border border-bordergold shadow-2xl transform transition-transform scale-95 duration-200 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-bordergold/60 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-champagne flex items-center justify-center text-gold-dark border border-gold-light/40 text-lg shadow-inner shrink-0">
+            ☁️
+          </div>
+          <div>
+            <h3 class="text-lg sm:text-xl font-serif text-charcoal font-bold tracking-wide">
+              Совместный доступ (Жених и Невеста)
+            </h3>
+            <p class="text-xs text-warmgray mt-0.5">
+              Мгновенная синхронизация правок между всеми вашими смартфонами
+            </p>
+          </div>
+        </div>
+        <button class="closeSyncModalBtn text-warmgray hover:text-charcoal p-1 cursor-pointer transition-colors" title="Закрыть">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Live Connection Status Alert Box -->
+      <div id="syncStatusAlertBox" class="p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-5 flex items-start gap-3 transition-colors">
+        <span id="syncAlertIcon" class="text-base mt-0.5 shrink-0">☁️</span>
+        <div class="text-xs min-w-0">
+          <div id="syncAlertTitle" class="font-semibold text-charcoal">Офлайн-режим (только это устройство)</div>
+          <div id="syncAlertDesc" class="text-warmgray mt-0.5 leading-relaxed">
+            Подключите базу данных, чтобы видеть действия друг друга в реальном времени — от галочек в чеклисте и бюджета до рассадки гостей.
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <div class="space-y-4">
+        
+        <!-- Step 1: Role Selector -->
+        <div>
+          <label class="block text-xs font-serif font-bold uppercase tracking-wider text-charcoal mb-2">
+            1. Ваша роль
+          </label>
+          <div class="grid grid-cols-3 gap-2" id="syncRoleButtonGroup">
+            <button type="button" data-role="🤵 Жених" class="sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer">
+              🤵 Жених
+            </button>
+            <button type="button" data-role="👰 Невеста" class="sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer">
+              👰 Невеста
+            </button>
+            <button type="button" data-role="💍 Мы вместе" class="sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer">
+              💍 Мы вместе
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Wedding Room Code -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="syncRoomInput" class="text-xs font-serif font-bold uppercase tracking-wider text-charcoal">
+              2. Код вашей свадьбы (комната)
+            </label>
+            <button type="button" id="generateRandomRoomBtn" class="text-[11px] text-gold-dark hover:text-charcoal underline underline-offset-2 transition-colors cursor-pointer">
+              Случайный код 🎲
+            </button>
+          </div>
+          <input type="text" id="syncRoomInput" value="wedding-2027" placeholder="Например: alek-anna-2026" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-xs sm:text-sm text-charcoal placeholder-warmgray/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all shadow-xs">
+          <p class="text-[11px] text-warmgray mt-1">Одинаковый код должен быть указан у жениха и у невесты.</p>
+        </div>
+
+        <!-- Step 3: Firebase Database URL -->
+        <div>
+          <label for="syncDbUrlInput" class="block text-xs font-serif font-bold uppercase tracking-wider text-charcoal mb-1.5">
+            3. Ссылка на базу данных Firebase
+          </label>
+          <input type="text" id="syncDbUrlInput" value="https://wedding-2027-df5b3-default-rtdb.firebaseio.com" placeholder="https://wedding-2027-df5b3-default-rtdb.firebaseio.com" class="w-full bg-ivory-100 border border-bordergold rounded-xl px-3.5 py-2 text-xs sm:text-sm text-charcoal placeholder-warmgray/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all shadow-xs">
+          <p class="text-[11px] text-warmgray mt-1">
+            Google Firebase Realtime Database (100% бесплатный тариф Spark навсегда, без карты).
+          </p>
+        </div>
+
+        <!-- Collapsible Setup Instructions Guide -->
+        <details class="group bg-ivory-100/70 rounded-xl border border-bordergold text-xs">
+          <summary class="p-3 font-medium text-charcoal cursor-pointer flex items-center justify-between list-none select-none">
+            <span class="flex items-center gap-2">
+              <span class="text-gold-dark">📖</span>
+              <span>Инструкция: как получить бесплатную базу за 2 минуты</span>
+            </span>
+            <span class="text-warmgray group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="px-3.5 pb-3.5 pt-1 text-warmgray space-y-2 border-t border-bordergold/40 text-[11px] leading-relaxed">
+            <p><strong>Шаг 1:</strong> Откройте <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" class="text-gold-dark underline hover:text-charcoal font-medium">console.firebase.google.com</a> под любым Google-аккаунтом и нажмите <em>«Добавить проект»</em> (назовите, например, <code>wedding-2026</code>).</p>
+            <p><strong>Шаг 2:</strong> В левом меню выберите <em>«Сборка» (Build) → «Realtime Database» → «Создать базу данных»</em> (выберите любой регион, например <code>europe-west1</code>).</p>
+            <p><strong>Шаг 3:</strong> На вкладке <em>«Правила» (Rules)</em> укажите открытый доступ для чтения и записи и нажмите «Опубликовать»:</p>
+            <pre class="bg-white p-2 rounded border border-bordergold text-[10px] text-charcoal font-mono overflow-x-auto select-all">{"rules": { ".read": true, ".write": true }}</pre>
+            <p><strong>Шаг 4:</strong> Скопируйте ссылку наверху страницы (начинается с <code>https://...firebaseio.com</code>) и вставьте в поле <strong>«3. Ссылка на базу данных»</strong> выше.</p>
+          </div>
+        </details>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-6 flex flex-col gap-2.5">
+        <!-- Connect Button -->
+        <button id="connectSyncBtn" class="w-full py-2.5 px-4 rounded-xl bg-olive hover:bg-olive-dark text-white text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer flex items-center justify-center gap-2">
+          <span>Подключить синхронизацию</span>
+          <span class="text-base">🟢</span>
+        </button>
+
+        <!-- Shareable Link Button -->
+        <button id="copyShareLinkBtn" class="w-full py-2.5 px-4 rounded-xl bg-champagne hover:bg-gold-light/60 text-gold-dark text-xs sm:text-sm font-semibold tracking-wide border border-gold-light/70 transition-all text-center cursor-pointer flex items-center justify-center gap-2">
+          <span>💌 Скопировать готовую ссылку для половинки</span>
+        </button>
+        <p id="copyShareLinkHint" class="text-[11px] text-warmgray text-center -mt-1">
+          Вторая половинка просто перейдет по ссылке со смартфона и подключится мгновенно без каких-либо настроек!
+        </p>
+
+        <!-- Disconnect Button -->
+        <button id="disconnectSyncBtn" class="hidden w-full py-2 text-xs text-rose-600 hover:text-rose-700 hover:underline transition-colors text-center cursor-pointer">
+          Отключить совместный доступ на этом устройстве
+        </button>
+
+        <!-- Close Button -->
+        <button class="closeSyncModalBtn w-full py-2 text-xs text-warmgray hover:text-charcoal mt-1 text-center font-medium cursor-pointer">
+          Закрыть
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
+
+  <!-- Main JavaScript Logic -->
+  <script>
+    /**
+     * INITIAL WEDDING CHECKLIST 2026 DATA
+     */
+    const INITIAL_CATEGORIES = [
+      {
+        id: 'cat-1',
+        title: '1. ОСНОВНАЯ ЧАСТЬ',
+        items: [
+          { id: 'item-1-1', text: 'Определить формат свадьбы', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-1-2', text: 'Выбрать дату свадьбы', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-1-3', text: 'Согласовать свадебный бюджет', completed: false, cost: '', notes: 'Примерный расчет основных статей: площадка, кейтеринг, фото, декор.', subtasks: [
+            { id: 'sub-1-3-1', text: 'Площадка и банкетное меню', completed: false },
+            { id: 'sub-1-3-2', text: 'Фотограф и видеограф', completed: false },
+            { id: 'sub-1-3-3', text: 'Образы жениха и невесты', completed: false },
+            { id: 'sub-1-3-4', text: 'Ведущий и DJ', completed: false }
+          ] },
+          { id: 'item-1-4', text: 'Составить предварительный список гостей', completed: false, cost: '', notes: 'Здесь ведем полный список гостей, рассадку по столам и пожелания по меню.', subtasks: [
+            { id: 'sub-1-4-1', text: 'Семья жениха', completed: false },
+            { id: 'sub-1-4-2', text: 'Семья невесты', completed: false },
+            { id: 'sub-1-4-3', text: 'Друзья и свидетели', completed: false },
+            { id: 'sub-1-4-4', text: 'Коллеги', completed: false }
+          ] },
+          { id: 'item-1-5', text: 'Подать заявление в ЗАГС', completed: false, cost: '350', notes: 'Госпошлина за регистрацию брака', subtasks: [] },
+          { id: 'item-1-6', text: 'Купить кольца', completed: false, cost: '75000', notes: 'Выбрать ювелирный салон и определиться с гравировкой', subtasks: [] },
+          { id: 'item-1-7', text: 'Подготовить документы для свадьбы', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-1-8', text: 'Подготовить и отправить Save the Date', completed: false, cost: '', notes: '', subtasks: [] }
+        ]
+      },
+      {
+        id: 'cat-2',
+        title: '2. ПЛОЩАДКА И КОМАНДА',
+        items: [
+          { id: 'item-2-1', text: 'Выбрать площадку', completed: false, cost: '250000', notes: 'Депозит и аренда свадебной локации', subtasks: [] },
+          { id: 'item-2-2', text: 'Забронировать фотографа', completed: false, cost: '80000', notes: '', subtasks: [] },
+          { id: 'item-2-3', text: 'Забронировать видеографа', completed: false, cost: '70000', notes: '', subtasks: [] },
+          { id: 'item-2-4', text: 'Выбрать ведущего', completed: false, cost: '90000', notes: '', subtasks: [] },
+          { id: 'item-2-5', text: 'Выбрать DJ / утвердить плейлист', completed: false, cost: '35000', notes: '', subtasks: [] },
+          { id: 'item-2-6', text: 'Найти визажиста и стилиста', completed: false, cost: '25000', notes: '', subtasks: [] },
+          { id: 'item-2-7', text: 'Заказать декор и флористику', completed: false, cost: '120000', notes: '', subtasks: [] },
+          { id: 'item-2-8', text: 'Согласовать свадебное меню', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-2-9', text: 'Заказать свадебный торт', completed: false, cost: '22000', notes: '', subtasks: [] },
+          { id: 'item-2-10', text: 'Организовать транспорт', completed: false, cost: '30000', notes: '', subtasks: [] },
+          { id: 'item-2-11', text: 'Продумать фотозону', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-2-12', text: 'Организовать детскую зону', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-2-13', text: 'Назначить свадебного координатора', completed: false, cost: '40000', notes: '', subtasks: [] },
+          { id: 'item-2-14', text: 'Оформить и отправить приглашения', completed: false, cost: '15000', notes: '', subtasks: [] },
+          { id: 'item-2-15', text: 'Собрать ответы гостей (RSVP)', completed: false, cost: '', notes: '', subtasks: [] }
+        ]
+      },
+      {
+        id: 'cat-3',
+        title: '3. ОБРАЗ НЕВЕСТЫ И ЖЕНИХА',
+        items: [
+          { id: 'item-3-1', text: 'Купить свадебное платье', completed: false, cost: '95000', notes: '', subtasks: [] },
+          { id: 'item-3-2', text: 'Подобрать обувь невесты', completed: false, cost: '18000', notes: '', subtasks: [] },
+          { id: 'item-3-3', text: 'Подобрать аксессуары невесты', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-3-4', text: 'Записаться на макияж и прическу', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-3-5', text: 'Сделать репетицию свадебного образа', completed: false, cost: '8000', notes: '', subtasks: [] },
+          { id: 'item-3-6', text: 'Подготовить образ жениха', completed: false, cost: '55000', notes: '', subtasks: [] },
+          { id: 'item-3-7', text: 'Купить обувь жениха', completed: false, cost: '15000', notes: '', subtasks: [] },
+          { id: 'item-3-8', text: 'Подготовить украшения и аксессуары', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-3-9', text: 'Заказать букет невесты', completed: false, cost: '10000', notes: '', subtasks: [] },
+          { id: 'item-3-10', text: 'Подготовить одежду на утро свадьбы', completed: false, cost: '', notes: '', subtasks: [] }
+        ]
+      },
+      {
+        id: 'cat-4',
+        title: '4. СЦЕНАРИЙ ДНЯ',
+        items: [
+          { id: 'item-4-1', text: 'Составить тайминг свадебного дня', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-4-2', text: 'Продумать программу мероприятия', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-4-3', text: 'Подготовить интерактив для гостей', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-4-4', text: 'Поставить первый танец', completed: false, cost: '15000', notes: '', subtasks: [] },
+          { id: 'item-4-5', text: 'Продумать план Б на случай дождя', completed: false, cost: '', notes: '', subtasks: [] }
+        ]
+      },
+      {
+        id: 'cat-5',
+        title: '5. ДОПОЛНИТЕЛЬНО',
+        items: [
+          { id: 'item-5-1', text: 'Подготовить подарки гостям', completed: false, cost: '12000', notes: '', subtasks: [] },
+          { id: 'item-5-2', text: 'Организовать девичник', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-5-3', text: 'Организовать мальчишник', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-5-4', text: 'Запланировать Love Story съемку', completed: false, cost: '25000', notes: '', subtasks: [] },
+          { id: 'item-5-5', text: 'Забронировать отель', completed: false, cost: '20000', notes: '', subtasks: [] },
+          { id: 'item-5-6', text: 'Подготовить аптечку и косметичку', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-5-7', text: 'Собрать вещи на свадебный день', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-5-8', text: 'Подготовить оплату подрядчикам', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-5-9', text: 'Подготовить другие свадебные карточки (посадочные, номера столов, меню, интерактив)', completed: false, cost: '8000', notes: '', subtasks: [] }
+        ]
+      },
+      {
+        id: 'cat-6',
+        title: '6. ЗА 1 НЕДЕЛЮ',
+        items: [
+          { id: 'item-6-1', text: 'Подтвердить всех подрядчиков', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-6-2', text: 'Проверить финальный список гостей', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-6-3', text: 'Заказать план рассадки', completed: false, cost: '5000', notes: '', subtasks: [] },
+          { id: 'item-6-4', text: 'Проверить тайминг свадебного дня', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-6-5', text: 'Подготовить кольца и документы', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-6-6', text: 'Проверить все адреса и контакты', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-6-7', text: 'Собрать свадебные вещи', completed: false, cost: '', notes: '', subtasks: [] },
+          { id: 'item-6-8', text: 'Передать свадебному координатору все контакты и инструкции', completed: false, cost: '', notes: '', subtasks: [] }
+        ]
+      }
+    ];
+
+    /**
+     * INITIAL SEATING DATA (Matches Screenshot 1 & 3: Стол молодожёнов, Стол 1, Стол 2)
+     */
+    const INITIAL_SEATING_DATA = {
+      tables: [
+        {
+          id: 'table-presidium',
+          title: 'Стол молодожёнов',
+          shape: 'presidium',
+          seatsCount: 2,
+          x: 420,
+          y: 110,
+          assigned: {
+            'seat-0': 'guest-groom',
+            'seat-1': 'guest-bride'
+          }
+        },
+        {
+          id: 'table-1',
+          title: 'Стол 1',
+          shape: 'round',
+          seatsCount: 10,
+          x: 230,
+          y: 290,
+          assigned: {
+            'seat-0': 'guest-alex'
+          }
+        },
+        {
+          id: 'table-2',
+          title: 'Стол 2',
+          shape: 'round',
+          seatsCount: 10,
+          x: 580,
+          y: 350,
+          assigned: {}
+        }
+      ],
+      scenes: [],
+      guests: [
+        { id: 'guest-groom', name: 'Жених', group: 'groom', tableId: 'table-presidium', seatIndex: 0 },
+        { id: 'guest-bride', name: 'Невеста', group: 'bride', tableId: 'table-presidium', seatIndex: 1 },
+        { id: 'guest-alex', name: 'Алексей Д.', group: 'groom', tableId: 'table-1', seatIndex: 0 },
+        { id: 'guest-maria', name: 'Мария Смирнова', group: 'bride', tableId: null, seatIndex: null },
+        { id: 'guest-dmitry', name: 'Дмитрий Ковалев', group: 'groom', tableId: null, seatIndex: null },
+        { id: 'guest-elena', name: 'Елена Петрова', group: 'bride', tableId: null, seatIndex: null },
+        { id: 'guest-mikhail', name: 'Михаил Новиков', group: 'common', tableId: null, seatIndex: null },
+        { id: 'guest-olga', name: 'Ольга Соколова', group: 'common', tableId: null, seatIndex: null }
+      ]
+    };
+
+    const STORAGE_KEY = 'wedding_checklist_2026_state';
+    const DATE_STORAGE_KEY = 'wedding_checklist_2026_date';
+    const TARGET_BUDGET_KEY = 'wedding_checklist_2026_target_budget';
+    const SEATING_STORAGE_KEY = 'wedding_seating_2026_state';
+    const CLOUD_SYNC_STORAGE_KEY = 'wedding_cloud_sync_config';
+    const DEVICE_ID_KEY = 'wedding_device_id';
+
+    // Device identity for cloud sync loop prevention
+    let myDeviceId = localStorage.getItem(DEVICE_ID_KEY);
+    if (!myDeviceId) {
+      myDeviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem(DEVICE_ID_KEY, myDeviceId);
+    }
+
+    // Cloud Sync State
+    let cloudConfig = {
+      enabled: true,
+      room: 'wedding-2027',
+      dbUrl: 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com',
+      role: localStorage.getItem('wedding_user_role') || '🤵 Жених'
+    };
+    let cloudApp = null;
+    let cloudDb = null;
+    let cloudRef = null;
+    let isReceivingCloudUpdate = false;
+    let cloudDebounceTimer = null;
+
+    // Application State
+    let categories = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let hasTriggeredCelebration = false;
+
+    // Seating State
+    let seatingData = { tables: [], scenes: [], guests: [] };
+    let currentGuestFilter = 'all';
+    let guestSearchQuery = '';
+    let selectedGuestId = null;
+    let selectedTableId = null;
+    let selectedSeatSlot = null; // { tableId, seatIndex }
+    let zoomLevel = 1;
+
+    // Currently opened item in task drawer
+    let activeCategoryId = null;
+    let activeItemId = null;
+
+    /**
+     * INITIALIZATION
+     */
+    function init() {
+      loadData();
+      loadSeatingData();
+      initNavigationTabs();
+      initWeddingDateCountdown();
+      initBudgetControls();
+      renderApp();
+      setupEventListeners();
+      setupDrawerEvents();
+      setupSeatingStudio();
+      initCloudSync();
+    }
+
+    /**
+     * NAVIGATION TAB CONTROLLER
+     */
+    function initNavigationTabs() {
+      const navTabChecklist = document.getElementById('navTabChecklist');
+      const navTabSeating = document.getElementById('navTabSeating');
+      const checklistView = document.getElementById('checklistViewSection');
+      const seatingView = document.getElementById('seatingViewSection');
+
+      const switchView = (view) => {
+        if (view === 'checklist') {
+          navTabChecklist.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all bg-olive text-white shadow-xs cursor-pointer';
+          navTabSeating.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all text-warmgray hover:text-charcoal cursor-pointer';
+          checklistView.classList.remove('hidden');
+          seatingView.classList.add('hidden');
+        } else {
+          navTabSeating.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all bg-terracotta text-white shadow-xs cursor-pointer';
+          navTabChecklist.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all text-warmgray hover:text-charcoal cursor-pointer';
+          checklistView.classList.add('hidden');
+          seatingView.classList.remove('hidden');
+          renderSeating();
+        }
+      };
+
+      navTabChecklist.addEventListener('click', () => switchView('checklist'));
+      navTabSeating.addEventListener('click', () => switchView('seating'));
+    }
+
+    /**
+     * NUMBER & MONEY HELPERS
+     */
+    function parseCost(val) {
+      if (!val) return 0;
+      if (typeof val === 'number') return val;
+      const clean = String(val).replace(/[\s\u00A0₽руб.рублейUSD$€]/gi, '').replace(',', '.');
+      const num = parseFloat(clean);
+      return isNaN(num) ? 0 : num;
+    }
+
+    function formatMoney(num) {
+      return new Intl.NumberFormat('ru-RU').format(Math.round(num)) + ' ₽';
+    }
+
+    /**
+     * LOCAL STORAGE PERSISTENCE
+     */
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          categories = JSON.parse(saved);
+          categories.forEach(cat => {
+            cat.items.forEach(item => {
+              if (!Array.isArray(item.subtasks)) item.subtasks = [];
+              if (typeof item.notes !== 'string') item.notes = '';
+              if (typeof item.cost !== 'string') item.cost = item.cost ? String(item.cost) : '';
+            });
+          });
+        } else {
+          categories = JSON.parse(JSON.stringify(INITIAL_CATEGORIES));
+          saveData();
+        }
+      } catch (e) {
+        console.error('Ошибка загрузки чеклиста:', e);
+        categories = JSON.parse(JSON.stringify(INITIAL_CATEGORIES));
+      }
+    }
+
+    function saveData(actionDesc = '') {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+        if (typeof pushToCloud === 'function') {
+          pushToCloud(actionDesc);
+        }
+      } catch (e) {
+        console.error('Ошибка сохранения данных чеклиста:', e);
+        showToast('Не удалось сохранить изменения', 'error');
+      }
+    }
+
+    function loadSeatingData() {
+      try {
+        const saved = localStorage.getItem(SEATING_STORAGE_KEY);
+        if (saved) {
+          seatingData = JSON.parse(saved);
+          if (!Array.isArray(seatingData.tables)) seatingData.tables = [];
+          if (!Array.isArray(seatingData.guests)) seatingData.guests = [];
+          if (!Array.isArray(seatingData.scenes)) seatingData.scenes = [];
+        } else {
+          seatingData = JSON.parse(JSON.stringify(INITIAL_SEATING_DATA));
+          saveSeatingData();
+        }
+      } catch (e) {
+        console.error('Ошибка загрузки рассадки:', e);
+        seatingData = JSON.parse(JSON.stringify(INITIAL_SEATING_DATA));
+      }
+      updateSeatingBadges();
+    }
+
+    function saveSeatingData(actionDesc = '') {
+      try {
+        localStorage.setItem(SEATING_STORAGE_KEY, JSON.stringify(seatingData));
+        updateSeatingBadges();
+        if (typeof pushToCloud === 'function') {
+          pushToCloud(actionDesc);
+        }
+      } catch (e) {
+        console.error('Ошибка сохранения рассадки:', e);
+      }
+    }
+
+    function updateSeatingBadges() {
+      const unseatedCount = seatingData.guests.filter(g => !g.tableId).length;
+      const badge = document.getElementById('seatingBadgeUnseated');
+      if (badge) {
+        if (unseatedCount > 0) {
+          badge.textContent = unseatedCount;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    /**
+     * WEDDING DATE COUNTDOWN WIDGET
+     */
+    function initWeddingDateCountdown() {
+      const dateInput = document.getElementById('weddingDateInput');
+      const badge = document.getElementById('countdownBadge');
+
+      const savedDate = localStorage.getItem(DATE_STORAGE_KEY);
+      if (savedDate) {
+        dateInput.value = savedDate;
+        updateCountdownDisplay(savedDate);
+      }
+
+      dateInput.addEventListener('change', (e) => {
+        const selected = e.target.value;
+        if (selected) {
+          localStorage.setItem(DATE_STORAGE_KEY, selected);
+          updateCountdownDisplay(selected);
+          showToast('Дата свадьбы сохранена! 💍');
+        } else {
+          localStorage.removeItem(DATE_STORAGE_KEY);
+          badge.classList.add('hidden');
+        }
+        if (typeof pushToCloud === 'function') {
+          pushToCloud('Дата свадьбы');
+        }
+      });
+    }
+
+    function updateCountdownDisplay(dateStr) {
+      const badge = document.getElementById('countdownBadge');
+      if (!dateStr) {
+        badge.classList.add('hidden');
+        return;
+      }
+
+      const target = new Date(dateStr);
+      target.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const diffTime = target - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      badge.classList.remove('hidden');
+      if (diffDays > 0) {
+        const word = getRussianPlural(diffDays, ['день', 'дня', 'дней']);
+        badge.textContent = `До свадьбы: ${diffDays} ${word} ✨`;
+      } else if (diffDays === 0) {
+        badge.textContent = 'День вашей свадьбы СЕГОДНЯ! 💍✨';
+      } else {
+        badge.textContent = 'Прекрасный день свадьбы состоялся! 💖';
+      }
+    }
+
+    function getRussianPlural(n, forms) {
+      n = Math.abs(n) % 100;
+      const n1 = n % 10;
+      if (n > 10 && n < 20) return forms[2];
+      if (n1 > 1 && n1 < 5) return forms[1];
+      if (n1 === 1) return forms[0];
+      return forms[2];
+    }
+
+    /**
+     * TARGET BUDGET CONTROLS
+     */
+    function initBudgetControls() {
+      const budgetModal = document.getElementById('budgetModal');
+      const setTargetBudgetBtn = document.getElementById('setTargetBudgetBtn');
+      const targetBudgetInput = document.getElementById('targetBudgetInput');
+      const saveTargetBudgetBtn = document.getElementById('saveTargetBudgetBtn');
+      const clearTargetBudgetBtn = document.getElementById('clearTargetBudgetBtn');
+
+      const openBudgetModal = () => {
+        const saved = localStorage.getItem(TARGET_BUDGET_KEY) || '';
+        targetBudgetInput.value = saved;
+        budgetModal.classList.remove('hidden');
+        setTimeout(() => {
+          budgetModal.classList.remove('opacity-0');
+          budgetModal.querySelector('div').classList.remove('scale-95');
+          targetBudgetInput.focus();
+        }, 10);
+      };
+
+      const closeBudgetModal = () => {
+        budgetModal.classList.add('opacity-0');
+        budgetModal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => budgetModal.classList.add('hidden'), 200);
+      };
+
+      setTargetBudgetBtn.addEventListener('click', openBudgetModal);
+      document.querySelectorAll('.closeBudgetModalBtn').forEach(b => b.addEventListener('click', closeBudgetModal));
+
+      saveTargetBudgetBtn.addEventListener('click', () => {
+        const val = targetBudgetInput.value.trim();
+        const num = parseCost(val);
+        if (num > 0) {
+          localStorage.setItem(TARGET_BUDGET_KEY, String(num));
+          showToast(`Лимит бюджета установлен: ${formatMoney(num)} 💰`);
+        } else {
+          localStorage.removeItem(TARGET_BUDGET_KEY);
+        }
+        closeBudgetModal();
+        updateProgress();
+        if (typeof pushToCloud === 'function') {
+          pushToCloud('Лимит бюджета');
+        }
+      });
+
+      targetBudgetInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveTargetBudgetBtn.click();
+      });
+
+      clearTargetBudgetBtn.addEventListener('click', () => {
+        localStorage.removeItem(TARGET_BUDGET_KEY);
+        targetBudgetInput.value = '';
+        closeBudgetModal();
+        updateProgress();
+        showToast('Лимит бюджета сброшен');
+        if (typeof pushToCloud === 'function') {
+          pushToCloud('Сброс лимита бюджета');
+        }
+      });
+    }
+
+    /**
+     * DYNAMIC PROGRESS & BUDGET IN CHECKLIST
+     */
+    function updateProgress() {
+      let total = 0;
+      let completed = 0;
+      let totalExpenses = 0;
+      let paidExpenses = 0;
+
+      categories.forEach(cat => {
+        cat.items.forEach(item => {
+          total++;
+          if (item.completed) completed++;
+
+          const cost = parseCost(item.cost);
+          if (cost > 0) {
+            totalExpenses += cost;
+            if (item.completed) {
+              paidExpenses += cost;
+            }
+          }
+        });
+      });
+
+      const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      const progressBar = document.getElementById('progressBar');
+      const progressPercent = document.getElementById('progressPercent');
+      const progressText = document.getElementById('progressText');
+      const quoteEl = document.getElementById('encouragementMsg');
+
+      progressBar.style.width = `${percent}%`;
+      progressPercent.textContent = `${percent}%`;
+      progressText.textContent = `${completed} из ${total} задач выполнено`;
+
+      const totalExpensesText = document.getElementById('totalExpensesText');
+      const paidExpensesText = document.getElementById('paidExpensesText');
+      const targetBudgetSpan = document.getElementById('targetBudgetSpan');
+      const remainingBudgetText = document.getElementById('remainingBudgetText');
+      const budgetProgressContainer = document.getElementById('budgetProgressContainer');
+      const budgetProgressBar = document.getElementById('budgetProgressBar');
+
+      totalExpensesText.textContent = formatMoney(totalExpenses);
+      paidExpensesText.textContent = formatMoney(paidExpenses);
+
+      const targetBudgetVal = parseCost(localStorage.getItem(TARGET_BUDGET_KEY));
+
+      if (targetBudgetVal > 0) {
+        targetBudgetSpan.classList.remove('hidden');
+        targetBudgetSpan.textContent = `из ${formatMoney(targetBudgetVal)}`;
+
+        remainingBudgetText.classList.remove('hidden');
+        const remaining = targetBudgetVal - totalExpenses;
+        if (remaining >= 0) {
+          remainingBudgetText.innerHTML = `Остаток: <strong class="text-olive font-semibold">${formatMoney(remaining)}</strong>`;
+        } else {
+          remainingBudgetText.innerHTML = `Перерасход: <strong class="text-rose-600 font-semibold">${formatMoney(Math.abs(remaining))}</strong>`;
+        }
+
+        budgetProgressContainer.classList.remove('hidden');
+        const budgetPercent = Math.min(100, Math.round((totalExpenses / targetBudgetVal) * 100));
+        budgetProgressBar.style.width = `${budgetPercent}%`;
+        if (totalExpenses > targetBudgetVal) {
+          budgetProgressBar.className = 'bg-gradient-to-r from-amber-500 to-rose-600 h-full rounded-full transition-all duration-500 ease-out shadow-xs';
+        } else {
+          budgetProgressBar.className = 'bg-gradient-to-r from-gold via-gold-dark to-olive h-full rounded-full transition-all duration-500 ease-out shadow-xs';
+        }
+      } else {
+        targetBudgetSpan.classList.add('hidden');
+        remainingBudgetText.classList.add('hidden');
+        budgetProgressContainer.classList.add('hidden');
+      }
+
+      if (percent === 0) {
+        quoteEl.textContent = '«Каждая большая сказка начинается с первого шага» ✨';
+      } else if (percent < 25) {
+        quoteEl.textContent = '«Прекрасный старт! С каждым пунктом торжество мечты всё ближе» 💍';
+      } else if (percent < 50) {
+        quoteEl.textContent = '«Четверть пути позади! Всё организовано, спокойно и уверенно» 🌿';
+      } else if (percent < 75) {
+        quoteEl.textContent = '«Более половины задач решено — вы великолепная команда!» 🥂';
+      } else if (percent < 100) {
+        quoteEl.textContent = '«Остались финальные штрихи! Главный день уже совсем близко» 🕊️';
+      } else {
+        quoteEl.textContent = '«Поздравляем! Все пункты выполнены — вы готовы к идеальной свадьбе!» 💖✨';
+        if (!hasTriggeredCelebration) {
+          triggerConfetti();
+          hasTriggeredCelebration = true;
+        }
+      }
+    }
+
+    /**
+     * RENDER CHECKLIST CARDS AND ITEMS
+     */
+    function renderApp() {
+      updateProgress();
+
+      const grid = document.getElementById('categoriesGrid');
+      const emptyState = document.getElementById('emptyState');
+      grid.innerHTML = '';
+
+      let anyCardVisible = false;
+
+      categories.forEach(category => {
+        const filteredItems = category.items.filter(item => {
+          const matchSearch = item.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            (item.notes && item.notes.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (item.subtasks && item.subtasks.some(s => s.text.toLowerCase().includes(searchQuery.toLowerCase())));
+          
+          const matchFilter = currentFilter === 'all' 
+            ? true 
+            : currentFilter === 'completed' 
+              ? item.completed 
+              : !item.completed;
+          return matchSearch && matchFilter;
+        });
+
+        if (searchQuery.trim() !== '' && filteredItems.length === 0) {
+          return;
+        }
+
+        anyCardVisible = true;
+
+        const catTotal = category.items.length;
+        const catCompleted = category.items.filter(i => i.completed).length;
+
+        const card = document.createElement('div');
+        card.className = 'category-card bg-white/95 backdrop-blur-sm rounded-2xl p-5 sm:p-6 border border-bordergold shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col group/card';
+        card.dataset.categoryId = category.id;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2.5 mb-4 pb-3 border-b border-bordergold/60">
+            <div class="flex-grow min-w-0 pr-1">
+              <h2 contenteditable="true" 
+                  spellcheck="false"
+                  class="category-title text-base sm:text-lg font-serif font-bold uppercase tracking-wider text-charcoal hover:text-gold-dark cursor-text transition-colors" 
+                  title="Кликните для редактирования названия раздела">
+                ${escapeHTML(category.title)}
+              </h2>
+            </div>
+            
+            <div class="flex items-center gap-1.5 shrink-0">
+              <span class="category-counter text-[11px] font-medium font-serif px-2.5 py-0.5 rounded-full bg-champagne text-gold-dark border border-gold-light/40">
+                ${catCompleted}/${catTotal}
+              </span>
+              <button class="delete-category-btn no-print p-1 rounded-lg text-warmgray/40 hover:text-rose-600 hover:bg-rose-50 opacity-0 group-hover/card:opacity-100 transition-all cursor-pointer" title="Удалить раздел">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <ul class="items-list space-y-1.5 flex-grow">
+            ${filteredItems.map(item => {
+              const subTotal = (item.subtasks || []).length;
+              const subDone = (item.subtasks || []).filter(s => s.completed).length;
+              const hasNotes = item.notes && item.notes.trim().length > 0;
+              const itemCostNum = parseCost(item.cost);
+
+              return `
+              <li class="item-row group/item flex items-start gap-2.5 p-2 -mx-1.5 rounded-xl hover:bg-ivory-200/50 transition-all cursor-pointer select-none" data-item-id="${item.id}">
+                <button type="button" class="check-btn shrink-0 mt-0.5 w-5 h-5 rounded-full border border-gold/80 flex items-center justify-center custom-checkbox ${item.completed ? 'checked' : 'bg-white'}" aria-label="Отметить выполненным" title="Отметить задачу">
+                  <svg class="check-svg w-3 h-3 text-white transition-transform duration-200 ${item.completed ? 'scale-100' : 'scale-0'}" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+
+                <div class="task-body flex-grow min-w-0 pr-1 cursor-pointer">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="item-text task-title text-xs sm:text-[13px] leading-relaxed transition-all ${item.completed ? 'completed' : 'text-charcoal font-medium'}">
+                      ${escapeHTML(item.text)}
+                    </span>
+                  </div>
+
+                  ${(subTotal > 0 || hasNotes || itemCostNum > 0) ? `
+                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                      ${subTotal > 0 ? `
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-champagne/80 text-[10px] font-medium text-gold-dark border border-gold-light/40">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                          <span>${subDone}/${subTotal}</span>
+                        </span>
+                      ` : ''}
+
+                      ${hasNotes ? `
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-ivory-200 text-[10px] text-warmgray border border-bordergold" title="Есть заметки">
+                          <span>📝</span>
+                          <span class="hidden sm:inline">заметка</span>
+                        </span>
+                      ` : ''}
+
+                      ${itemCostNum > 0 ? `
+                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-olive-soft text-[10px] text-olive font-medium border border-olive/20" title="Расход по задаче">
+                          <span>💰</span>
+                          <span>${formatMoney(itemCostNum)}</span>
+                        </span>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+
+                <div class="item-actions no-print shrink-0 flex items-center gap-0.5 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                  <button type="button" class="open-drawer-btn p-1 rounded text-warmgray/60 hover:text-gold-dark hover:bg-ivory-300 transition-all cursor-pointer" title="Открыть карточку задачи">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </button>
+                  <button type="button" class="delete-item-btn p-1 rounded text-warmgray/50 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer" title="Удалить пункт">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </li>
+              `;
+            }).join('')}
+          </ul>
+
+          <div class="no-print mt-4 pt-3 border-t border-bordergold/40 flex items-center gap-2">
+            <input type="text" placeholder="+ Добавить пункт..." class="new-item-input w-full bg-ivory-100/70 hover:bg-ivory-100 focus:bg-white text-xs px-3 py-1.5 rounded-lg border border-bordergold/70 focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all">
+            <button class="add-item-btn shrink-0 p-1.5 rounded-lg bg-champagne hover:bg-gold-light text-gold-dark hover:text-charcoal transition-all text-xs flex items-center justify-center cursor-pointer" title="Добавить задачу">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      if (!anyCardVisible) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+    }
+
+    /**
+     * ATOMIC TOGGLE FOR CHECKLIST
+     */
+    function toggleItemState(categoryId, itemId, itemRow) {
+      const category = categories.find(c => c.id === categoryId);
+      if (!category) return;
+      const item = category.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      item.completed = !item.completed;
+      saveData();
+
+      if (currentFilter !== 'all') {
+        renderApp();
+        return;
+      }
+
+      const checkBtn = itemRow.querySelector('.check-btn');
+      const checkSvg = itemRow.querySelector('.check-svg');
+      const itemText = itemRow.querySelector('.item-text');
+      const card = itemRow.closest('.category-card');
+      const counterBadge = card.querySelector('.category-counter');
+
+      if (item.completed) {
+        checkBtn.classList.add('checked');
+        checkBtn.classList.remove('bg-white');
+        checkSvg.classList.add('scale-100');
+        checkSvg.classList.remove('scale-0');
+        itemText.classList.add('completed');
+        itemText.classList.remove('font-medium');
+      } else {
+        checkBtn.classList.remove('checked');
+        checkBtn.classList.add('bg-white');
+        checkSvg.classList.remove('scale-100');
+        checkSvg.classList.add('scale-0');
+        itemText.classList.remove('completed');
+        itemText.classList.add('font-medium');
+      }
+
+      const catTotal = category.items.length;
+      const catCompleted = category.items.filter(i => i.completed).length;
+      if (counterBadge) counterBadge.textContent = `${catCompleted}/${catTotal}`;
+
+      updateProgress();
+    }
+
+    /**
+     * TASK DETAIL DRAWER CONTROLLER
+     */
+    function openTaskDrawer(categoryId, itemId) {
+      const category = categories.find(c => c.id === categoryId);
+      if (!category) return;
+      const item = category.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      activeCategoryId = categoryId;
+      activeItemId = itemId;
+
+      document.getElementById('drawerCategoryTitle').textContent = category.title;
+      document.getElementById('drawerTaskTitleInput').value = item.text;
+
+      updateDrawerStatusBadge(item.completed);
+
+      document.getElementById('drawerNotesTextarea').value = item.notes || '';
+      document.getElementById('drawerCostInput').value = item.cost ? parseCost(item.cost) : '';
+
+      document.getElementById('bulkAddContainer').classList.add('hidden');
+      document.getElementById('newSubtaskInput').value = '';
+
+      renderDrawerSubtasks(item);
+
+      const backdrop = document.getElementById('taskDrawerBackdrop');
+      const drawer = document.getElementById('taskDrawer');
+
+      backdrop.classList.remove('hidden');
+      setTimeout(() => {
+        backdrop.classList.remove('opacity-0');
+        drawer.classList.remove('translate-x-full');
+      }, 10);
+    }
+
+    function closeTaskDrawer() {
+      const backdrop = document.getElementById('taskDrawerBackdrop');
+      const drawer = document.getElementById('taskDrawer');
+
+      backdrop.classList.add('opacity-0');
+      drawer.classList.add('translate-x-full');
+      setTimeout(() => {
+        backdrop.classList.add('hidden');
+        activeCategoryId = null;
+        activeItemId = null;
+        renderApp();
+      }, 300);
+    }
+
+    function updateDrawerStatusBadge(isCompleted) {
+      const btn = document.getElementById('drawerStatusToggleBtn');
+      if (isCompleted) {
+        btn.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-olive text-white border-olive cursor-pointer shadow-xs transition-all';
+        btn.innerHTML = `<span>✓</span><span>Выполнено</span>`;
+      } else {
+        btn.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-champagne text-gold-dark border-gold-light/60 hover:bg-gold-light/40 cursor-pointer transition-all';
+        btn.innerHTML = `<span class="w-2 h-2 rounded-full border border-gold-dark"></span><span>В процессе</span>`;
+      }
+    }
+
+    function renderDrawerSubtasks(item) {
+      const list = document.getElementById('drawerSubtasksList');
+      const countBadge = document.getElementById('drawerSubtasksCount');
+      const emptyMsg = document.getElementById('emptySubtasksMsg');
+      list.innerHTML = '';
+
+      const subtasks = item.subtasks || [];
+      const total = subtasks.length;
+      const completed = subtasks.filter(s => s.completed).length;
+
+      countBadge.textContent = `${completed} из ${total}`;
+
+      if (total === 0) {
+        emptyMsg.classList.remove('hidden');
+        return;
+      } else {
+        emptyMsg.classList.add('hidden');
+      }
+
+      subtasks.forEach(sub => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center gap-2.5 p-2 rounded-xl bg-white border border-bordergold/60 hover:border-gold/60 transition-all group/sub';
+        li.dataset.subtaskId = sub.id;
+
+        li.innerHTML = `
+          <button type="button" class="sub-check-btn shrink-0 w-4.5 h-4.5 rounded-full border border-gold/70 flex items-center justify-center custom-checkbox ${sub.completed ? 'checked' : 'bg-white'}" aria-label="Отметить">
+            <svg class="w-2.5 h-2.5 text-white transition-transform ${sub.completed ? 'scale-100' : 'scale-0'}" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
+
+          <input type="text" class="sub-text-input flex-grow text-xs sm:text-[13px] bg-transparent focus:outline-none focus:bg-ivory-100 px-1.5 py-0.5 rounded transition-all ${sub.completed ? 'line-through text-warmgray italic' : 'text-charcoal'}" value="${escapeHTML(sub.text)}">
+
+          <button type="button" class="delete-sub-btn p-1 text-warmgray/40 hover:text-rose-600 hover:bg-rose-50 rounded opacity-0 group-hover/sub:opacity-100 transition-opacity cursor-pointer" title="Удалить">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        `;
+
+        list.appendChild(li);
+      });
+    }
+
+    function setupDrawerEvents() {
+      document.getElementById('closeDrawerBtn').addEventListener('click', closeTaskDrawer);
+      document.getElementById('saveAndCloseDrawerBtn').addEventListener('click', closeTaskDrawer);
+      document.getElementById('taskDrawerBackdrop').addEventListener('click', closeTaskDrawer);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (!document.getElementById('taskDrawer').classList.contains('translate-x-full')) {
+            closeTaskDrawer();
+          }
+        }
+      });
+
+      const titleInput = document.getElementById('drawerTaskTitleInput');
+      titleInput.addEventListener('input', () => {
+        if (!activeCategoryId || !activeItemId) return;
+        const category = categories.find(c => c.id === activeCategoryId);
+        const item = category?.items.find(i => i.id === activeItemId);
+        if (item) {
+          item.text = titleInput.value.trim() || item.text;
+          saveData();
+        }
+      });
+
+      document.getElementById('drawerStatusToggleBtn').addEventListener('click', () => {
+        if (!activeCategoryId || !activeItemId) return;
+        const category = categories.find(c => c.id === activeCategoryId);
+        const item = category?.items.find(i => i.id === activeItemId);
+        if (item) {
+          item.completed = !item.completed;
+          updateDrawerStatusBadge(item.completed);
+          saveData();
+          updateProgress();
+        }
+      });
+
+      const notesTextarea = document.getElementById('drawerNotesTextarea');
+      notesTextarea.addEventListener('input', () => {
+        if (!activeCategoryId || !activeItemId) return;
+        const category = categories.find(c => c.id === activeCategoryId);
+        const item = category?.items.find(i => i.id === activeItemId);
+        if (item) {
+          item.notes = notesTextarea.value;
+          saveData();
+        }
+      });
+
+      const costInput = document.getElementById('drawerCostInput');
+      costInput.addEventListener('input', () => {
+        if (!activeCategoryId || !activeItemId) return;
+        const category = categories.find(c => c.id === activeCategoryId);
+        const item = category?.items.find(i => i.id === activeItemId);
+        if (item) {
+          item.cost = costInput.value.trim();
+          saveData();
+          updateProgress();
+        }
+      });
+
+      const newSubtaskInput = document.getElementById('newSubtaskInput');
+      const addSubtaskBtn = document.getElementById('addSubtaskBtn');
+
+      const commitSubtask = () => {
+        const text = newSubtaskInput.value.trim();
+        if (!text || !activeCategoryId || !activeItemId) return;
+
+        const category = categories.find(c => c.id === activeCategoryId);
+        const item = category?.items.find(i => i.id === activeItemId);
+        if (!item) return;
+
+        if (!Array.isArray(item.subtasks)) item.subtasks = [];
+        item.subtasks.push({
+          id: 'sub-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+          text: text,
+          completed: false
+        });
+
+        newSubtaskInput.value = '';
+        saveData();
+        renderDrawerSubtasks(item);
+      };
+
+      addSubtaskBtn.addEventListener('click', commitSubtask);
+      newSubtaskInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') commitSubtask();
+      });
+
+      const subtaskList = document.getElementById('drawerSubtasksList');
+      subtaskList.addEventListener('click', (e) => {
+        if (!activeCategoryId || !activeItemId) return;
+        const category = categories.find(c => c.id === activeCategoryId);
+        const item = category?.items.find(i => i.id === activeItemId);
+        if (!item || !Array.isArray(item.subtasks)) return;
+
+        const li = e.target.closest('li');
+        if (!li) return;
+        const subId = li.dataset.subtaskId;
+        const sub = item.subtasks.find(s => s.id === subId);
+        if (!sub) return;
+
+        if (e.target.closest('.sub-check-btn')) {
+          sub.completed = !sub.completed;
+          saveData();
+          renderDrawerSubtasks(item);
+          return;
+        }
+
+        if (e.target.closest('.delete-sub-btn')) {
+          item.subtasks = item.subtasks.filter(s => s.id !== subId);
+          saveData();
+          renderDrawerSubtasks(item);
+          return;
+        }
+      });
+
+      subtaskList.addEventListener('input', (e) => {
+        if (e.target.classList.contains('sub-text-input')) {
+          const li = e.target.closest('li');
+          const subId = li.dataset.subtaskId;
+          const category = categories.find(c => c.id === activeCategoryId);
+          const item = category?.items.find(i => i.id === activeItemId);
+          const sub = item?.subtasks?.find(s => s.id === subId);
+          if (sub) {
+            sub.text = e.target.value;
+            saveData();
+          }
+        }
+      });
+
+      const bulkAddBtn = document.getElementById('bulkAddBtn');
+      const bulkContainer = document.getElementById('bulkAddContainer');
+      const cancelBulkAddBtn = document.getElementById('cancelBulkAddBtn');
+      const confirmBulkAddBtn = document.getElementById('confirmBulkAddBtn');
+      const bulkAddTextarea = document.getElementById('bulkAddTextarea');
+
+      bulkAddBtn.addEventListener('click', () => {
+        bulkContainer.classList.toggle('hidden');
+        if (!bulkContainer.classList.contains('hidden')) {
+          bulkAddTextarea.focus();
+        }
+      });
+
+      cancelBulkAddBtn.addEventListener('click', () => {
+        bulkContainer.classList.add('hidden');
+        bulkAddTextarea.value = '';
+      });
+
+      confirmBulkAddBtn.addEventListener('click', () => {
+        const raw = bulkAddTextarea.value;
+        const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length === 0 || !activeCategoryId || !activeItemId) return;
+
+        const category = categories.find(c => c.id === activeCategoryId);
+        const item = category?.items.find(i => i.id === activeItemId);
+        if (!item) return;
+
+        if (!Array.isArray(item.subtasks)) item.subtasks = [];
+
+        lines.forEach(line => {
+          item.subtasks.push({
+            id: 'sub-' + Date.now() + '-' + Math.floor(Math.random() * 10000),
+            text: line,
+            completed: false
+          });
+        });
+
+        bulkAddTextarea.value = '';
+        bulkContainer.classList.add('hidden');
+        saveData();
+        renderDrawerSubtasks(item);
+        showToast(`Добавлено ${lines.length} пунктов в список! 📋`);
+      });
+    }
+
+    /**
+     * MAIN APPLICATION EVENT LISTENERS (Checklist View)
+     */
+    function setupEventListeners() {
+      const grid = document.getElementById('categoriesGrid');
+
+      grid.addEventListener('click', (e) => {
+        const itemRow = e.target.closest('.item-row');
+        const card = e.target.closest('.category-card');
+        if (!card) return;
+
+        const categoryId = card.dataset.categoryId;
+        const category = categories.find(c => c.id === categoryId);
+        if (!category) return;
+
+        if (e.target.closest('.delete-category-btn')) {
+          if (confirm(`Удалить весь раздел «${category.title}»?`)) {
+            categories = categories.filter(c => c.id !== categoryId);
+            saveData();
+            renderApp();
+            showToast('Раздел удален');
+          }
+          return;
+        }
+
+        if (e.target.closest('.add-item-btn')) {
+          const input = card.querySelector('.new-item-input');
+          commitNewItem(category, input);
+          return;
+        }
+
+        if (itemRow) {
+          const itemId = itemRow.dataset.itemId;
+
+          if (e.target.closest('.delete-item-btn')) {
+            category.items = category.items.filter(i => i.id !== itemId);
+            saveData();
+            renderApp();
+            showToast('Пункт удален');
+            return;
+          }
+
+          if (e.target.closest('.check-btn')) {
+            toggleItemState(categoryId, itemId, itemRow);
+            return;
+          }
+
+          openTaskDrawer(categoryId, itemId);
+        }
+      });
+
+      grid.addEventListener('keydown', (e) => {
+        if (e.target.classList.contains('new-item-input') && e.key === 'Enter') {
+          const card = e.target.closest('.category-card');
+          const categoryId = card.dataset.categoryId;
+          const category = categories.find(c => c.id === categoryId);
+          if (category) {
+            commitNewItem(category, e.target);
+          }
+        }
+
+        if (e.target.classList.contains('category-title') && e.key === 'Enter') {
+          e.preventDefault();
+          e.target.blur();
+        }
+      });
+
+      grid.addEventListener('blur', (e) => {
+        const card = e.target.closest('.category-card');
+        if (!card) return;
+        const categoryId = card.dataset.categoryId;
+        const category = categories.find(c => c.id === categoryId);
+        if (!category) return;
+
+        if (e.target.classList.contains('category-title')) {
+          const newTitle = e.target.textContent.trim();
+          if (newTitle && newTitle !== category.title) {
+            category.title = newTitle;
+            saveData();
+            showToast('Название раздела сохранено');
+          } else {
+            e.target.textContent = category.title;
+          }
+        }
+      }, true);
+
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderApp();
+      });
+
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => {
+            b.classList.remove('bg-olive', 'text-white', 'shadow-xs');
+            b.classList.add('text-warmgray');
+          });
+          btn.classList.remove('text-warmgray');
+          btn.classList.add('bg-olive', 'text-white', 'shadow-xs');
+          currentFilter = btn.dataset.filter;
+          renderApp();
+        });
+      });
+
+      document.getElementById('exportBtn').addEventListener('click', exportToJSON);
+      document.getElementById('importInput').addEventListener('change', importFromJSON);
+      document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+      // Add Category Modal
+      const addModal = document.getElementById('addCategoryModal');
+      const addCategoryBtn = document.getElementById('addCategoryBtn');
+      const confirmAddCategoryBtn = document.getElementById('confirmAddCategoryBtn');
+      const newCategoryTitleInput = document.getElementById('newCategoryTitleInput');
+
+      addCategoryBtn.addEventListener('click', () => {
+        newCategoryTitleInput.value = '';
+        addModal.classList.remove('hidden');
+        setTimeout(() => {
+          addModal.classList.remove('opacity-0');
+          addModal.querySelector('div').classList.remove('scale-95');
+          newCategoryTitleInput.focus();
+        }, 10);
+      });
+
+      const closeAddModal = () => {
+        addModal.classList.add('opacity-0');
+        addModal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => addModal.classList.add('hidden'), 200);
+      };
+
+      document.querySelectorAll('.closeModalBtn').forEach(b => b.addEventListener('click', closeAddModal));
+
+      confirmAddCategoryBtn.addEventListener('click', () => {
+        const title = newCategoryTitleInput.value.trim();
+        if (title) {
+          const newCat = {
+            id: 'cat-' + Date.now(),
+            title: title,
+            items: []
+          };
+          categories.push(newCat);
+          saveData();
+          renderApp();
+          closeAddModal();
+          showToast(`Раздел «${title}» добавлен`);
+        }
+      });
+
+      newCategoryTitleInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') confirmAddCategoryBtn.click();
+      });
+
+      // Reset Modal
+      const resetModal = document.getElementById('resetModal');
+      const resetBtn = document.getElementById('resetBtn');
+      const restoreDefaultBtn = document.getElementById('restoreDefaultBtn');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+
+      resetBtn.addEventListener('click', () => {
+        resetModal.classList.remove('hidden');
+        setTimeout(() => {
+          resetModal.classList.remove('opacity-0');
+          resetModal.querySelector('div').classList.remove('scale-95');
+        }, 10);
+      });
+
+      const closeResetModal = () => {
+        resetModal.classList.add('opacity-0');
+        resetModal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => resetModal.classList.add('hidden'), 200);
+      };
+
+      document.querySelectorAll('.closeResetModalBtn').forEach(b => b.addEventListener('click', closeResetModal));
+
+      restoreDefaultBtn.addEventListener('click', () => {
+        categories = JSON.parse(JSON.stringify(INITIAL_CATEGORIES));
+        saveData();
+        renderApp();
+        closeResetModal();
+        hasTriggeredCelebration = false;
+        showToast('Оригинальный чек-лист 2026 восстановлен');
+      });
+
+      clearAllBtn.addEventListener('click', () => {
+        categories = [];
+        saveData();
+        renderApp();
+        closeResetModal();
+        hasTriggeredCelebration = false;
+        showToast('Все данные очищены');
+      });
+    }
+
+    function commitNewItem(category, inputElement) {
+      const text = inputElement.value.trim();
+      if (!text) return;
+
+      const newItem = {
+        id: 'item-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        text: text,
+        completed: false,
+        cost: '',
+        notes: '',
+        subtasks: []
+      };
+
+      category.items.push(newItem);
+      inputElement.value = '';
+      saveData();
+      renderApp();
+      showToast('Новый пункт добавлен');
+    }
+
+    /**
+     * ==========================================
+     * INTERACTIVE SEATING STUDIO CONTROLLER
+     * ==========================================
+     */
+    function setupSeatingStudio() {
+      // Modals setup
+      setupSeatingModals();
+      setupSeatingSidebar();
+      setupCanvasInteractions();
+      renderSeating();
+    }
+
+    function setupSeatingModals() {
+      // Add Table Modal
+      const addTableModal = document.getElementById('addTableModal');
+      const openAddTableBtn = document.getElementById('openAddTableModalBtn');
+      const confirmAddTableBtn = document.getElementById('confirmAddTableBtn');
+      const shapeBtns = document.querySelectorAll('.table-shape-btn');
+      let chosenShape = 'round';
+
+      openAddTableBtn.addEventListener('click', () => {
+        addTableModal.classList.remove('hidden');
+        setTimeout(() => {
+          addTableModal.classList.remove('opacity-0');
+          addTableModal.querySelector('div').classList.remove('scale-95');
+        }, 10);
+      });
+
+      const closeAddTableModal = () => {
+        addTableModal.classList.add('opacity-0');
+        addTableModal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => addTableModal.classList.add('hidden'), 200);
+      };
+
+      document.querySelectorAll('.closeTableModalBtn').forEach(b => b.addEventListener('click', closeAddTableModal));
+
+      shapeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          shapeBtns.forEach(b => {
+            b.className = 'table-shape-btn py-2.5 px-3 rounded-2xl border border-bordergold bg-ivory-100 text-charcoal font-medium text-xs text-center hover:bg-white transition-all cursor-pointer';
+          });
+          btn.className = 'table-shape-btn py-2.5 px-3 rounded-2xl border-2 border-terracotta bg-white text-terracotta font-semibold text-xs text-center transition-all shadow-xs cursor-pointer';
+          chosenShape = btn.dataset.shape;
+
+          const seatsInput = document.getElementById('newTableSeatsInput');
+          if (chosenShape === 'presidium') seatsInput.value = 2;
+          else if (chosenShape === 'square') seatsInput.value = 4;
+          else if (chosenShape === 'round') seatsInput.value = 10;
+          else if (chosenShape === 'rect') seatsInput.value = 8;
+        });
+      });
+
+      confirmAddTableBtn.addEventListener('click', () => {
+        const qty = parseInt(document.getElementById('newTableQuantityInput').value) || 1;
+        const seats = parseInt(document.getElementById('newTableSeatsInput').value) || 10;
+        const prefix = document.getElementById('newTableNamePrefix').value.trim();
+
+        for (let i = 0; i < qty; i++) {
+          const tableNum = seatingData.tables.length + 1;
+          const title = prefix ? (qty > 1 ? `${prefix} ${tableNum}` : prefix) : (chosenShape === 'presidium' ? 'Стол молодожёнов' : `Стол ${tableNum}`);
+          
+          const newTable = {
+            id: 'table-' + Date.now() + '-' + i,
+            title: title,
+            shape: chosenShape,
+            seatsCount: seats,
+            x: 100 + (tableNum % 3) * 260,
+            y: 80 + Math.floor(tableNum / 3) * 230,
+            assigned: {}
+          };
+          seatingData.tables.push(newTable);
+        }
+
+        saveSeatingData();
+        renderSeating();
+        closeAddTableModal();
+        showToast('Столы успешно добавлены в зал! 🪑');
+      });
+
+      // Add Scene Element Modal
+      const addSceneModal = document.getElementById('addSceneModal');
+      const openAddSceneModalBtn = document.getElementById('openAddSceneModalBtn');
+
+      openAddSceneModalBtn.addEventListener('click', () => {
+        addSceneModal.classList.remove('hidden');
+        setTimeout(() => {
+          addSceneModal.classList.remove('opacity-0');
+          addSceneModal.querySelector('div').classList.remove('scale-95');
+        }, 10);
+      });
+
+      const closeAddSceneModal = () => {
+        addSceneModal.classList.add('opacity-0');
+        addSceneModal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => addSceneModal.classList.add('hidden'), 200);
+      };
+
+      document.querySelectorAll('.closeSceneModalBtn').forEach(b => b.addEventListener('click', closeAddSceneModal));
+
+      document.querySelectorAll('.scene-elem-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const type = btn.dataset.elemType;
+          let title = 'Сцена';
+          let icon = '🎭';
+          let width = 200;
+          let height = 75;
+
+          if (type === 'dance') { title = 'Танцпол'; icon = '💃'; width = 220; height = 140; }
+          if (type === 'photo') { title = 'Фотозона'; icon = '📸'; width = 140; height = 65; }
+          if (type === 'bar') { title = 'Бар / Фуршет'; icon = '🍸'; width = 160; height = 70; }
+
+          seatingData.scenes.push({
+            id: 'scene-' + Date.now(),
+            title: title,
+            icon: icon,
+            width: width,
+            height: height,
+            x: 400,
+            y: 30
+          });
+
+          saveSeatingData();
+          renderSeating();
+          closeAddSceneModal();
+          showToast(`Добавлена зона: ${title}`);
+        });
+      });
+
+      // Add Guest Modal
+      const addGuestModal = document.getElementById('addGuestModal');
+      const openAddGuestModalBtn = document.getElementById('openAddGuestModalBtn');
+      const confirmAddGuestModalBtn = document.getElementById('confirmAddGuestModalBtn');
+      const modalGuestNameInput = document.getElementById('modalGuestNameInput');
+      const modalGuestGroupSelect = document.getElementById('modalGuestGroupSelect');
+
+      openAddGuestModalBtn.addEventListener('click', () => {
+        modalGuestNameInput.value = '';
+        addGuestModal.classList.remove('hidden');
+        setTimeout(() => {
+          addGuestModal.classList.remove('opacity-0');
+          addGuestModal.querySelector('div').classList.remove('scale-95');
+          modalGuestNameInput.focus();
+        }, 10);
+      });
+
+      const closeAddGuestModal = () => {
+        addGuestModal.classList.add('opacity-0');
+        addGuestModal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => addGuestModal.classList.add('hidden'), 200);
+      };
+
+      document.querySelectorAll('.closeGuestModalBtn').forEach(b => b.addEventListener('click', closeAddGuestModal));
+
+      confirmAddGuestModalBtn.addEventListener('click', () => {
+        const name = modalGuestNameInput.value.trim();
+        if (!name) return;
+
+        seatingData.guests.push({
+          id: 'guest-' + Date.now(),
+          name: name,
+          group: modalGuestGroupSelect.value,
+          tableId: null,
+          seatIndex: null
+        });
+
+        saveSeatingData();
+        renderSeating();
+        closeAddGuestModal();
+        showToast(`Гость ${name} добавлен в список!`);
+      });
+
+      modalGuestNameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') confirmAddGuestModalBtn.click();
+      });
+
+      // Quick Add Guest inside left sidebar
+      const quickGuestInput = document.getElementById('quickGuestNameInput');
+      const quickAddBtn = document.getElementById('quickAddGuestBtn');
+
+      const commitQuickGuest = () => {
+        const name = quickGuestInput.value.trim();
+        if (!name) return;
+
+        seatingData.guests.push({
+          id: 'guest-' + Date.now(),
+          name: name,
+          group: currentGuestFilter === 'all' ? 'common' : currentGuestFilter,
+          tableId: null,
+          seatIndex: null
+        });
+
+        quickGuestInput.value = '';
+        saveSeatingData();
+        renderSeating();
+        showToast(`Гость ${name} добавлен!`);
+      };
+
+      quickAddBtn.addEventListener('click', commitQuickGuest);
+      quickGuestInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') commitQuickGuest();
+      });
+
+      // Auto-seat Button
+      document.getElementById('autoSeatBtn').addEventListener('click', autoSeatGuests);
+
+      // Print Seating
+      document.getElementById('printSeatingBtn').addEventListener('click', () => window.print());
+      document.getElementById('printListModeBtn').addEventListener('click', () => window.print());
+
+      // View mode switcher: Схема зала | Списком
+      const viewModeCanvasBtn = document.getElementById('viewModeCanvasBtn');
+      const viewModeListBtn = document.getElementById('viewModeListBtn');
+      const canvasWrapper = document.getElementById('seatingCanvasWrapper');
+      const listView = document.getElementById('seatingListView');
+
+      viewModeCanvasBtn.addEventListener('click', () => {
+        viewModeCanvasBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-lg font-medium transition-all bg-ivory-200 text-charcoal shadow-2xs';
+        viewModeListBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-lg font-medium transition-all text-warmgray hover:text-charcoal';
+        canvasWrapper.classList.remove('hidden');
+        listView.classList.add('hidden');
+      });
+
+      viewModeListBtn.addEventListener('click', () => {
+        viewModeListBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-lg font-medium transition-all bg-ivory-200 text-charcoal shadow-2xs';
+        viewModeCanvasBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-lg font-medium transition-all text-warmgray hover:text-charcoal';
+        canvasWrapper.classList.add('hidden');
+        listView.classList.remove('hidden');
+        renderSeatingListView();
+      });
+
+      // Zoom controls
+      const board = document.getElementById('seatingBoard');
+      const zoomText = document.getElementById('zoomLevelText');
+      const updateZoom = (val) => {
+        zoomLevel = Math.max(0.6, Math.min(1.6, val));
+        board.style.transform = `scale(${zoomLevel})`;
+        zoomText.textContent = `${Math.round(zoomLevel * 100)}%`;
+      };
+      document.getElementById('zoomInBtn').addEventListener('click', () => updateZoom(zoomLevel + 0.1));
+      document.getElementById('zoomOutBtn').addEventListener('click', () => updateZoom(zoomLevel - 0.1));
+      document.getElementById('zoomResetBtn').addEventListener('click', () => updateZoom(1));
+    }
+
+    function setupSeatingSidebar() {
+      // Guest category filter pills
+      const pills = document.querySelectorAll('.guest-filter-pill');
+      pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          pills.forEach(p => {
+            p.className = 'guest-filter-pill px-2.5 py-1 rounded-lg font-medium transition-all bg-ivory-200 text-warmgray hover:text-charcoal text-[11px]';
+          });
+          pill.className = 'guest-filter-pill px-2.5 py-1 rounded-lg font-medium transition-all bg-charcoal text-white text-[11px]';
+          currentGuestFilter = pill.dataset.guestFilter;
+          renderSeating();
+        });
+      });
+
+      // Guest Search in Seating
+      const searchInput = document.getElementById('seatingGuestSearchInput');
+      searchInput.addEventListener('input', (e) => {
+        guestSearchQuery = e.target.value;
+        renderSeating();
+      });
+
+      // Import guests from task 1.4
+      document.getElementById('importFromChecklistBtn').addEventListener('click', () => {
+        let imported = 0;
+        categories.forEach(cat => {
+          cat.items.forEach(item => {
+            if (item.text.toLowerCase().includes('гостей') && Array.isArray(item.subtasks)) {
+              item.subtasks.forEach(sub => {
+                const exists = seatingData.guests.some(g => g.name.toLowerCase() === sub.text.toLowerCase());
+                if (!exists) {
+                  seatingData.guests.push({
+                    id: 'guest-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                    name: sub.text,
+                    group: 'common',
+                    tableId: null,
+                    seatIndex: null
+                  });
+                  imported++;
+                }
+              });
+            }
+          });
+        });
+
+        if (imported > 0) {
+          saveSeatingData();
+          renderSeating();
+          showToast(`Импортировано ${imported} гостей из чек-листа! 👥`);
+        } else {
+          showToast('Все гости из списка уже есть в рассадке');
+        }
+      });
+
+      // Selection Banner controls
+      document.getElementById('cancelGuestSelectionBtn').addEventListener('click', clearGuestSelection);
+      document.getElementById('unseatSelectedGuestBtn').addEventListener('click', unseatSelectedGuest);
+      document.getElementById('deleteSelectedGuestBtn').addEventListener('click', deleteSelectedGuest);
+    }
+
+    /**
+     * DRAG AND DROP & BOARD INTERACTIONS
+     */
+    function setupCanvasInteractions() {
+      const board = document.getElementById('seatingBoard');
+
+      let isDragging = false;
+      let dragTarget = null;
+      let dragType = null; // 'table' or 'scene'
+      let startX = 0, startY = 0;
+      let initialElemX = 0, initialElemY = 0;
+
+      // Mouse/Touch drag
+      const onStart = (e) => {
+        const handle = e.target.closest('.drag-handle');
+        if (!handle) return;
+
+        const tableElem = e.target.closest('.table-container');
+        const sceneElem = e.target.closest('.scene-container');
+
+        if (!tableElem && !sceneElem) return;
+
+        isDragging = true;
+        dragTarget = tableElem || sceneElem;
+        dragType = tableElem ? 'table' : 'scene';
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        startX = clientX;
+        startY = clientY;
+
+        initialElemX = parseFloat(dragTarget.dataset.x) || 0;
+        initialElemY = parseFloat(dragTarget.dataset.y) || 0;
+
+        dragTarget.style.zIndex = '50';
+      };
+
+      const onMove = (e) => {
+        if (!isDragging || !dragTarget) return;
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const deltaX = (clientX - startX) / zoomLevel;
+        const deltaY = (clientY - startY) / zoomLevel;
+
+        const newX = Math.max(10, Math.min(1400, initialElemX + deltaX));
+        const newY = Math.max(10, Math.min(800, initialElemY + deltaY));
+
+        dragTarget.style.left = `${newX}px`;
+        dragTarget.style.top = `${newY}px`;
+        dragTarget.dataset.x = newX;
+        dragTarget.dataset.y = newY;
+      };
+
+      const onEnd = () => {
+        if (!isDragging || !dragTarget) return;
+        isDragging = false;
+
+        const id = dragTarget.dataset.id;
+        const finalX = parseFloat(dragTarget.dataset.x);
+        const finalY = parseFloat(dragTarget.dataset.y);
+
+        if (dragType === 'table') {
+          const table = seatingData.tables.find(t => t.id === id);
+          if (table) {
+            table.x = Math.round(finalX);
+            table.y = Math.round(finalY);
+          }
+        } else if (dragType === 'scene') {
+          const scene = seatingData.scenes.find(s => s.id === id);
+          if (scene) {
+            scene.x = Math.round(finalX);
+            scene.y = Math.round(finalY);
+          }
+        }
+
+        dragTarget.style.zIndex = '';
+        dragTarget = null;
+        saveSeatingData();
+      };
+
+      board.addEventListener('mousedown', onStart);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onEnd);
+
+      board.addEventListener('touchstart', onStart, { passive: true });
+      window.addEventListener('touchmove', onMove, { passive: true });
+      window.addEventListener('touchend', onEnd);
+    }
+
+    /**
+     * RENDER THE ENTIRE SEATING STUDIO
+     */
+    function renderSeating() {
+      renderSeatingStats();
+      renderUnseatedGuests();
+      renderSeatingCanvas();
+      renderSeatingSelectionBanner();
+    }
+
+    function renderSeatingStats() {
+      const totalTables = seatingData.tables.length;
+      let totalSeats = 0;
+      let occupiedSeats = 0;
+
+      seatingData.tables.forEach(t => {
+        totalSeats += t.seatsCount;
+        const occupiedInTable = Object.keys(t.assigned || {}).length;
+        occupiedSeats += occupiedInTable;
+      });
+
+      const freeSeats = Math.max(0, totalSeats - occupiedSeats);
+      const waitingCount = seatingData.guests.filter(g => !g.tableId).length;
+
+      document.getElementById('seatingTablesCount').textContent = totalTables;
+      document.getElementById('seatingFreeSeatsCount').textContent = freeSeats;
+      document.getElementById('seatingWaitingCount').textContent = waitingCount;
+
+      document.getElementById('seatingOccupiedText').textContent = `${occupiedSeats}/${totalSeats}`;
+      const percent = totalSeats > 0 ? Math.round((occupiedSeats / totalSeats) * 100) : 0;
+      document.getElementById('seatingPercentText').textContent = `${percent}%`;
+      document.getElementById('seatingProgressBar').style.width = `${percent}%`;
+    }
+
+    function renderUnseatedGuests() {
+      const container = document.getElementById('unseatedGuestsContainer');
+      const badge = document.getElementById('unseatedCountBadge');
+      const allSeatedMsg = document.getElementById('allGuestsSeatedMsg');
+      container.innerHTML = '';
+
+      const unseated = seatingData.guests.filter(g => !g.tableId);
+      badge.textContent = unseated.length;
+
+      const filtered = unseated.filter(g => {
+        const matchesGroup = currentGuestFilter === 'all' ? true : g.group === currentGuestFilter;
+        const matchesSearch = g.name.toLowerCase().includes(guestSearchQuery.toLowerCase());
+        return matchesGroup && matchesSearch;
+      });
+
+      if (unseated.length === 0) {
+        allSeatedMsg.classList.remove('hidden');
+        return;
+      } else {
+        allSeatedMsg.classList.add('hidden');
+      }
+
+      filtered.forEach(guest => {
+        const card = document.createElement('div');
+        const isSelected = selectedGuestId === guest.id;
+
+        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 transition-all cursor-pointer ${
+          isSelected 
+            ? 'bg-charcoal text-white border-charcoal shadow-md scale-[1.02]' 
+            : 'bg-white hover:bg-ivory-100 border-bordergold/80 hover:border-gold'
+        }`;
+
+        const initial = guest.name.charAt(0).toUpperCase();
+
+        card.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+              isSelected ? 'bg-gold text-charcoal' : 'bg-champagne text-gold-dark'
+            }">
+              ${initial}
+            </div>
+            <div class="truncate">
+              <div class="text-xs font-medium truncate ${isSelected ? 'text-white' : 'text-charcoal'}">${escapeHTML(guest.name)}</div>
+              <div class="text-[10px] ${isSelected ? 'text-gold-light' : 'text-warmgray'}">${getGroupLabel(guest.group)}</div>
+            </div>
+          </div>
+          <button class="shrink-0 text-xs px-2 py-1 rounded-lg ${isSelected ? 'bg-white/20 text-white' : 'bg-ivory-200 text-gold-dark hover:bg-gold-light'} font-medium">
+            ${isSelected ? 'Выбран' : 'Посадить'}
+          </button>
+        `;
+
+        card.addEventListener('click', () => {
+          if (selectedGuestId === guest.id) {
+            clearGuestSelection();
+          } else {
+            selectGuest(guest.id);
+          }
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function getGroupLabel(group) {
+      if (group === 'bride') return 'Невеста';
+      if (group === 'groom') return 'Жених';
+      return 'Общие';
+    }
+
+    function renderSeatingCanvas() {
+      const board = document.getElementById('seatingBoard');
+      board.innerHTML = '';
+
+      // 1. Render Scene Elements (Stage, Dancefloor, etc.)
+      seatingData.scenes.forEach(scene => {
+        const div = document.createElement('div');
+        div.className = 'scene-container absolute rounded-2xl border border-gold-light/60 bg-white/70 backdrop-blur-xs shadow-xs p-3 flex flex-col items-center justify-center drag-handle cursor-move group/scene';
+        div.dataset.id = scene.id;
+        div.dataset.x = scene.x;
+        div.dataset.y = scene.y;
+        div.style.left = `${scene.x}px`;
+        div.style.top = `${scene.y}px`;
+        div.style.width = `${scene.width}px`;
+        div.style.height = `${scene.height}px`;
+
+        div.innerHTML = `
+          <div class="text-2xl">${scene.icon}</div>
+          <div class="text-xs font-serif font-bold text-charcoal tracking-wide mt-1 uppercase">${escapeHTML(scene.title)}</div>
+          <button type="button" class="delete-scene-btn absolute top-1 right-1 p-1 text-warmgray/40 hover:text-rose-600 rounded opacity-0 group-hover/scene:opacity-100 transition-opacity cursor-pointer" title="Удалить">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        `;
+
+        div.querySelector('.delete-scene-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          seatingData.scenes = seatingData.scenes.filter(s => s.id !== scene.id);
+          saveSeatingData();
+          renderSeating();
+        });
+
+        board.appendChild(div);
+      });
+
+      // 2. Render Tables (Round, Presidium, Rect, Square)
+      seatingData.tables.forEach(table => {
+        const tableElem = createTableElement(table);
+        board.appendChild(tableElem);
+      });
+    }
+
+    /**
+     * CREATE TABLE ELEMENT (Matches Screenshot 1 & 3)
+     */
+    function createTableElement(table) {
+      const container = document.createElement('div');
+      container.className = 'table-container absolute select-none';
+      container.dataset.id = table.id;
+      container.dataset.x = table.x;
+      container.dataset.y = table.y;
+      container.style.left = `${table.x}px`;
+      container.style.top = `${table.y}px`;
+
+      const assignedCount = Object.keys(table.assigned || {}).length;
+      const isFull = assignedCount >= table.seatsCount;
+
+      // SHAPE 1: PRESIDIUM / СТОЛ МОЛОДОЖЕНОВ (Screenshot 1 & 3: mint rounded card with heart badges on top)
+      if (table.shape === 'presidium') {
+        const width = 180;
+        const height = 58;
+
+        container.style.width = `${width}px`;
+        container.style.height = `${height + 36}px`;
+
+        container.innerHTML = `
+          <!-- Seats on Top with Heart Badges -->
+          <div class="flex items-center justify-center gap-6 mb-2">
+            ${Array.from({ length: table.seatsCount }).map((_, idx) => {
+              const seatKey = 'seat-' + idx;
+              const guestId = table.assigned ? table.assigned[seatKey] : null;
+              const guest = guestId ? seatingData.guests.find(g => g.id === guestId) : null;
+              const isSelected = selectedSeatSlot && selectedSeatSlot.tableId === table.id && selectedSeatSlot.seatIndex === idx;
+
+              return `
+                <div data-seat-index="${idx}" class="seat-slot w-7 h-7 rounded-full bg-terracotta text-white flex items-center justify-center text-xs shadow-md border-2 ${
+                  isSelected ? 'border-yellow-400 scale-125' : 'border-white'
+                } cursor-pointer" title="${guest ? escapeHTML(guest.name) : 'Свободное место'}">
+                  ${guest ? guest.name.charAt(0).toUpperCase() : '🤍'}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- Newlyweds Table Card (Mint border, rounded) -->
+          <div class="drag-handle w-full h-[54px] rounded-2xl bg-emerald-50/70 border-2 border-emerald-400/80 shadow-table flex flex-col items-center justify-center p-2 cursor-move hover:border-emerald-500 transition-all group/table">
+            <div class="text-xs font-serif font-bold text-charcoal tracking-wide">${escapeHTML(table.title)}</div>
+            <div class="text-[11px] font-semibold text-emerald-700">${assignedCount}/${table.seatsCount}</div>
+            
+            <button class="delete-table-btn absolute -top-1 -right-1 p-1 bg-white rounded-full text-warmgray/50 hover:text-rose-600 shadow-xs opacity-0 group-hover/table:opacity-100 transition-all cursor-pointer" title="Удалить стол">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        `;
+      } 
+      // SHAPE 2: ROUND TABLE (Screenshot 1 & 3: circular table with dotted seats in circle)
+      else if (table.shape === 'round') {
+        const N = table.seatsCount;
+        const R_table = Math.min(80, 48 + N * 1.6);
+        const R_seats = R_table + 24;
+        const boxSize = (R_seats + 16) * 2;
+
+        container.style.width = `${boxSize}px`;
+        container.style.height = `${boxSize}px`;
+
+        const center = boxSize / 2;
+
+        let seatsHTML = '';
+        for (let i = 0; i < N; i++) {
+          const theta = (2 * Math.PI * i) / N - Math.PI / 2;
+          const x = center + R_seats * Math.cos(theta) - 13;
+          const y = center + R_seats * Math.sin(theta) - 13;
+
+          const seatKey = 'seat-' + i;
+          const guestId = table.assigned ? table.assigned[seatKey] : null;
+          const guest = guestId ? seatingData.guests.find(g => g.id === guestId) : null;
+          const isSelected = selectedSeatSlot && selectedSeatSlot.tableId === table.id && selectedSeatSlot.seatIndex === i;
+
+          if (guest) {
+            seatsHTML += `
+              <div data-seat-index="${i}" style="left:${x}px; top:${y}px;" class="seat-slot absolute w-[26px] h-[26px] rounded-full bg-gold-dark text-white flex items-center justify-center text-[11px] font-bold shadow-sm border-2 ${
+                isSelected ? 'border-charcoal scale-125' : 'border-white'
+              } cursor-pointer" title="${escapeHTML(guest.name)}">
+                ${guest.name.charAt(0).toUpperCase()}
+              </div>
+            `;
+          } else {
+            seatsHTML += `
+              <div data-seat-index="${i}" style="left:${x}px; top:${y}px;" class="seat-slot absolute w-[26px] h-[26px] rounded-full border-2 border-dashed border-[#C5A880]/80 bg-white/80 hover:bg-champagne/80 hover:border-gold flex items-center justify-center text-[10px] text-warmgray shadow-2xs ${
+                selectedGuestId ? 'highlight-free' : ''
+              } cursor-pointer" title="Свободное место">
+              </div>
+            `;
+          }
+        }
+
+        container.innerHTML = `
+          ${seatsHTML}
+          <!-- Central Round Table -->
+          <div style="width:${R_table * 2}px; height:${R_table * 2}px; left:${center - R_table}px; top:${center - R_table}px;" class="drag-handle absolute rounded-full bg-white border-2 border-[#C5A880] shadow-table flex flex-col items-center justify-center p-3 cursor-move hover:border-gold-dark transition-all group/table">
+            <div class="text-xs sm:text-[13px] font-serif font-bold text-charcoal tracking-wide text-center leading-tight">${escapeHTML(table.title)}</div>
+            <div class="text-[11px] font-semibold text-warmgray mt-0.5">${assignedCount}/${table.seatsCount}</div>
+
+            <button class="delete-table-btn absolute top-1 right-1 p-1 bg-white rounded-full text-warmgray/50 hover:text-rose-600 shadow-xs opacity-0 group-hover/table:opacity-100 transition-all cursor-pointer" title="Удалить стол">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        `;
+      }
+      // SHAPE 3: RECTANGULAR & SQUARE
+      else {
+        const N = table.seatsCount;
+        const width = 160 + (N > 8 ? (N - 8) * 12 : 0);
+        const height = 70;
+
+        container.style.width = `${width + 48}px`;
+        container.style.height = `${height + 56}px`;
+
+        const centerTop = 28;
+        const centerLeft = 24;
+
+        let seatsHTML = '';
+        const half = Math.ceil(N / 2);
+
+        // Top row
+        for (let i = 0; i < half; i++) {
+          const x = centerLeft + (width / half) * (i + 0.5) - 13;
+          const y = centerTop - 26;
+          const guestId = table.assigned ? table.assigned['seat-' + i] : null;
+          const guest = guestId ? seatingData.guests.find(g => g.id === guestId) : null;
+
+          seatsHTML += `
+            <div data-seat-index="${i}" style="left:${x}px; top:${y}px;" class="seat-slot absolute w-[26px] h-[26px] rounded-full ${
+              guest ? 'bg-gold-dark text-white font-bold border-2 border-white' : 'border-2 border-dashed border-[#C5A880]/80 bg-white/80'
+            } flex items-center justify-center text-[11px] shadow-2xs cursor-pointer" title="${guest ? escapeHTML(guest.name) : 'Свободно'}">
+              ${guest ? guest.name.charAt(0).toUpperCase() : ''}
+            </div>
+          `;
+        }
+
+        // Bottom row
+        for (let i = half; i < N; i++) {
+          const x = centerLeft + (width / (N - half)) * (i - half + 0.5) - 13;
+          const y = centerTop + height + 2;
+          const guestId = table.assigned ? table.assigned['seat-' + i] : null;
+          const guest = guestId ? seatingData.guests.find(g => g.id === guestId) : null;
+
+          seatsHTML += `
+            <div data-seat-index="${i}" style="left:${x}px; top:${y}px;" class="seat-slot absolute w-[26px] h-[26px] rounded-full ${
+              guest ? 'bg-gold-dark text-white font-bold border-2 border-white' : 'border-2 border-dashed border-[#C5A880]/80 bg-white/80'
+            } flex items-center justify-center text-[11px] shadow-2xs cursor-pointer" title="${guest ? escapeHTML(guest.name) : 'Свободно'}">
+              ${guest ? guest.name.charAt(0).toUpperCase() : ''}
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          ${seatsHTML}
+          <div style="width:${width}px; height:${height}px; left:${centerLeft}px; top:${centerTop}px;" class="drag-handle absolute rounded-2xl bg-white border-2 border-[#C5A880] shadow-table flex flex-col items-center justify-center p-2 cursor-move hover:border-gold-dark transition-all group/table">
+            <div class="text-xs font-serif font-bold text-charcoal tracking-wide">${escapeHTML(table.title)}</div>
+            <div class="text-[11px] font-semibold text-warmgray">${assignedCount}/${table.seatsCount}</div>
+            <button class="delete-table-btn absolute -top-1 -right-1 p-1 bg-white rounded-full text-warmgray/50 hover:text-rose-600 shadow-xs opacity-0 group-hover/table:opacity-100 transition-all cursor-pointer" title="Удалить стол">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        `;
+      }
+
+      // Seat click listeners
+      container.querySelectorAll('.seat-slot').forEach(slot => {
+        slot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const seatIdx = parseInt(slot.dataset.seatIndex);
+          handleSeatClick(table.id, seatIdx);
+        });
+      });
+
+      // Delete table listener
+      const delBtn = container.querySelector('.delete-table-btn');
+      if (delBtn) {
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm(`Удалить «${table.title}»? Гости за этим столом вернутся в список без места.`)) {
+            // Unseat all guests at this table
+            seatingData.guests.forEach(g => {
+              if (g.tableId === table.id) {
+                g.tableId = null;
+                g.seatIndex = null;
+              }
+            });
+            seatingData.tables = seatingData.tables.filter(t => t.id !== table.id);
+            clearGuestSelection();
+            saveSeatingData();
+            renderSeating();
+            showToast('Стол удален');
+          }
+        });
+      }
+
+      return container;
+    }
+
+    /**
+     * SEAT SELECTION & ASSIGNMENT LOGIC
+     */
+    function handleSeatClick(tableId, seatIndex) {
+      const table = seatingData.tables.find(t => t.id === tableId);
+      if (!table) return;
+
+      const seatKey = 'seat-' + seatIndex;
+      const currentGuestId = table.assigned ? table.assigned[seatKey] : null;
+
+      // Case 1: A guest is currently selected in sidebar
+      if (selectedGuestId) {
+        const guest = seatingData.guests.find(g => g.id === selectedGuestId);
+        if (!guest) return;
+
+        // If seat was occupied by another guest, unseat them
+        if (currentGuestId && currentGuestId !== selectedGuestId) {
+          const prevGuest = seatingData.guests.find(g => g.id === currentGuestId);
+          if (prevGuest) {
+            prevGuest.tableId = null;
+            prevGuest.seatIndex = null;
+          }
+        }
+
+        // If this guest was seated elsewhere, clear that seat
+        if (guest.tableId && guest.seatIndex !== null) {
+          const oldTable = seatingData.tables.find(t => t.id === guest.tableId);
+          if (oldTable && oldTable.assigned) {
+            delete oldTable.assigned['seat-' + guest.seatIndex];
+          }
+        }
+
+        // Assign guest to new seat
+        if (!table.assigned) table.assigned = {};
+        table.assigned[seatKey] = guest.id;
+        guest.tableId = table.id;
+        guest.seatIndex = seatIndex;
+
+        saveSeatingData();
+        clearGuestSelection();
+        renderSeating();
+        showToast(`${guest.name} посажен(а) за «${table.title}»! 🪑`);
+        return;
+      }
+
+      // Case 2: No guest was selected, user clicked on an occupied seat
+      if (currentGuestId) {
+        selectGuest(currentGuestId);
+        selectedSeatSlot = { tableId, seatIndex };
+        renderSeatingSelectionBanner();
+      } else {
+        // Empty seat clicked without guest selected
+        showToast('Выберите гостя в левом меню, чтобы посадить на это место');
+      }
+    }
+
+    function selectGuest(guestId) {
+      selectedGuestId = guestId;
+      const guest = seatingData.guests.find(g => g.id === guestId);
+      if (guest && guest.tableId) {
+        selectedSeatSlot = { tableId: guest.tableId, seatIndex: guest.seatIndex };
+      } else {
+        selectedSeatSlot = null;
+      }
+      renderSeatingSelectionBanner();
+      renderUnseatedGuests();
+    }
+
+    function clearGuestSelection() {
+      selectedGuestId = null;
+      selectedSeatSlot = null;
+      renderSeatingSelectionBanner();
+      renderUnseatedGuests();
+    }
+
+    function unseatSelectedGuest() {
+      if (!selectedGuestId) return;
+      const guest = seatingData.guests.find(g => g.id === selectedGuestId);
+      if (guest) {
+        if (guest.tableId) {
+          const table = seatingData.tables.find(t => t.id === guest.tableId);
+          if (table && table.assigned) {
+            delete table.assigned['seat-' + guest.seatIndex];
+          }
+        }
+        guest.tableId = null;
+        guest.seatIndex = null;
+        saveSeatingData();
+        clearGuestSelection();
+        renderSeating();
+        showToast(`${guest.name} снят(а) со стола`);
+      }
+    }
+
+    function deleteSelectedGuest() {
+      if (!selectedGuestId) return;
+      const guest = seatingData.guests.find(g => g.id === selectedGuestId);
+      if (guest && confirm(`Удалить гостя «${guest.name}» из рассадки?`)) {
+        if (guest.tableId) {
+          const table = seatingData.tables.find(t => t.id === guest.tableId);
+          if (table && table.assigned) {
+            delete table.assigned['seat-' + guest.seatIndex];
+          }
+        }
+        seatingData.guests = seatingData.guests.filter(g => g.id !== selectedGuestId);
+        saveSeatingData();
+        clearGuestSelection();
+        renderSeating();
+        showToast('Гость удален');
+      }
+    }
+
+    function renderSeatingSelectionBanner() {
+      const banner = document.getElementById('seatingSelectionBanner');
+      const titleEl = document.getElementById('selectedGuestBannerTitle');
+      const hintEl = document.getElementById('selectedGuestBannerHint');
+      const unseatBtn = document.getElementById('unseatSelectedGuestBtn');
+      const avatarEl = document.getElementById('selectedGuestAvatar');
+
+      if (!selectedGuestId) {
+        banner.classList.add('hidden');
+        return;
+      }
+
+      const guest = seatingData.guests.find(g => g.id === selectedGuestId);
+      if (!guest) {
+        banner.classList.add('hidden');
+        return;
+      }
+
+      banner.classList.remove('hidden');
+      avatarEl.textContent = guest.name.charAt(0).toUpperCase();
+
+      if (guest.tableId) {
+        const table = seatingData.tables.find(t => t.id === guest.tableId);
+        titleEl.innerHTML = `Выбран: <strong>${escapeHTML(guest.name)}</strong> · сейчас за «${table ? escapeHTML(table.title) : 'Столом'}»`;
+        hintEl.textContent = 'Нажмите «Снять со стола» или выберите другое свободное место';
+        unseatBtn.classList.remove('hidden');
+      } else {
+        titleEl.innerHTML = `Выбран: <strong>${escapeHTML(guest.name)}</strong>`;
+        hintEl.textContent = 'Нажмите на любое свободное место (кружок) на схеме зала, чтобы посадить';
+        unseatBtn.classList.add('hidden');
+      }
+    }
+
+    /**
+     * AUTO-SEAT GUESTS EVENLY
+     */
+    function autoSeatGuests() {
+      const unseated = seatingData.guests.filter(g => !g.tableId);
+      if (unseated.length === 0) {
+        showToast('Все гости уже рассажены!');
+        return;
+      }
+
+      let seatedCount = 0;
+
+      seatingData.tables.forEach(table => {
+        if (!table.assigned) table.assigned = {};
+        for (let i = 0; i < table.seatsCount; i++) {
+          const seatKey = 'seat-' + i;
+          if (!table.assigned[seatKey] && unseated.length > 0) {
+            const guest = unseated.shift();
+            table.assigned[seatKey] = guest.id;
+            guest.tableId = table.id;
+            guest.seatIndex = i;
+            seatedCount++;
+          }
+        }
+      });
+
+      saveSeatingData();
+      renderSeating();
+      showToast(`Автоматически рассажено ${seatedCount} гостей! ✨`);
+    }
+
+    /**
+     * RENDER SEATING LIST VIEW (For Banquet / Catering)
+     */
+    function renderSeatingListView() {
+      const container = document.getElementById('seatingListContainer');
+      container.innerHTML = '';
+
+      seatingData.tables.forEach(table => {
+        const card = document.createElement('div');
+        card.className = 'p-5 rounded-2xl bg-ivory-100/60 border border-bordergold flex flex-col';
+
+        const seatedGuests = [];
+        for (let i = 0; i < table.seatsCount; i++) {
+          const gId = table.assigned ? table.assigned['seat-' + i] : null;
+          if (gId) {
+            const g = seatingData.guests.find(x => x.id === gId);
+            if (g) seatedGuests.push({ seat: i + 1, guest: g });
+          }
+        }
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-bordergold">
+            <h4 class="font-serif font-bold text-charcoal text-base">${escapeHTML(table.title)}</h4>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-champagne text-gold-dark border border-gold-light/40">
+              ${seatedGuests.length} / ${table.seatsCount} мест
+            </span>
+          </div>
+
+          <ol class="space-y-1.5 flex-grow text-xs">
+            ${seatedGuests.length === 0 ? '<li class="text-warmgray italic">За столом пока никого нет</li>' : ''}
+            ${seatedGuests.map(item => `
+              <li class="flex items-center justify-between p-1.5 rounded-lg bg-white border border-bordergold/60">
+                <span class="text-charcoal font-medium">${item.seat}. ${escapeHTML(item.guest.name)}</span>
+                <span class="text-[10px] text-warmgray">${getGroupLabel(item.guest.group)}</span>
+              </li>
+            `).join('')}
+          </ol>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    /**
+     * EXPORT TO JSON FILE (Including Checklist, Budget, and Seating Plan!)
+     */
+    function exportToJSON() {
+      const backupData = {
+        version: "2026.4",
+        exportDate: new Date().toISOString(),
+        weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
+        targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null,
+        categories: categories,
+        seating: seatingData
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      const date = new Date().toISOString().slice(0, 10);
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `wedding-planner-2026-${date}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Полная резервная копия сохранена в файл!');
+    }
+
+    /**
+     * IMPORT FROM JSON FILE
+     */
+    function importFromJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          let importedCategories = null;
+
+          if (Array.isArray(parsed)) {
+            importedCategories = parsed;
+          } else if (parsed && Array.isArray(parsed.categories)) {
+            importedCategories = parsed.categories;
+            if (parsed.weddingDate) {
+              localStorage.setItem(DATE_STORAGE_KEY, parsed.weddingDate);
+              const dateInput = document.getElementById('weddingDateInput');
+              if (dateInput) dateInput.value = parsed.weddingDate;
+              updateCountdownDisplay(parsed.weddingDate);
+            }
+            if (parsed.targetBudget) {
+              localStorage.setItem(TARGET_BUDGET_KEY, parsed.targetBudget);
+            }
+            if (parsed.seating) {
+              seatingData = parsed.seating;
+              saveSeatingData();
+            }
+          }
+
+          if (importedCategories) {
+            importedCategories.forEach(cat => {
+              cat.items.forEach(item => {
+                if (!Array.isArray(item.subtasks)) item.subtasks = [];
+                if (typeof item.notes !== 'string') item.notes = '';
+                if (typeof item.cost !== 'string') item.cost = item.cost ? String(item.cost) : '';
+              });
+            });
+
+            categories = importedCategories;
+            saveData();
+            renderApp();
+            renderSeating();
+            showToast('Все данные планера и рассадки успешно загружены!');
+          } else {
+            showToast('Некорректная структура JSON файла', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Ошибка при чтении файла', 'error');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    /** ========================================================================= */
+    /** CLOUD SYNCHRONIZATION CONTROLLER (Firebase Realtime Database)             */
+    /** Real-time Groom & Bride Collaboration across Devices & Platforms          */
+    /** ========================================================================= */
+
+    function initCloudSync() {
+      loadCloudConfig();
+      checkUrlSyncParameters();
+      setupHeaderRoleButtons();
+      setupSyncModalEvents();
+      updateSyncRoleButtonsUI();
+      updateSyncStatusUI('connecting', 'Подключение к облаку...');
+
+      connectCloudSync(false);
+    }
+
+    function setupHeaderRoleButtons() {
+      const groomBtn = document.getElementById('roleGroomBtn');
+      const brideBtn = document.getElementById('roleBrideBtn');
+
+      const setRole = (role) => {
+        cloudConfig.role = role;
+        localStorage.setItem('wedding_user_role', role);
+        saveCloudConfig();
+        updateSyncRoleButtonsUI();
+        showToast(`Роль выбрана: ${role}! Все изменения на одной ссылке.`);
+      };
+
+      if (groomBtn) groomBtn.addEventListener('click', () => setRole('🤵 Жених'));
+      if (brideBtn) brideBtn.addEventListener('click', () => setRole('👰 Невеста'));
+    }
+
+    function loadCloudConfig() {
+      try {
+        const savedRole = localStorage.getItem('wedding_user_role');
+        const saved = localStorage.getItem(CLOUD_SYNC_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          cloudConfig.enabled = true; // Always ON by default
+          cloudConfig.room = parsed.room || 'wedding-2027';
+          cloudConfig.dbUrl = parsed.dbUrl || 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com';
+          cloudConfig.role = savedRole || parsed.role || '🤵 Жених';
+        } else {
+          cloudConfig.enabled = true;
+          cloudConfig.room = 'wedding-2027';
+          cloudConfig.dbUrl = 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com';
+          cloudConfig.role = savedRole || '🤵 Жених';
+        }
+      } catch (e) {
+        console.error('Failed to load cloud config:', e);
+      }
+    }
+
+    function saveCloudConfig() {
+      try {
+        localStorage.setItem(CLOUD_SYNC_STORAGE_KEY, JSON.stringify(cloudConfig));
+      } catch (e) {
+        console.error('Failed to save cloud config:', e);
+      }
+    }
+
+    function checkUrlSyncParameters() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const urlRoom = params.get('room');
+        const urlDb = params.get('db');
+        const urlRole = params.get('role');
+
+        if (urlRoom) {
+          cloudConfig.room = urlRoom.trim();
+          if (urlDb) {
+            cloudConfig.dbUrl = decodeURIComponent(urlDb.trim());
+          }
+          if (urlRole) {
+            if (urlRole === 'bride') cloudConfig.role = '👰 Невеста';
+            else if (urlRole === 'groom') cloudConfig.role = '🤵 Жених';
+            else if (urlRole === 'together') cloudConfig.role = '💍 Мы вместе';
+            else cloudConfig.role = urlRole;
+          }
+          cloudConfig.enabled = true;
+          saveCloudConfig();
+
+          // Clean query params from address bar without reloading
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+
+          setTimeout(() => {
+            showToast(`🟢 Подключено к свадьбе! Ваша роль: ${cloudConfig.role}`);
+          }, 600);
+        }
+      } catch (e) {
+        console.error('Error parsing sync URL parameters:', e);
+      }
+    }
+
+    function setupSyncModalEvents() {
+      const modal = document.getElementById('syncModal');
+      const openBtn = document.getElementById('openSyncModalBtn');
+      const roomInput = document.getElementById('syncRoomInput');
+      const dbUrlInput = document.getElementById('syncDbUrlInput');
+      const connectBtn = document.getElementById('connectSyncBtn');
+      const copyLinkBtn = document.getElementById('copyShareLinkBtn');
+      const disconnectBtn = document.getElementById('disconnectSyncBtn');
+      const randomRoomBtn = document.getElementById('generateRandomRoomBtn');
+
+      const openModal = () => {
+        roomInput.value = cloudConfig.room || '';
+        dbUrlInput.value = cloudConfig.dbUrl || '';
+        updateSyncRoleButtonsUI();
+        updateModalStatusAlert();
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          modal.querySelector('div').classList.remove('scale-95');
+          if (!cloudConfig.room) roomInput.focus();
+        }, 10);
+      };
+
+      const closeModal = () => {
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+      };
+
+      if (openBtn) openBtn.addEventListener('click', openModal);
+      document.querySelectorAll('.closeSyncModalBtn').forEach(b => b.addEventListener('click', closeModal));
+
+      // Role button selection
+      document.querySelectorAll('.sync-role-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          cloudConfig.role = btn.dataset.role;
+          saveCloudConfig();
+          updateSyncRoleButtonsUI();
+          updateSyncStatusBadge();
+          showToast(`Роль выбрана: ${cloudConfig.role}`);
+        });
+      });
+
+      // Generate random room code
+      if (randomRoomBtn) {
+        randomRoomBtn.addEventListener('click', () => {
+          const words = ['love', 'forever', 'family', 'happy', 'sweet', 'bliss', 'heart'];
+          const word = words[Math.floor(Math.random() * words.length)];
+          const num = Math.floor(100 + Math.random() * 900);
+          const generated = `wedding-${word}-${num}`;
+          roomInput.value = generated;
+          cloudConfig.room = generated;
+          saveCloudConfig();
+          showToast(`Код комнаты сгенерирован: ${generated} 🎲`);
+        });
+      }
+
+      // Connect button
+      if (connectBtn) {
+        connectBtn.addEventListener('click', () => {
+          const roomVal = roomInput.value.trim();
+          let dbVal = dbUrlInput.value.trim();
+
+          if (!roomVal) {
+            showToast('Укажите имя комнаты или нажмите «Случайный код»', 'error');
+            roomInput.focus();
+            return;
+          }
+
+          if (!dbVal) {
+            showToast('Укажите ссылку на базу данных Firebase', 'error');
+            dbUrlInput.focus();
+            return;
+          }
+
+          cloudConfig.room = roomVal;
+          cloudConfig.dbUrl = dbVal;
+          cloudConfig.enabled = true;
+          saveCloudConfig();
+
+          connectCloudSync(true);
+          updateModalStatusAlert();
+          setTimeout(closeModal, 600);
+        });
+      }
+
+      // Copy shareable 1-click link
+      if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', () => {
+          const roomVal = (roomInput.value.trim() || cloudConfig.room).trim();
+          const dbVal = (dbUrlInput.value.trim() || cloudConfig.dbUrl).trim();
+
+          if (!roomVal) {
+            showToast('Сначала введите код комнаты!', 'error');
+            roomInput.focus();
+            return;
+          }
+
+          let partnerRole = 'bride';
+          if (cloudConfig.role && cloudConfig.role.includes('Невеста')) {
+            partnerRole = 'groom';
+          } else if (cloudConfig.role && cloudConfig.role.includes('вместе')) {
+            partnerRole = 'together';
+          }
+
+          const base = window.location.origin + window.location.pathname;
+          let shareUrl = `${base}?room=${encodeURIComponent(roomVal)}&role=${partnerRole}`;
+          if (dbVal) {
+            shareUrl += `&db=${encodeURIComponent(dbVal)}`;
+          }
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              showToast('💌 Ссылка для второй половинки скопирована в буфер обмена!');
+            }).catch(() => {
+              fallbackPrompt(shareUrl);
+            });
+          } else {
+            fallbackPrompt(shareUrl);
+          }
+        });
+      }
+
+      // Disconnect button
+      if (disconnectBtn) {
+        disconnectBtn.addEventListener('click', () => {
+          disconnectCloudSync();
+          updateModalStatusAlert();
+        });
+      }
+
+      function fallbackPrompt(url) {
+        prompt('Скопируйте эту ссылку и отправьте второй половинке:', url);
+      }
+    }
+
+    function updateSyncRoleButtonsUI() {
+      const groomBtn = document.getElementById('roleGroomBtn');
+      const brideBtn = document.getElementById('roleBrideBtn');
+      const isGroom = cloudConfig.role.includes('Жених');
+
+      if (groomBtn && brideBtn) {
+        if (isGroom) {
+          groomBtn.className = 'px-2.5 py-1 rounded-full text-xs font-semibold transition-all bg-olive text-white shadow-xs cursor-pointer';
+          brideBtn.className = 'px-2.5 py-1 rounded-full text-xs font-medium text-charcoal hover:bg-champagne transition-all cursor-pointer';
+        } else {
+          brideBtn.className = 'px-2.5 py-1 rounded-full text-xs font-semibold transition-all bg-olive text-white shadow-xs cursor-pointer';
+          groomBtn.className = 'px-2.5 py-1 rounded-full text-xs font-medium text-charcoal hover:bg-champagne transition-all cursor-pointer';
+        }
+      }
+
+      document.querySelectorAll('.sync-role-btn').forEach(btn => {
+        const isSelected = btn.dataset.role === cloudConfig.role;
+        if (isSelected) {
+          btn.className = 'sync-role-btn py-2 px-3 rounded-xl border border-olive text-xs font-semibold text-white bg-olive shadow-xs transition-all text-center cursor-pointer';
+        } else {
+          btn.className = 'sync-role-btn py-2 px-3 rounded-xl border border-bordergold text-xs font-medium text-charcoal bg-ivory-100 hover:bg-champagne transition-all text-center cursor-pointer';
+        }
+      });
+      updateSyncStatusBadge();
+    }
+
+    function updateSyncStatusBadge() {
+      const badge = document.getElementById('syncRoleBadge');
+      if (badge) {
+        if (cloudConfig.enabled && cloudConfig.role) {
+          badge.textContent = cloudConfig.role;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    function updateModalStatusAlert() {
+      const box = document.getElementById('syncStatusAlertBox');
+      const icon = document.getElementById('syncAlertIcon');
+      const title = document.getElementById('syncAlertTitle');
+      const desc = document.getElementById('syncAlertDesc');
+      const disconnectBtn = document.getElementById('disconnectSyncBtn');
+      if (!box || !icon || !title || !desc) return;
+
+      if (cloudConfig.enabled && cloudRef) {
+        box.className = 'p-3.5 rounded-xl bg-olive-soft border border-olive/30 mb-5 flex items-start gap-3 transition-colors';
+        icon.textContent = '🟢';
+        title.className = 'font-semibold text-olive-dark';
+        title.textContent = `Синхронизация активна: «${cloudConfig.room}»`;
+        desc.textContent = `Все изменения чек-листа, бюджета и рассадки мгновенно транслируются обоим партнерам в реальном времени.`;
+        if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+      } else {
+        box.className = 'p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-5 flex items-start gap-3 transition-colors';
+        icon.textContent = '☁️';
+        title.className = 'font-semibold text-charcoal';
+        title.textContent = 'Офлайн-режим (только это устройство)';
+        desc.textContent = 'Подключите базу данных, чтобы видеть действия друг друга в реальном времени — от галочек в чеклисте и бюджета до рассадки гостей.';
+        if (disconnectBtn) disconnectBtn.classList.add('hidden');
+      }
+    }
+
+    function updateSyncStatusUI(status, label) {
+      const dot = document.getElementById('syncStatusDot');
+      const text = document.getElementById('syncStatusLabel');
+      if (!dot || !text) return;
+
+      if (status === 'connected') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-all';
+        text.textContent = 'Общий доступ: в сети';
+      } else if (status === 'connecting') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse transition-all';
+        text.textContent = 'Подключение...';
+      } else if (status === 'error') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 transition-all';
+        text.textContent = label || 'Ошибка';
+      } else {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-warmgray/50 transition-all';
+        text.textContent = label || 'Общий доступ';
+      }
+
+      updateSyncStatusBadge();
+      updateModalStatusAlert();
+    }
+
+    function connectCloudSync(isUserInitiated = false) {
+      if (typeof firebase === 'undefined') {
+        updateSyncStatusUI('error', 'Офлайн (нет SDK)');
+        if (isUserInitiated) {
+          showToast('Firebase SDK не загружен. Проверьте интернет-соединение.', 'error');
+        }
+        return;
+      }
+
+      if (!cloudConfig.room || !cloudConfig.dbUrl) {
+        updateSyncStatusUI('disconnected', 'Совместный доступ');
+        return;
+      }
+
+      const cleanRoom = cloudConfig.room.trim().replace(/[^a-zA-Z0-9_\-]/g, '_');
+      let cleanUrl = cloudConfig.dbUrl.trim();
+      if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+        cleanUrl = 'https://' + cleanUrl;
+      }
+      cleanUrl = cleanUrl.replace(/\/+$/, '');
+
+      try {
+        updateSyncStatusUI('connecting', 'Подключение...');
+
+        if (!firebase.apps.length) {
+          cloudApp = firebase.initializeApp({
+            databaseURL: cleanUrl
+          });
+        } else {
+          cloudApp = firebase.app();
+        }
+
+        cloudDb = firebase.database(cloudApp);
+        cloudRef = cloudDb.ref('wedding_rooms/' + cleanRoom);
+
+        // Detach existing listener if any
+        cloudRef.off();
+
+        // Listen for Realtime Changes
+        cloudRef.on('value', (snapshot) => {
+          updateSyncStatusUI('connected', 'В сети');
+          const val = snapshot.val();
+          if (val) {
+            handleRemoteCloudUpdate(val);
+          } else {
+            // First time room is opened, seed it with our local state
+            pushToCloud('Инициализация планера');
+          }
+        }, (error) => {
+          console.error('Firebase DB Error:', error);
+          if (error.code === 'PERMISSION_DENIED' || (error.message && error.message.toLowerCase().includes('permission_denied'))) {
+            updateSyncStatusUI('error', 'Разрешите Rules в Firebase');
+            showToast('⚠️ В Firebase на вкладке Rules укажите .read: true, .write: true', 'error');
+          } else {
+            updateSyncStatusUI('error', 'Ошибка связи с облаком');
+          }
+        });
+
+        if (isUserInitiated) {
+          showToast('🟢 Совместный доступ успешно подключен!');
+        }
+      } catch (err) {
+        console.error('Failed to init Firebase:', err);
+        updateSyncStatusUI('error', 'Ошибка');
+        if (isUserInitiated) {
+          showToast('Не удалось подключиться: ' + err.message, 'error');
+        }
+      }
+    }
+
+    function disconnectCloudSync() {
+      if (cloudRef) {
+        try { cloudRef.off(); } catch (e) {}
+        cloudRef = null;
+      }
+      cloudConfig.enabled = false;
+      saveCloudConfig();
+      updateSyncStatusUI('disconnected', 'Совместный доступ');
+      showToast('Совместный доступ отключен. Планер перешел в локальный режим.');
+    }
+
+    function handleRemoteCloudUpdate(data) {
+      if (!data || typeof data !== 'object') return;
+      // Echo cancellation: ignore updates sent by this device
+      if (data.senderDeviceId && data.senderDeviceId === myDeviceId) {
+        return;
+      }
+
+      isReceivingCloudUpdate = true;
+      try {
+        let changed = false;
+
+        // 1. Categories and Checklist Items
+        if (Array.isArray(data.categories)) {
+          data.categories.forEach(cat => {
+            if (Array.isArray(cat.items)) {
+              cat.items.forEach(item => {
+                if (!Array.isArray(item.subtasks)) item.subtasks = [];
+                if (typeof item.notes !== 'string') item.notes = '';
+                if (typeof item.cost !== 'string') item.cost = item.cost ? String(item.cost) : '';
+              });
+            }
+          });
+          categories = data.categories;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+          changed = true;
+        }
+
+        // 2. Seating Plan & Guest Arrangements
+        if (data.seating && typeof data.seating === 'object') {
+          seatingData = data.seating;
+          if (!Array.isArray(seatingData.tables)) seatingData.tables = [];
+          if (!Array.isArray(seatingData.guests)) seatingData.guests = [];
+          if (!Array.isArray(seatingData.scenes)) seatingData.scenes = [];
+          localStorage.setItem(SEATING_STORAGE_KEY, JSON.stringify(seatingData));
+          updateSeatingBadges();
+          changed = true;
+        }
+
+        // 3. Wedding Date Countdown
+        if (data.weddingDate !== undefined) {
+          if (data.weddingDate) {
+            localStorage.setItem(DATE_STORAGE_KEY, String(data.weddingDate));
+            const dateInput = document.getElementById('weddingDateInput');
+            if (dateInput) dateInput.value = data.weddingDate;
+            if (typeof updateCountdownDisplay === 'function') {
+              updateCountdownDisplay(data.weddingDate);
+            }
+          } else {
+            localStorage.removeItem(DATE_STORAGE_KEY);
+            const dateInput = document.getElementById('weddingDateInput');
+            if (dateInput) dateInput.value = '';
+            const badge = document.getElementById('countdownBadge');
+            if (badge) badge.classList.add('hidden');
+          }
+          changed = true;
+        }
+
+        // 4. Target Budget
+        if (data.targetBudget !== undefined) {
+          if (data.targetBudget) {
+            localStorage.setItem(TARGET_BUDGET_KEY, String(data.targetBudget));
+          } else {
+            localStorage.removeItem(TARGET_BUDGET_KEY);
+          }
+          changed = true;
+        }
+
+        if (changed) {
+          renderApp();
+          renderSeating();
+
+          // If Task Drawer is open, re-render its content
+          if (activeCategoryId && activeItemId) {
+            const cat = categories.find(c => c.id === activeCategoryId);
+            const item = cat?.items.find(i => i.id === activeItemId);
+            if (item) {
+              const notesTextarea = document.getElementById('drawerNotesTextarea');
+              if (notesTextarea && document.activeElement !== notesTextarea) {
+                notesTextarea.value = item.notes || '';
+              }
+              const costInput = document.getElementById('drawerCostInput');
+              if (costInput && document.activeElement !== costInput) {
+                costInput.value = item.cost ? parseCost(item.cost) : '';
+              }
+              if (typeof renderDrawerSubtasks === 'function') {
+                renderDrawerSubtasks(item);
+              }
+            }
+          }
+
+          const senderRole = data.senderRole || 'Вторая половинка';
+          const actionMsg = data.actionDescription ? `: ${data.actionDescription}` : '';
+          showToast(`✨ ${senderRole} обновил(а) планер${actionMsg}`);
+        }
+      } catch (err) {
+        console.error('Error applying remote cloud update:', err);
+      } finally {
+        setTimeout(() => {
+          isReceivingCloudUpdate = false;
+        }, 120);
+      }
+    }
+
+    function pushToCloud(actionDescription = '') {
+      if (!cloudConfig.enabled || !cloudRef || isReceivingCloudUpdate) {
+        return;
+      }
+
+      clearTimeout(cloudDebounceTimer);
+      cloudDebounceTimer = setTimeout(() => {
+        try {
+          const payload = {
+            senderDeviceId: myDeviceId,
+            senderRole: cloudConfig.role || 'Половинка',
+            actionDescription: actionDescription || '',
+            updatedAt: Date.now(),
+            categories: categories,
+            seating: seatingData,
+            weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
+            targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null
+          };
+          cloudRef.set(payload).catch(err => {
+            console.error('Cloud push failed:', err);
+          });
+        } catch (e) {
+          console.error('Failed to construct cloud payload:', e);
+        }
+      }, 250);
+    }
+
+    /**
+     * TOAST NOTIFICATION SYSTEM
+     */
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const isSuccess = type === 'success';
+      const bgColor = isSuccess ? 'bg-charcoal text-white' : 'bg-rose-900 text-white';
+      const icon = isSuccess ? '💍' : '⚠️';
+
+      toast.className = `animate-toast flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium shadow-xl border border-white/10 ${bgColor}`;
+      toast.innerHTML = `
+        <span class="text-sm">${icon}</span>
+        <span>${escapeHTML(message)}</span>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(12px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2600);
+    }
+
+    /**
+     * CONFETTI CELEBRATION
+     */
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      const colors = ['#C5A880', '#D4AF37', '#E6D7BD', '#6B7F6D', '#B4533C', '#FAF8F5'];
+      const particles = [];
+      const particleCount = 120;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height - height,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedY: Math.random() * 3 + 2,
+          speedX: Math.random() * 2 - 1,
+          angle: Math.random() * 360,
+          spin: Math.random() * 6 - 3,
+          opacity: 1
+        });
+      }
+
+      let animationFrame;
+      let start = null;
+
+      function render(timestamp) {
+        if (!start) start = timestamp;
+        const progress = timestamp - start;
+
+        ctx.clearRect(0, 0, width, height);
+
+        particles.forEach(p => {
+          p.y += p.speedY;
+          p.x += Math.sin(p.angle * Math.PI / 180) * 1.5;
+          p.angle += p.spin;
+
+          if (progress > 3000) {
+            p.opacity -= 0.015;
+          }
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.angle * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+          ctx.restore();
+        });
+
+        if (progress < 4500) {
+          animationFrame = requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, width, height);
+          cancelAnimationFrame(animationFrame);
+        }
+      }
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }, { once: true });
+
+      animationFrame = requestAnimationFrame(render);
+    }
+
+    /**
+     * HTML ESCAPER
+     */
+    function escapeHTML(str) {
+      return (str || '').replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+
+    // Launch Application
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
