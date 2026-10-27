@@ -1,8 +1,8 @@
 {
-  "updatedAt": 1793132977692,
-  "senderDeviceId": "dev_init",
+  "version": "2026.4",
+  "exportDate": "2026-10-27T21:52:35.093Z",
+  "weddingDate": "2027-06-25",
   "targetBudget": null,
-  "weddingDate": null,
   "categories": [
     {
       "id": "cat-1",
@@ -19,7 +19,7 @@
         {
           "id": "item-1-2",
           "text": "Выбрать дату свадьбы",
-          "completed": false,
+          "completed": true,
           "cost": "",
           "notes": "",
           "subtasks": []
@@ -30,28 +30,7 @@
           "completed": false,
           "cost": "",
           "notes": "",
-          "subtasks": [
-            {
-              "id": "sub-1-3-1",
-              "text": "Площадка и банкетное меню",
-              "completed": false
-            },
-            {
-              "id": "sub-1-3-2",
-              "text": "Фотограф и видеограф",
-              "completed": false
-            },
-            {
-              "id": "sub-1-3-3",
-              "text": "Образы жениха и невесты",
-              "completed": false
-            },
-            {
-              "id": "sub-1-3-4",
-              "text": "Ведущий и DJ",
-              "completed": false
-            }
-          ]
+          "subtasks": []
         },
         {
           "id": "item-1-4",
@@ -59,35 +38,14 @@
           "completed": false,
           "cost": "",
           "notes": "",
-          "subtasks": [
-            {
-              "id": "sub-1-4-1",
-              "text": "Семья жениха",
-              "completed": false
-            },
-            {
-              "id": "sub-1-4-2",
-              "text": "Семья невесты",
-              "completed": false
-            },
-            {
-              "id": "sub-1-4-3",
-              "text": "Друзья и свидетели",
-              "completed": false
-            },
-            {
-              "id": "sub-1-4-4",
-              "text": "Коллеги",
-              "completed": false
-            }
-          ]
+          "subtasks": []
         },
         {
           "id": "item-1-5",
           "text": "Подать заявление в ЗАГС",
-          "completed": false,
-          "cost": "",
-          "notes": "",
+          "completed": true,
+          "cost": "30350",
+          "notes": "Гос пошлина 350 р\nХерсонес 30000 р",
           "subtasks": []
         },
         {
@@ -111,6 +69,14 @@
           "text": "Подготовить и отправить Save the Date",
           "completed": false,
           "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-1793136379623-144",
+          "text": "Договорится с венчанием",
+          "completed": true,
+          "cost": "40000",
           "notes": "",
           "subtasks": []
         }
@@ -203,22 +169,6 @@
         {
           "id": "item-2-11",
           "text": "Продумать фотозону",
-          "completed": false,
-          "cost": "",
-          "notes": "",
-          "subtasks": []
-        },
-        {
-          "id": "item-2-12",
-          "text": "Организовать детскую зону",
-          "completed": false,
-          "cost": "",
-          "notes": "",
-          "subtasks": []
-        },
-        {
-          "id": "item-2-13",
-          "text": "Назначить свадебного координатора",
           "completed": false,
           "cost": "",
           "notes": "",
@@ -533,8 +483,8 @@
         "x": 420,
         "y": 110,
         "assigned": {
-          "seat-0": "guest-groom",
-          "seat-1": "guest-bride"
+          "seat-1": "guest-1793137881600",
+          "seat-0": "guest-1793137900676"
         }
       },
       {
@@ -544,78 +494,35 @@
         "seatsCount": 10,
         "x": 230,
         "y": 290,
-        "assigned": {
-          "seat-0": "guest-alex"
-        }
+        "assigned": {}
       },
       {
         "id": "table-2",
         "title": "Стол 2",
         "shape": "round",
         "seatsCount": 10,
-        "x": 580,
-        "y": 350,
+        "x": 568,
+        "y": 294,
         "assigned": {}
       }
     ],
     "scenes": [],
     "guests": [
       {
-        "id": "guest-groom",
-        "name": "Жених",
-        "group": "groom",
-        "tableId": "table-presidium",
-        "seatIndex": 0
-      },
-      {
-        "id": "guest-bride",
-        "name": "Невеста",
-        "group": "bride",
+        "id": "guest-1793137881600",
+        "name": "Любимая",
+        "group": "common",
         "tableId": "table-presidium",
         "seatIndex": 1
       },
       {
-        "id": "guest-alex",
-        "name": "Алексей Д.",
-        "group": "groom",
-        "tableId": "table-1",
+        "id": "guest-1793137900676",
+        "name": "Любимый",
+        "group": "common",
+        "tableId": "table-presidium",
         "seatIndex": 0
-      },
-      {
-        "id": "guest-maria",
-        "name": "Мария Смирнова",
-        "group": "bride",
-        "tableId": null,
-        "seatIndex": null
-      },
-      {
-        "id": "guest-dmitry",
-        "name": "Дмитрий Ковалев",
-        "group": "groom",
-        "tableId": null,
-        "seatIndex": null
-      },
-      {
-        "id": "guest-elena",
-        "name": "Елена Петрова",
-        "group": "bride",
-        "tableId": null,
-        "seatIndex": null
-      },
-      {
-        "id": "guest-mikhail",
-        "name": "Михаил Новиков",
-        "group": "common",
-        "tableId": null,
-        "seatIndex": null
-      },
-      {
-        "id": "guest-olga",
-        "name": "Ольга Соколова",
-        "group": "common",
-        "tableId": null,
-        "seatIndex": null
       }
     ]
-  }
+  },
+  "updatedAt": 1793138127396
 }
