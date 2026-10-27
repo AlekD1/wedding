@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>СВАДЕБНЫЙ ПЛАНЕР 2026 — Чек-лист, Бюджет и Рассадка гостей</title>
   
   <!-- Google Fonts: Cormorant Garamond & Montserrat -->
@@ -3503,7 +3506,28 @@
       updateSyncRoleButtonsUI();
       updateSyncStatusUI('connecting', 'Подключение к облаку...');
 
+      // 1. Immediate REST fetch (works instantly on mobile and bypasses WebSocket delay)
+      fetchFromCloudRest(false);
+
+      // 2. Connect Firebase Realtime SDK (WebSocket)
       connectCloudSync(false);
+
+      // 3. Listen for window focus & visibility changes (e.g. unlocking phone or switching back to tab)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          fetchFromCloudRest(true);
+        }
+      });
+      window.addEventListener('focus', () => {
+        fetchFromCloudRest(true);
+      });
+
+      // 4. Background heartbeat sync every 3.5 seconds
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          fetchFromCloudRest(false);
+        }
+      }, 3500);
     }
 
     function setupHeaderRoleButtons() {
@@ -3889,7 +3913,52 @@
       showToast('Совместный доступ отключен. Планер перешел в локальный режим.');
     }
 
-    function handleRemoteCloudUpdate(data) {
+    function getFirebaseRestUrl() {
+      if (!cloudConfig.dbUrl || !cloudConfig.room) return null;
+      let url = cloudConfig.dbUrl.trim().replace(/\/+$/, '');
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      const cleanRoom = cloudConfig.room.trim().replace(/[^a-zA-Z0-9_\-]/g, '_');
+      return `${url}/wedding_rooms/${cleanRoom}.json`;
+    }
+
+    let lastKnownRemoteUpdatedAt = 0;
+    let isFetchingRest = false;
+
+    async function fetchFromCloudRest(showToastNotice = true) {
+      if (isReceivingCloudUpdate || isFetchingRest) return;
+      const url = getFirebaseRestUrl();
+      if (!url) return;
+
+      try {
+        isFetchingRest = true;
+        const fetchUrl = `${url}?_cb=${Date.now()}`;
+        const res = await fetch(fetchUrl);
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            updateSyncStatusUI('error', 'Разрешите Rules в Firebase');
+          }
+          return;
+        }
+        const data = await res.json();
+        if (data && typeof data === 'object' && data.updatedAt) {
+          if (data.senderDeviceId !== myDeviceId && data.updatedAt > lastKnownRemoteUpdatedAt) {
+            lastKnownRemoteUpdatedAt = data.updatedAt;
+            handleRemoteCloudUpdate(data, showToastNotice);
+          }
+          updateSyncStatusUI('connected', 'Общий доступ: в сети');
+        } else if (!data) {
+          pushToCloud('Инициализация планера');
+        }
+      } catch (err) {
+        console.warn('REST fetch error:', err);
+      } finally {
+        isFetchingRest = false;
+      }
+    }
+
+    function handleRemoteCloudUpdate(data, showToastNotice = true) {
       if (!data || typeof data !== 'object') return;
       // Echo cancellation: ignore updates sent by this device
       if (data.senderDeviceId && data.senderDeviceId === myDeviceId) {
@@ -3979,9 +4048,11 @@
             }
           }
 
-          const senderRole = data.senderRole || 'Вторая половинка';
-          const actionMsg = data.actionDescription ? `: ${data.actionDescription}` : '';
-          showToast(`✨ ${senderRole} обновил(а) планер${actionMsg}`);
+          if (showToastNotice) {
+            const senderRole = data.senderRole || 'Вторая половинка';
+            const actionMsg = data.actionDescription ? `: ${data.actionDescription}` : '';
+            showToast(`✨ ${senderRole} обновил(а) планер${actionMsg}`);
+          }
         }
       } catch (err) {
         console.error('Error applying remote cloud update:', err);
@@ -3993,7 +4064,7 @@
     }
 
     function pushToCloud(actionDescription = '') {
-      if (!cloudConfig.enabled || !cloudRef || isReceivingCloudUpdate) {
+      if (!cloudConfig.enabled || isReceivingCloudUpdate) {
         return;
       }
 
@@ -4010,9 +4081,30 @@
             weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
             targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null
           };
-          cloudRef.set(payload).catch(err => {
-            console.error('Cloud push failed:', err);
-          });
+          lastKnownRemoteUpdatedAt = payload.updatedAt;
+
+          // 1. Send via Firebase SDK WebSocket
+          if (cloudRef) {
+            cloudRef.set(payload).catch(err => {
+              console.warn('Firebase WebSocket push error:', err);
+            });
+          }
+
+          // 2. ALSO send via direct HTTPS REST PUT (100% reliable across Russian mobile networks)
+          const restUrl = getFirebaseRestUrl();
+          if (restUrl) {
+            fetch(restUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            }).then(r => {
+              if (r.ok) {
+                updateSyncStatusUI('connected', 'Общий доступ: в сети');
+              }
+            }).catch(e => {
+              console.warn('REST push error:', e);
+            });
+          }
         } catch (e) {
           console.error('Failed to construct cloud payload:', e);
         }
