@@ -1,0 +1,621 @@
+{
+  "updatedAt": 1793127021543,
+  "senderDeviceId": "dev_init",
+  "targetBudget": "1500000",
+  "weddingDate": "2027-06-15",
+  "categories": [
+    {
+      "id": "cat-1",
+      "title": "1. ОСНОВНАЯ ЧАСТЬ",
+      "items": [
+        {
+          "id": "item-1-1",
+          "text": "Определить формат свадьбы",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-1-2",
+          "text": "Выбрать дату свадьбы",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-1-3",
+          "text": "Согласовать свадебный бюджет",
+          "completed": false,
+          "cost": "1138350",
+          "notes": "Согласовано",
+          "subtasks": [
+            {
+              "id": "sub-1-3-1",
+              "text": "Площадка и банкетное меню",
+              "completed": false
+            },
+            {
+              "id": "sub-1-3-2",
+              "text": "Фотограф и видеограф",
+              "completed": false
+            },
+            {
+              "id": "sub-1-3-3",
+              "text": "Образы жениха и невесты",
+              "completed": false
+            },
+            {
+              "id": "sub-1-3-4",
+              "text": "Ведущий и DJ",
+              "completed": false
+            }
+          ]
+        },
+        {
+          "id": "item-1-4",
+          "text": "Составить предварительный список гостей",
+          "completed": false,
+          "cost": "",
+          "notes": "Здесь ведем полный список гостей, рассадку по столам и пожелания по меню.",
+          "subtasks": [
+            {
+              "id": "sub-1-4-1",
+              "text": "Семья жениха",
+              "completed": false
+            },
+            {
+              "id": "sub-1-4-2",
+              "text": "Семья невесты",
+              "completed": false
+            },
+            {
+              "id": "sub-1-4-3",
+              "text": "Друзья и свидетели",
+              "completed": false
+            },
+            {
+              "id": "sub-1-4-4",
+              "text": "Коллеги",
+              "completed": false
+            }
+          ]
+        },
+        {
+          "id": "item-1-5",
+          "text": "Подать заявление в ЗАГС",
+          "completed": false,
+          "cost": "350",
+          "notes": "Госпошлина за регистрацию брака",
+          "subtasks": []
+        },
+        {
+          "id": "item-1-6",
+          "text": "Купить кольца",
+          "completed": false,
+          "cost": "75000",
+          "notes": "Выбрать ювелирный салон и определиться с гравировкой",
+          "subtasks": []
+        },
+        {
+          "id": "item-1-7",
+          "text": "Подготовить документы для свадьбы",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-1-8",
+          "text": "Подготовить и отправить Save the Date",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        }
+      ]
+    },
+    {
+      "id": "cat-2",
+      "title": "2. ПЛОЩАДКА И КОМАНДА",
+      "items": [
+        {
+          "id": "item-2-1",
+          "text": "Выбрать площадку",
+          "completed": false,
+          "cost": "250000",
+          "notes": "Депозит и аренда свадебной локации",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-2",
+          "text": "Забронировать фотографа",
+          "completed": false,
+          "cost": "80000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-3",
+          "text": "Забронировать видеографа",
+          "completed": false,
+          "cost": "70000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-4",
+          "text": "Выбрать ведущего",
+          "completed": false,
+          "cost": "90000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-5",
+          "text": "Выбрать DJ / утвердить плейлист",
+          "completed": false,
+          "cost": "35000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-6",
+          "text": "Найти визажиста и стилиста",
+          "completed": false,
+          "cost": "25000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-7",
+          "text": "Заказать декор и флористику",
+          "completed": false,
+          "cost": "120000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-8",
+          "text": "Согласовать свадебное меню",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-9",
+          "text": "Заказать свадебный торт",
+          "completed": false,
+          "cost": "22000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-10",
+          "text": "Организовать транспорт",
+          "completed": false,
+          "cost": "30000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-11",
+          "text": "Продумать фотозону",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-12",
+          "text": "Организовать детскую зону",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-13",
+          "text": "Назначить свадебного координатора",
+          "completed": false,
+          "cost": "40000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-14",
+          "text": "Оформить и отправить приглашения",
+          "completed": false,
+          "cost": "15000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-2-15",
+          "text": "Собрать ответы гостей (RSVP)",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        }
+      ]
+    },
+    {
+      "id": "cat-3",
+      "title": "3. ОБРАЗ НЕВЕСТЫ И ЖЕНИХА",
+      "items": [
+        {
+          "id": "item-3-1",
+          "text": "Купить свадебное платье",
+          "completed": false,
+          "cost": "95000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-2",
+          "text": "Подобрать обувь невесты",
+          "completed": false,
+          "cost": "18000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-3",
+          "text": "Подобрать аксессуары невесты",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-4",
+          "text": "Записаться на макияж и прическу",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-5",
+          "text": "Сделать репетицию свадебного образа",
+          "completed": false,
+          "cost": "8000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-6",
+          "text": "Подготовить образ жениха",
+          "completed": false,
+          "cost": "55000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-7",
+          "text": "Купить обувь жениха",
+          "completed": false,
+          "cost": "15000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-8",
+          "text": "Подготовить украшения и аксессуары",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-9",
+          "text": "Заказать букет невесты",
+          "completed": false,
+          "cost": "10000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-3-10",
+          "text": "Подготовить одежду на утро свадьбы",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        }
+      ]
+    },
+    {
+      "id": "cat-4",
+      "title": "4. СЦЕНАРИЙ ДНЯ",
+      "items": [
+        {
+          "id": "item-4-1",
+          "text": "Составить тайминг свадебного дня",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-4-2",
+          "text": "Продумать программу мероприятия",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-4-3",
+          "text": "Подготовить интерактив для гостей",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-4-4",
+          "text": "Поставить первый танец",
+          "completed": false,
+          "cost": "15000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-4-5",
+          "text": "Продумать план Б на случай дождя",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        }
+      ]
+    },
+    {
+      "id": "cat-5",
+      "title": "5. ДОПОЛНИТЕЛЬНО",
+      "items": [
+        {
+          "id": "item-5-1",
+          "text": "Подготовить подарки гостям",
+          "completed": false,
+          "cost": "12000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-2",
+          "text": "Организовать девичник",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-3",
+          "text": "Организовать мальчишник",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-4",
+          "text": "Запланировать Love Story съемку",
+          "completed": false,
+          "cost": "25000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-5",
+          "text": "Забронировать отель",
+          "completed": false,
+          "cost": "20000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-6",
+          "text": "Подготовить аптечку и косметичку",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-7",
+          "text": "Собрать вещи на свадебный день",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-8",
+          "text": "Подготовить оплату подрядчикам",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-5-9",
+          "text": "Подготовить другие свадебные карточки (посадочные, номера столов, меню, интерактив)",
+          "completed": false,
+          "cost": "8000",
+          "notes": "",
+          "subtasks": []
+        }
+      ]
+    },
+    {
+      "id": "cat-6",
+      "title": "6. ЗА 1 НЕДЕЛЮ",
+      "items": [
+        {
+          "id": "item-6-1",
+          "text": "Подтвердить всех подрядчиков",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-6-2",
+          "text": "Проверить финальный список гостей",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-6-3",
+          "text": "Заказать план рассадки",
+          "completed": false,
+          "cost": "5000",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-6-4",
+          "text": "Проверить тайминг свадебного дня",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-6-5",
+          "text": "Подготовить кольца и документы",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-6-6",
+          "text": "Проверить все адреса и контакты",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-6-7",
+          "text": "Собрать свадебные вещи",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        },
+        {
+          "id": "item-6-8",
+          "text": "Передать свадебному координатору все контакты и инструкции",
+          "completed": false,
+          "cost": "",
+          "notes": "",
+          "subtasks": []
+        }
+      ]
+    }
+  ],
+  "seating": {
+    "tables": [
+      {
+        "id": "table-presidium",
+        "title": "Стол молодожёнов",
+        "shape": "presidium",
+        "seatsCount": 2,
+        "x": 420,
+        "y": 110,
+        "assigned": {
+          "seat-0": "guest-groom",
+          "seat-1": "guest-bride"
+        }
+      },
+      {
+        "id": "table-1",
+        "title": "Стол 1",
+        "shape": "round",
+        "seatsCount": 10,
+        "x": 230,
+        "y": 290,
+        "assigned": {
+          "seat-0": "guest-alex"
+        }
+      },
+      {
+        "id": "table-2",
+        "title": "Стол 2",
+        "shape": "round",
+        "seatsCount": 10,
+        "x": 580,
+        "y": 350,
+        "assigned": {}
+      }
+    ],
+    "scenes": [],
+    "guests": [
+      {
+        "id": "guest-groom",
+        "name": "Жених",
+        "group": "groom",
+        "tableId": "table-presidium",
+        "seatIndex": 0
+      },
+      {
+        "id": "guest-bride",
+        "name": "Невеста",
+        "group": "bride",
+        "tableId": "table-presidium",
+        "seatIndex": 1
+      },
+      {
+        "id": "guest-alex",
+        "name": "Алексей Д.",
+        "group": "groom",
+        "tableId": "table-1",
+        "seatIndex": 0
+      },
+      {
+        "id": "guest-maria",
+        "name": "Мария Смирнова",
+        "group": "bride",
+        "tableId": null,
+        "seatIndex": null
+      },
+      {
+        "id": "guest-dmitry",
+        "name": "Дмитрий Ковалев",
+        "group": "groom",
+        "tableId": null,
+        "seatIndex": null
+      },
+      {
+        "id": "guest-elena",
+        "name": "Елена Петрова",
+        "group": "bride",
+        "tableId": null,
+        "seatIndex": null
+      },
+      {
+        "id": "guest-mikhail",
+        "name": "Михаил Новиков",
+        "group": "common",
+        "tableId": null,
+        "seatIndex": null
+      },
+      {
+        "id": "guest-olga",
+        "name": "Ольга Соколова",
+        "group": "common",
+        "tableId": null,
+        "seatIndex": null
+      }
+    ]
+  }
+}

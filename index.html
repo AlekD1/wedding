@@ -1171,6 +1171,22 @@
       <!-- Form Content -->
       <div class="space-y-4">
         
+        <!-- GitHub Native Sync (100% NO-VPN) -->
+        <div class="p-3.5 rounded-xl bg-ivory-100 border border-bordergold mb-2">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="githubTokenInput" class="text-xs font-serif font-bold uppercase tracking-wider text-charcoal flex items-center gap-1.5">
+              <span>🐙 Автосохранение на GitHub (без VPN)</span>
+            </label>
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=WeddingSync" target="_blank" rel="noopener noreferrer" class="text-[11px] text-gold-dark hover:text-charcoal underline underline-offset-2 transition-colors">
+              Получить токен (15 сек) ↗
+            </a>
+          </div>
+          <input type="password" id="githubTokenInput" placeholder="ghp_... (токен GitHub для автозаписи)" class="w-full bg-white border border-bordergold rounded-xl px-3.5 py-2 text-xs text-charcoal placeholder-warmgray/50 focus:outline-none focus:ring-1 focus:ring-gold transition-all shadow-xs">
+          <p class="text-[11px] text-warmgray mt-1 leading-relaxed">
+            Чтение с любого смартфона в РФ работает <strong>без всякого токена и без VPN</strong>. Токен нужен только чтобы сайт сам записывал новые галочки в репозиторий.
+          </p>
+        </div>
+
         <!-- Step 1: Wedding Room Code -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
@@ -3901,6 +3917,147 @@
       }
     }
 
+
+    /** ========================================================================= */
+    /** GITHUB NATIVE SYNC ENGINE (100% ACCESSIBLE IN RUSSIA WITHOUT VPN)         */
+    /** Uses alekd1/wedding/data.json directly on GitHub Pages                    */
+    /** ========================================================================= */
+    const GITHUB_REPO_OWNER = 'alekd1';
+    const GITHUB_REPO_NAME = 'wedding';
+    const GITHUB_DATA_FILE = 'data.json';
+    const GITHUB_TOKEN_STORAGE_KEY = 'wedding_github_sync_token';
+
+    let gitHubFileSha = null;
+    let isPushingToGitHub = false;
+    let isFetchingFromGitHub = false;
+
+    function getGitHubToken() {
+      try {
+        return localStorage.getItem(GITHUB_TOKEN_STORAGE_KEY) || '';
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function setGitHubToken(token) {
+      try {
+        if (token) {
+          localStorage.setItem(GITHUB_TOKEN_STORAGE_KEY, token.trim());
+        } else {
+          localStorage.removeItem(GITHUB_TOKEN_STORAGE_KEY);
+        }
+      } catch (e) {}
+    }
+
+    /**
+     * Fetch latest data directly from GitHub Pages data.json (100% NO VPN, NO TOKEN NEEDED)
+     */
+    async function fetchFromGitHubData(showNotice = false) {
+      if (isReceivingCloudUpdate || isFetchingFromGitHub) return;
+      try {
+        isFetchingFromGitHub = true;
+        const cb = Date.now();
+        // 1. Try relative fetch from same origin (alekd1.github.io/wedding/data.json)
+        let res = await fetch(`data.json?_cb=${cb}`);
+        if (!res.ok) {
+          // 2. Try raw.githubusercontent.com fallback
+          res = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/main/${GITHUB_DATA_FILE}?_cb=${cb}`);
+        }
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data && data.updatedAt && data.updatedAt > lastKnownRemoteUpdatedAt) {
+          if (data.senderDeviceId !== myDeviceId) {
+            lastKnownRemoteUpdatedAt = data.updatedAt;
+            handleRemoteCloudUpdate(data, showNotice);
+            updateSyncStatusUI('connected', 'Общий доступ: в сети');
+          }
+        }
+      } catch (err) {
+        console.warn('GitHub data.json fetch error:', err);
+      } finally {
+        isFetchingFromGitHub = false;
+      }
+    }
+
+    /**
+     * Push updated state to GitHub repository contents API
+     */
+    async function pushToGitHubRepo(actionDesc = '') {
+      const token = getGitHubToken();
+      if (!token || isPushingToGitHub || isReceivingCloudUpdate) return;
+
+      try {
+        isPushingToGitHub = true;
+        const payload = {
+          updatedAt: Date.now(),
+          senderDeviceId: myDeviceId,
+          actionDescription: actionDesc || '',
+          weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
+          targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null,
+          categories: categories,
+          seating: seatingData
+        };
+
+        const jsonContent = JSON.stringify(payload, null, 2);
+        const base64Content = utf8ToBase64(jsonContent);
+
+        // First get current SHA if unknown
+        if (!gitHubFileSha) {
+          try {
+            const getRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_DATA_FILE}`, {
+              headers: {
+                'Authorization': `token ${token}`,
+                'User-Agent': 'WeddingApp'
+              }
+            });
+            if (getRes.ok) {
+              const fileInfo = await getRes.json();
+              gitHubFileSha = fileInfo.sha;
+            }
+          } catch (e) {}
+        }
+
+        const putBody = {
+          message: `Обновление планера: ${actionDesc || 'автосохранение'}`,
+          content: base64Content
+        };
+        if (gitHubFileSha) {
+          putBody.sha = gitHubFileSha;
+        }
+
+        const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_DATA_FILE}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json',
+            'User-Agent': 'WeddingApp'
+          },
+          body: JSON.stringify(putBody)
+        });
+
+        if (putRes.ok) {
+          const putResult = await putRes.json();
+          if (putResult && putResult.content && putResult.content.sha) {
+            gitHubFileSha = putResult.content.sha;
+          }
+          lastKnownRemoteUpdatedAt = payload.updatedAt;
+          updateSyncStatusUI('saved', 'Сохранено на GitHub ✓');
+          setTimeout(() => {
+            updateSyncStatusUI('connected', 'Общий доступ: в сети');
+          }, 1500);
+        } else {
+          console.warn('GitHub PUT failed with status:', putRes.status);
+          // Invalidate cached sha to re-fetch next time
+          gitHubFileSha = null;
+        }
+      } catch (err) {
+        console.warn('GitHub push error:', err);
+      } finally {
+        isPushingToGitHub = false;
+      }
+    }
+
     function initCloudSync() {
       loadCloudConfig();
       checkUrlSyncParameters();
@@ -3915,6 +4072,7 @@
       updateSyncStatusUI('connecting', 'Подключение...');
 
       // 1. Immediate dual-fetch: Unblocked gateway (100% mobile unblocked) + Firebase
+      fetchFromGitHubData(false);
       fetchFromUnblockedGateway(false);
       fetchFromCloudRest(false);
 
@@ -3924,7 +4082,8 @@
       // 3. Listen for window focus & visibility changes (e.g. unlocking phone or switching back to browser tab)
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
-          fetchFromUnblockedGateway(true);
+          fetchFromGitHubData(true);
+        fetchFromUnblockedGateway(true);
           fetchFromCloudRest(true);
         }
       });
@@ -3936,6 +4095,7 @@
       // 4. Background heartbeat sync every 3 seconds across both gateways
       setInterval(() => {
         if (document.visibilityState === 'visible') {
+          fetchFromGitHubData(false);
           fetchFromUnblockedGateway(false);
           fetchFromCloudRest(false);
         }
@@ -3949,6 +4109,7 @@
           forceBtn.classList.add('animate-spin');
           updateSyncStatusUI('connecting', 'Обновление...');
           await Promise.all([
+            fetchFromGitHubData(false),
             fetchFromUnblockedGateway(false),
             fetchFromCloudRest(false)
           ]);
@@ -3969,7 +4130,9 @@
         const saved = localStorage.getItem(CLOUD_SYNC_STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
-          cloudConfig.enabled = true; // Always ON for zero friction
+          cloudConfig.enabled = true;
+          const ghInput = document.getElementById('githubTokenInput');
+          if (ghInput) setGitHubToken(ghInput.value); // Always ON for zero friction
           cloudConfig.room = parsed.room || 'wedding-2027';
           cloudConfig.dbUrl = parsed.dbUrl || 'https://wedding-2027-df5b3-default-rtdb.firebaseio.com';
         } else {
@@ -4501,6 +4664,9 @@
             weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
             targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null
           };
+
+          // Also push directly to GitHub repository (works 100% without VPN)
+          pushToGitHubRepo(actionDescription);
 
           // Also push to unblocked gateway (100% accessible in Russia on mobile 4G/LTE without VPN)
           pushToUnblockedGateway();
