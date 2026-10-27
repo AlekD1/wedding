@@ -1730,15 +1730,6 @@
      */
     function loadData() {
       try {
-        // Version 3 wipe: ensure all old sample dummy costs and sample notes are wiped clean on all phones
-        const RESET_FLAG_KEY = 'wedding_clean_reset_v3';
-        if (!localStorage.getItem(RESET_FLAG_KEY)) {
-          localStorage.removeItem(STORAGE_KEY);
-          localStorage.removeItem(TARGET_BUDGET_KEY);
-          localStorage.removeItem(DATE_STORAGE_KEY);
-          localStorage.setItem(RESET_FLAG_KEY, 'true');
-        }
-
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
           categories = JSON.parse(saved);
@@ -2161,8 +2152,8 @@
           </ul>
 
           <div class="no-print mt-4 pt-3 border-t border-bordergold/40 flex items-center gap-2">
-            <input type="text" placeholder="+ Добавить пункт..." class="new-item-input w-full bg-ivory-100/70 hover:bg-ivory-100 focus:bg-white text-xs px-3 py-1.5 rounded-lg border border-bordergold/70 focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all">
-            <button class="add-item-btn shrink-0 p-1.5 rounded-lg bg-champagne hover:bg-gold-light text-gold-dark hover:text-charcoal transition-all text-xs flex items-center justify-center cursor-pointer" title="Добавить задачу">
+            <input type="text" placeholder="+ Добавить пункт..." class="new-item-input w-full bg-ivory-100/70 hover:bg-ivory-100 focus:bg-white text-xs px-3 py-2 rounded-lg border border-bordergold/70 focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-all">
+            <button type="button" class="add-item-btn shrink-0 p-2 min-w-[36px] min-h-[36px] rounded-lg bg-champagne hover:bg-gold-light text-gold-dark hover:text-charcoal transition-all text-xs flex items-center justify-center cursor-pointer shadow-2xs" title="Добавить задачу">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
               </svg>
@@ -2700,11 +2691,12 @@
     }
 
     function commitNewItem(category, inputElement) {
+      if (!category || !inputElement) return;
       const text = inputElement.value.trim();
       if (!text) return;
 
       const newItem = {
-        id: 'item-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        id: 'item-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
         text: text,
         completed: false,
         cost: '',
@@ -2712,11 +2704,12 @@
         subtasks: []
       };
 
+      if (!Array.isArray(category.items)) {
+        category.items = [];
+      }
       category.items.push(newItem);
       inputElement.value = '';
-      saveData();
-      renderApp();
-      showToast('Новый пункт добавлен');
+      saveData('Добавлен пункт: ' + text);
     }
 
     /**
@@ -3991,92 +3984,77 @@
     }
 
     /**
-     * Compact state packer: extracts only dynamic values (completed, costs, notes, seating, date)
-     * Fits into ~500-1500 bytes (far below Pusher's 10 KB limit)
+     * Compact state packer: serializes entire planner including all added/deleted tasks and categories
+     * Resulting payload is ~4.5 - 5.5 KB, well within Pusher's 10,240 byte limit.
      */
     function packWeddingState(actionDescription = '') {
-      const completed = [];
-      const costs = {};
-      const notes = {};
-      const subtasksCompleted = [];
-      const customItems = [];
-
-      categories.forEach(cat => {
-        cat.items.forEach(item => {
-          if (item.completed) completed.push(item.id);
-          if (item.cost && String(item.cost).trim() !== '') costs[item.id] = String(item.cost).trim();
-          if (item.notes && String(item.notes).trim() !== '') notes[item.id] = String(item.notes).trim();
-          if (Array.isArray(item.subtasks)) {
-            item.subtasks.forEach(st => {
-              if (st.completed) subtasksCompleted.push(st.id);
-            });
+      const cats = categories.map(c => ({
+        id: c.id,
+        title: c.title,
+        items: c.items.map(item => {
+          const obj = { id: item.id, text: item.text };
+          if (item.completed) obj.c = 1;
+          if (item.cost && String(item.cost).trim() !== '') obj.k = String(item.cost).trim();
+          if (item.notes && String(item.notes).trim() !== '') obj.n = String(item.notes).trim();
+          if (Array.isArray(item.subtasks) && item.subtasks.length > 0) {
+            obj.s = item.subtasks.map(st => ({ id: st.id, text: st.text, c: st.completed ? 1 : 0 }));
           }
-          if (item.isCustom) {
-            customItems.push({ catId: cat.id, item });
-          }
-        });
-      });
+          return obj;
+        })
+      }));
 
       return {
         senderDeviceId: myDeviceId,
         actionDescription: actionDescription || '',
         updatedAt: Date.now(),
-        d: localStorage.getItem(DATE_STORAGE_KEY) || null,
-        b: localStorage.getItem(TARGET_BUDGET_KEY) || null,
-        c: completed,
-        k: costs,
-        n: notes,
-        st: subtasksCompleted,
-        x: customItems,
-        s: seatingData
+        weddingDate: localStorage.getItem(DATE_STORAGE_KEY) || null,
+        targetBudget: localStorage.getItem(TARGET_BUDGET_KEY) || null,
+        categories: cats,
+        seating: seatingData
       };
     }
 
     /**
-     * Unpacks compact wedding state into live categories and UI
+     * Unpacks wedding state reconstructing full categories, custom tasks and subtasks
      */
     function unpackWeddingState(payload) {
       if (!payload || typeof payload !== 'object') return null;
 
-      const completedSet = new Set(payload.c || []);
-      const subtasksSet = new Set(payload.st || []);
-      const costs = payload.k || {};
-      const notes = payload.n || {};
-
-      categories.forEach(cat => {
-        cat.items.forEach(item => {
-          item.completed = completedSet.has(item.id);
-          item.cost = costs[item.id] !== undefined ? String(costs[item.id]) : '';
-          item.notes = notes[item.id] !== undefined ? String(notes[item.id]) : '';
-          if (Array.isArray(item.subtasks)) {
-            item.subtasks.forEach(st => {
-              st.completed = subtasksSet.has(st.id);
-            });
-          }
-        });
-      });
-
-      if (Array.isArray(payload.x)) {
-        payload.x.forEach(({ catId, item }) => {
-          const cat = categories.find(c => c.id === catId);
-          if (cat && !cat.items.some(i => i.id === item.id)) {
-            cat.items.push(item);
-          }
-        });
+      let cats = [];
+      if (Array.isArray(payload.categories)) {
+        cats = payload.categories.map(c => ({
+          id: c.id,
+          title: c.title || 'Раздел',
+          items: Array.isArray(c.items) ? c.items.map(item => ({
+            id: item.id,
+            text: item.text || '',
+            completed: Boolean(item.c || item.completed),
+            cost: item.k ? String(item.k) : (item.cost ? String(item.cost) : ''),
+            notes: item.n ? String(item.n) : (item.notes ? String(item.notes) : ''),
+            subtasks: Array.isArray(item.s) ? item.s.map(st => ({
+              id: st.id,
+              text: st.text || '',
+              completed: Boolean(st.c !== undefined ? st.c : st.completed)
+            })) : (Array.isArray(item.subtasks) ? item.subtasks : [])
+          })) : []
+        }));
+      } else {
+        cats = categories;
       }
 
       return {
         senderDeviceId: payload.senderDeviceId,
-        updatedAt: payload.updatedAt,
-        categories: categories,
-        seating: payload.s || seatingData,
-        weddingDate: payload.d,
-        targetBudget: payload.b
+        actionDescription: payload.actionDescription || '',
+        updatedAt: payload.updatedAt || Date.now(),
+        weddingDate: payload.weddingDate,
+        targetBudget: payload.targetBudget,
+        categories: cats,
+        seating: payload.seating || seatingData
       };
     }
 
     /**
-     * Push latest state to partner via Pusher WebSocket (Compact & Ultra-Fast)
+     * Push latest state to partner via Pusher WebSocket
      */
     function pushToCloud(actionDescription = '') {
       if (isReceivingCloudUpdate) return;
@@ -4093,13 +4071,6 @@
       }, 100);
     }
 
-    // In event listener:
-    // pusherChannel.bind('client-wedding-update', (data) => {
-    //   if (data && data.senderDeviceId !== myDeviceId) {
-    //     const fullState = unpackWeddingState(data);
-    //     if (fullState) handleRemoteCloudUpdate(fullState, true);
-    //   }
-    // });
     /**
      * Apply remote update to application state safely
      */
